@@ -1,0 +1,9 @@
+node_modules
+design
+screenshots
+tests
+*.md
+*.tsbuildinfo
+LOGO AGLIS ANGGAH AHINGANI PUSADA TNI.png
+.DS_Store
+.env*

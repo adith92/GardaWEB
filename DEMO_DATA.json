@@ -1,0 +1,51 @@
+{
+  "site": {
+    "id": "site-pusada-hq",
+    "name": "PUSADA HQ",
+    "timezone": "Asia/Jakarta"
+  },
+  "system": {
+    "camerasOnline": 8,
+    "camerasTotal": 8,
+    "activeIncidents": 3,
+    "unknownFacesToday": 2,
+    "unknownPlatesToday": 1,
+    "storagePercent": 62,
+    "coreServer": "Dell PowerEdge R630",
+    "coreServerHealth": "healthy",
+    "gpuNode": "not_installed"
+  },
+  "cameras": [
+    {"id":"CAM-01","name":"Main Gate","zone":"Gate","status":"online","fps":15,"bitrateMbps":4.2,"ptz":true},
+    {"id":"CAM-02","name":"Front Yard","zone":"Perimeter","status":"online","fps":15,"bitrateMbps":3.8,"ptz":false},
+    {"id":"CAM-03","name":"Parking East","zone":"Parking","status":"online","fps":15,"bitrateMbps":4.5,"ptz":true},
+    {"id":"CAM-04","name":"Lobby","zone":"Lobby","status":"online","fps":20,"bitrateMbps":4.1,"ptz":false},
+    {"id":"CAM-05","name":"Corridor A","zone":"Interior","status":"online","fps":15,"bitrateMbps":3.1,"ptz":false},
+    {"id":"CAM-06","name":"Warehouse","zone":"Restricted","status":"online","fps":15,"bitrateMbps":4.6,"ptz":true},
+    {"id":"CAM-07","name":"Rear Gate","zone":"Gate","status":"online","fps":15,"bitrateMbps":4.0,"ptz":false},
+    {"id":"CAM-08","name":"Server Room","zone":"Critical","status":"online","fps":15,"bitrateMbps":2.8,"ptz":false}
+  ],
+  "events": [
+    {"id":"EV-1001","time":"22:14:03","camera":"CAM-07","severity":"medium","type":"Unknown Plate","entity":"B 1234 GAR","confidence":0.94,"status":"new"},
+    {"id":"EV-1002","time":"22:15:22","camera":"CAM-06","severity":"high","type":"Restricted Zone Entry","entity":"Person #184","confidence":0.91,"status":"new"},
+    {"id":"EV-1003","time":"22:16:01","camera":"CAM-04","severity":"low","type":"Known Face","entity":"Arif Pratama","confidence":0.97,"status":"reviewed"},
+    {"id":"EV-1004","time":"22:18:17","camera":"CAM-03","severity":"medium","type":"Vehicle Dwell > 10m","entity":"B 9271 TNI","confidence":0.89,"status":"new"},
+    {"id":"EV-1005","time":"22:22:08","camera":"CAM-08","severity":"high","type":"Camera Blur Warning","entity":"CAM-08","confidence":0.88,"status":"new"}
+  ],
+  "incidents": [
+    {"id":"INC-2026-0184","title":"Restricted-zone entry after hours","severity":"critical","status":"open","camera":"CAM-06","time":"22:15","assignee":"Operator 01"},
+    {"id":"INC-2026-0183","title":"Unknown plate at rear gate","severity":"high","status":"acknowledged","camera":"CAM-07","time":"22:14","assignee":"Operator 02"},
+    {"id":"INC-2026-0182","title":"Server-room camera image degradation","severity":"medium","status":"open","camera":"CAM-08","time":"22:22","assignee":"Unassigned"}
+  ],
+  "faces": [
+    {"id":"FACE-001","name":"Arif Pratama","category":"known","lastSeen":"22:16","camera":"CAM-04","confidence":0.97},
+    {"id":"FACE-002","name":"Maya Putri","category":"known","lastSeen":"19:42","camera":"CAM-01","confidence":0.95},
+    {"id":"FACE-U17","name":"Unknown #17","category":"unknown","lastSeen":"21:51","camera":"CAM-07","confidence":0.86},
+    {"id":"FACE-U18","name":"Unknown #18","category":"unknown","lastSeen":"22:15","camera":"CAM-06","confidence":0.91}
+  ],
+  "plates": [
+    {"plate":"B 1234 GAR","status":"unknown","vehicle":"Black SUV","firstSeen":"22:14","lastSeen":"22:14","state":"inside","gate":"Rear Gate"},
+    {"plate":"B 9271 TNI","status":"registered","vehicle":"White MPV","firstSeen":"08:11","lastSeen":"22:18","state":"inside","gate":"Main Gate"},
+    {"plate":"B 8080 PUS","status":"registered","vehicle":"Silver Sedan","firstSeen":"07:48","lastSeen":"18:02","state":"outside","gate":"Main Gate"}
+  ]
+}
