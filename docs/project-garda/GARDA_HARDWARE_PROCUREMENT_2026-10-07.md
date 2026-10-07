@@ -50,10 +50,17 @@ Alternatives:
 
 ## 3. RAM decision
 
-### Safe baseline
+### Preferred layout
+**128 GB = 4 x 32 GB DDR4 UDIMM** is now the user preference because it keeps four DIMM slots free for future expansion.
+
+Important: this remains a **conditional/tested preference**, not a guaranteed compatibility claim. The original X399 AORUS PRO documentation states 8 DIMM sockets and 128 GB total, but does not explicitly state 32 GB-per-DIMM support. Use only unbuffered desktop UDIMM, update BIOS, boot at conservative JEDEC speed first, and run extended MemTest before production.
+
+### Safe fallback
 **128 GB = 8 x 16 GB DDR4-2666 UDIMM, same part number where possible.**
 
-Preferred used modules:
+This is still the safer compatibility route and is generally easier to hunt in the used DDR4 desktop market.
+
+Preferred modules:
 - Samsung
 - SK Hynix
 - Micron
@@ -69,8 +76,8 @@ Rejected user candidates:
 - Samsung 64GB 4DRx4 ECC RDIMM
 - Samsung 64GB DDR4 2400T ECC REGISTER
 
-### 2 x 32 GB desktop kits
-User-supplied 64GB desktop kits remain **conditional test candidates**, not production-locked parts. The board officially specifies 128GB total and unbuffered DIMMs, but 32GB-per-DIMM support is not explicitly stated in the original specification. If testing 2x32 or 4x32:
+### 2 x 32 GB desktop kits / 4 x 32 GB target
+User-supplied 64GB desktop kits are now the preferred path **if compatibility is proven**, not production-locked parts yet. The board officially specifies 128GB total and unbuffered DIMMs, but 32GB-per-DIMM support is not explicitly stated in the original specification. If testing 2x32 or 4x32:
 - use genuine UDIMM
 - update/check BIOS
 - boot at JEDEC / 2666 first
@@ -185,11 +192,11 @@ Excludes:
 - HDD bracket extras / GPU risers if required
 
 ### Baseline with 1200W FSP
-Approx. **Rp23.915m**
+Approx. **Rp25.815m** using the current preferred 4x32GB RAM budget.
 using:
 - 1950X
 - X399 AORUS PRO
-- Rp6m target budget for used 8x16GB UDIMM
+- Rp7.9m target budget for 4x32GB UDIMM
 - Phanteks Enthoo Pro II Server Edition
 - FSP 1200W
 - 1TB NVMe
@@ -203,7 +210,7 @@ If RAM costs Rp8m and monitor Rp1.45m, baseline rises to about **Rp26.265m**.
 
 ### Safer 1600W configuration
 Replacing FSP 1200W with Corsair AX1600i:
-- low estimate: **Rp28.801m**
+- preferred 4x32GB estimate: **Rp30.701m**
 - higher RAM/monitor estimate: **Rp31.151m**
 
 ## 8. Shared procurement sheet
@@ -246,3 +253,12 @@ Features:
 - interactive budget calculator
 - persistent procurement/burn-in checklist
 - links to Shopee and the shared Google Sheet
+
+
+## 9. Report UI update
+
+The interactive HTML hardware report was updated to a **bright/light theme** for easier viewing and sharing.
+
+Current RAM display policy:
+- Preferred: **4 x 32 GB DDR4 UDIMM**, only after compatibility proof.
+- Safe fallback: **8 x 16 GB DDR4-2666 UDIMM**, generally easier to source used and safer for this X399 generation.
