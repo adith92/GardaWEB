@@ -50,15 +50,21 @@ Alternatives:
 
 ## 3. RAM decision
 
-### Preferred layout
-**128 GB = 4 x 32 GB DDR4 UDIMM** is now the user preference because it keeps four DIMM slots free for future expansion.
+### RAM decision after deep compatibility check
+**LOCK: 128 GB = 8 x 16 GB DDR4-2666 UDIMM, same part number where possible.**
 
-Important: this remains a **conditional/tested preference**, not a guaranteed compatibility claim. The original X399 AORUS PRO documentation states 8 DIMM sockets and 128 GB total, but does not explicitly state 32 GB-per-DIMM support. Use only unbuffered desktop UDIMM, update BIOS, boot at conservative JEDEC speed first, and run extended MemTest before production.
+The previously preferred **4 x 32 GB** layout is **NOT APPROVED for procurement on the X399 AORUS PRO** because it cannot be confirmed by official compatibility data.
 
-### Safe fallback
-**128 GB = 8 x 16 GB DDR4-2666 UDIMM, same part number where possible.**
+Evidence:
+- GIGABYTE official specification: 8 DIMM sockets, maximum 128 GB total, ECC/non-ECC **unbuffered** DDR4.
+- GIGABYTE's published memory QVL for this board lists module densities up to **16 GB** and includes 128 GB configurations built from **8 x 16 GB** modules.
+- Kingston's current configurator for X399 AORUS PRO states maximum 128 GB and says supported configurations are reached using **4 GB, 8 GB and 16 GB modules in groups of four**.
+- G.SKILL sells 4 x 32 GB DDR4 kits, but their QVL for those 128 GB kits does **not** list X399 AORUS PRO.
+- Latest GIGABYTE BIOS notes (through F3d, 2024) do not state added 32 GB-per-DIMM support or an increase beyond 128 GB.
 
-This is still the safer compatibility route and is generally easier to hunt in the used DDR4 desktop market.
+Conclusion:
+- **8 x 16 GB UDIMM = approved / procurement-safe path.**
+- **4 x 32 GB UDIMM = unsupported/unverified for this board; do not buy unless a seller can demonstrate the exact board + 1950X + exact RAM part number booting and passing memory test.**
 
 Preferred modules:
 - Samsung
@@ -76,8 +82,8 @@ Rejected user candidates:
 - Samsung 64GB 4DRx4 ECC RDIMM
 - Samsung 64GB DDR4 2400T ECC REGISTER
 
-### 2 x 32 GB desktop kits / 4 x 32 GB target
-User-supplied 64GB desktop kits are now the preferred path **if compatibility is proven**, not production-locked parts yet. The board officially specifies 128GB total and unbuffered DIMMs, but 32GB-per-DIMM support is not explicitly stated in the original specification. If testing 2x32 or 4x32:
+### 32 GB-per-DIMM desktop kits
+User-supplied 64GB 2x32 kits are now **test-only / not approved for procurement** on X399 AORUS PRO. If an experimental test is ever attempted:
 - use genuine UDIMM
 - update/check BIOS
 - boot at JEDEC / 2666 first
@@ -192,11 +198,11 @@ Excludes:
 - HDD bracket extras / GPU risers if required
 
 ### Baseline with 1200W FSP
-Approx. **Rp25.815m** using the current preferred 4x32GB RAM budget.
+Approx. **Rp23.915m** using the approved 8x16GB RAM target.
 using:
 - 1950X
 - X399 AORUS PRO
-- Rp7.9m target budget for 4x32GB UDIMM
+- Rp6m target budget for used 8x16GB UDIMM
 - Phanteks Enthoo Pro II Server Edition
 - FSP 1200W
 - 1TB NVMe
@@ -210,7 +216,7 @@ If RAM costs Rp8m and monitor Rp1.45m, baseline rises to about **Rp26.265m**.
 
 ### Safer 1600W configuration
 Replacing FSP 1200W with Corsair AX1600i:
-- preferred 4x32GB estimate: **Rp30.701m**
+- low estimate: **Rp28.801m**
 - higher RAM/monitor estimate: **Rp31.151m**
 
 ## 8. Shared procurement sheet
@@ -262,3 +268,10 @@ The interactive HTML hardware report was updated to a **bright/light theme** for
 Current RAM display policy:
 - Preferred: **4 x 32 GB DDR4 UDIMM**, only after compatibility proof.
 - Safe fallback: **8 x 16 GB DDR4-2666 UDIMM**, generally easier to source used and safer for this X399 generation.
+
+
+## 10. 4x32GB compatibility verdict
+
+**Verdict: DO NOT BUY 4x32GB for X399 AORUS PRO + Threadripper 1950X as a planned configuration.**
+
+Official and vendor compatibility evidence converges on 16GB-per-module as the supported path for this board. A 4x32GB configuration may work only as an undocumented edge case on some combinations, but it is not strong enough evidence for GARDA procurement. The procurement baseline is therefore restored to **8x16GB DDR4-2666 UDIMM**.
