@@ -7,42 +7,42 @@
 <meta name="description" content="Interactive GARDA hardware procurement report for Threadripper X399 4-GPU build." />
 <style>
 :root{
-  --bg:#0d1110;--panel:#141a17;--panel2:#19211d;--line:#2a3931;
-  --text:#e9f0ec;--muted:#9fb0a7;--green:#5fb27b;--green2:#2f6a45;
-  --amber:#d8a84f;--red:#d87373;--blue:#77a6d8;--chip:#1e2a24;
+  --bg:#f5f7f5;--panel:#ffffff;--panel2:#f0f5f1;--line:#d9e3dc;
+  --text:#173126;--muted:#6e8077;--green:#2f7d4b;--green2:#dcefe3;
+  --amber:#c48724;--red:#c44f4f;--blue:#4f79a8;--chip:#eef5f0;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:linear-gradient(180deg,#0d1110 0%,#101612 100%);color:var(--text);font:14px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-a{color:#9ad8ae;text-decoration:none} a:hover{text-decoration:underline}
+body{margin:0;background:linear-gradient(180deg,#f7faf7 0%,#eef3ef 100%);color:var(--text);font:14px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+a{color:#257044;text-decoration:none} a:hover{text-decoration:underline}
 .wrap{max-width:1500px;margin:auto;padding:24px}
 .top{display:flex;gap:18px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
 .brand h1{margin:0;font-size:28px;letter-spacing:.2px}.brand p{margin:6px 0 0;color:var(--muted)}
-.badges{display:flex;gap:8px;flex-wrap:wrap}.badge{border:1px solid var(--line);background:var(--chip);padding:7px 10px;border-radius:999px;color:#c9d5cf;font-size:12px}
-.badge.ok{border-color:#37684a;color:#a9dfba}.badge.warn{border-color:#705c33;color:#f0ca7a}
+.badges{display:flex;gap:8px;flex-wrap:wrap}.badge{border:1px solid var(--line);background:var(--chip);padding:7px 10px;border-radius:999px;color:#385244;font-size:12px}
+.badge.ok{border-color:#83b394;color:#1d6c3c;background:#e7f4eb}.badge.warn{border-color:#e5c789;color:#8c5b0d;background:#fff6df}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
 button,.btn,select,input{font:inherit}
-button,.btn{background:#1c2a22;border:1px solid #355143;color:#e9f0ec;border-radius:9px;padding:9px 12px;cursor:pointer}
-button:hover,.btn:hover{background:#24382c;text-decoration:none}
-.nav{position:sticky;top:0;z-index:10;background:rgba(13,17,16,.92);backdrop-filter:blur(10px);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:18px -24px 22px;padding:10px 24px;display:flex;gap:8px;overflow:auto}
+button,.btn{background:#ffffff;border:1px solid #b7cec0;color:#214f36;border-radius:9px;padding:9px 12px;cursor:pointer}
+button:hover,.btn:hover{background:#eaf4ed;text-decoration:none}
+.nav{position:sticky;top:0;z-index:10;background:rgba(250,252,250,.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:18px -24px 22px;padding:10px 24px;display:flex;gap:8px;overflow:auto}
 .nav button{white-space:nowrap;padding:7px 11px;background:transparent}
 .grid{display:grid;gap:14px}.kpis{grid-template-columns:repeat(5,minmax(150px,1fr))}
-.card{background:linear-gradient(180deg,var(--panel),#111713);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.12)}
+.card{background:linear-gradient(180deg,#ffffff,#fbfdfb);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 10px 26px rgba(37,78,53,.08)}
 .kpi .v{font-size:24px;font-weight:750;margin-top:4px}.kpi .l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
 section{scroll-margin-top:72px;margin-top:26px}section h2{font-size:20px;margin:0 0 12px}section h3{font-size:15px;margin:0 0 8px}
 .two{grid-template-columns:repeat(2,minmax(0,1fr))}.three{grid-template-columns:repeat(3,minmax(0,1fr))}
-.part{display:flex;flex-direction:column;gap:8px}.part .title{font-weight:700;font-size:16px}.price{font-size:19px;font-weight:750;color:#b8e7c6}
-.meta{color:var(--muted);font-size:12px}.why{color:#cdd8d2}.status{display:inline-flex;width:max-content;padding:4px 8px;border-radius:999px;font-size:11px;border:1px solid var(--line)}
-.status.pick{color:#a9dfba;border-color:#3e7653;background:#16251b}.status.hold{color:#f0ca7a;border-color:#705c33;background:#251f14}.status.reject{color:#efaaaa;border-color:#744040;background:#2a1717}
-.callout{padding:14px;border-left:4px solid var(--amber);background:#211d14;border-radius:8px;color:#ead9b0}.callout.red{border-left-color:var(--red);background:#241717;color:#f0c1c1}
-table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
-th,td{text-align:left;padding:10px 11px;border-bottom:1px solid var(--line);vertical-align:top}th{position:sticky;top:49px;background:#1a2b21;color:#dce8e1;font-size:12px}tr:last-child td{border-bottom:0}tr:hover td{background:#151d19}
+.part{display:flex;flex-direction:column;gap:8px}.part .title{font-weight:700;font-size:16px}.price{font-size:19px;font-weight:750;color:#246c40}
+.meta{color:var(--muted);font-size:12px}.why{color:#3d5147}.status{display:inline-flex;width:max-content;padding:4px 8px;border-radius:999px;font-size:11px;border:1px solid var(--line)}
+.status.pick{color:#1f6b3c;border-color:#9bc9a9;background:#e9f6ed}.status.hold{color:#8d610f;border-color:#e4c57d;background:#fff6dd}.status.reject{color:#9c3333;border-color:#e2aaaa;background:#fff0f0}
+.callout{padding:14px;border-left:4px solid var(--amber);background:#fff8e8;border-radius:8px;color:#684b18}.callout.red{border-left-color:var(--red);background:#fff0f0;color:#7b2d2d}
+table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#ffffff}
+th,td{text-align:left;padding:10px 11px;border-bottom:1px solid var(--line);vertical-align:top}th{position:sticky;top:49px;background:#e6f1e9;color:#244c34;font-size:12px}tr:last-child td{border-bottom:0}tr:hover td{background:#f4f8f5}
 .table-wrap{overflow:auto;border-radius:12px}
 .controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
-input,select{background:#111713;border:1px solid var(--line);color:var(--text);border-radius:8px;padding:9px 10px}
+input,select{background:#ffffff;border:1px solid #c8d7ce;color:var(--text);border-radius:8px;padding:9px 10px}
 input[type=number]{width:150px}
-.calc{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}.calc-list{display:grid;gap:8px}.calc-row{display:flex;justify-content:space-between;gap:18px;border-bottom:1px dashed #2b3731;padding:7px 0}.calc-row:last-child{border:0}.calc-total{font-size:28px;font-weight:800;color:#b9ebc8}
-.checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.check{display:flex;gap:10px;align-items:flex-start;background:#121814;border:1px solid var(--line);padding:10px;border-radius:9px}.check input{margin-top:3px}
+.calc{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}.calc-list{display:grid;gap:8px}.calc-row{display:flex;justify-content:space-between;gap:18px;border-bottom:1px dashed #cbd8d0;padding:7px 0}.calc-row:last-child{border:0}.calc-total{font-size:28px;font-weight:800;color:#246c40}
+.checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.check{display:flex;gap:10px;align-items:flex-start;background:#ffffff;border:1px solid var(--line);padding:10px;border-radius:9px}.check input{margin-top:3px}
 .small{font-size:12px;color:var(--muted)}.footer{margin:36px 0 10px;color:var(--muted);font-size:12px;text-align:center}
 @media(max-width:1000px){.kpis{grid-template-columns:repeat(2,1fr)}.two,.three,.calc{grid-template-columns:1fr}.checks{grid-template-columns:1fr}}
 @media(max-width:560px){.wrap{padding:14px}.nav{margin-left:-14px;margin-right:-14px;padding-left:14px;padding-right:14px}.kpis{grid-template-columns:1fr}.brand h1{font-size:23px}}
@@ -82,10 +82,10 @@ input[type=number]{width:150px}
   <section id="summary">
     <div class="grid kpis">
       <div class="card kpi"><div class="l">CPU</div><div class="v">1950X</div><div class="meta">16C / 32T • 64 PCIe lanes</div></div>
-      <div class="card kpi"><div class="l">RAM Target</div><div class="v">128 GB</div><div class="meta">8×16GB DDR4-2666 UDIMM</div></div>
+      <div class="card kpi"><div class="l">RAM Target</div><div class="v">128 GB</div><div class="meta">4×32GB preferred • 8×16GB fallback</div></div>
       <div class="card kpi"><div class="l">GPU Capacity</div><div class="v">4 GPU</div><div class="meta">x16 / x8 class topology</div></div>
       <div class="card kpi"><div class="l">HDD Target</div><div class="v">6 Drive</div><div class="meta">8 SATA on selected board</div></div>
-      <div class="card kpi"><div class="l">Baseline*</div><div class="v">Rp23.915 jt</div><div class="meta">*GPU + CCTV HDD excluded</div></div>
+      <div class="card kpi"><div class="l">Baseline*</div><div class="v">Rp25.815 jt</div><div class="meta">*GPU + CCTV HDD excluded</div></div>
     </div>
     <div class="callout red" style="margin-top:14px"><b>Rule penting:</b> jangan beli DDR4 server RDIMM / Registered / LRDIMM untuk build X399 ini. Target kita UDIMM / unbuffered.</div>
   </section>
@@ -104,9 +104,9 @@ input[type=number]{width:150px}
         <a target="_blank" href="https://shopee.co.id/Motherboard-GIGABYTE-X399-Aorus-Pro-i.271960024.3557761736">Buka Shopee ↗</a>
       </div>
       <div class="card part">
-        <span class="status pick">HUNT USED</span><div class="title">128GB DDR4-2666 UDIMM</div>
-        <div class="price">Target Rp6–8 jt</div><div class="why">8×16GB matched module paling aman. Prioritas Samsung / SK Hynix / Micron desktop UDIMM.</div>
-        <a target="_blank" href="https://shopee.co.id/search?keyword=DDR4%2016GB%202666%20LONGDIMM%20UDIMM">Cari di Shopee ↗</a>
+        <span class="status hold">PREFERRED / TEST</span><div class="title">128GB DDR4 UDIMM = 4×32GB preferred</div>
+        <div class="price">±Rp7,9–8,0 jt target</div><div class="why">Sesuai preferensi build: cuma 4 DIMM terisi, sisa 4 slot untuk upgrade. Tapi manual original X399 AORUS PRO hanya menyebut 128GB total dan tidak eksplisit menjamin 32GB per DIMM, jadi wajib proof boot + BIOS terbaru + MemTest. Kalau gagal, fallback paling aman adalah 8×16GB UDIMM.</div>
+        <a target="_blank" href="https://shopee.co.id/Team-T-Create-64GB-DDR4-2X32GB-3200MHZ-Garansi-Resmi-Fox-Hound-i.24274776.40378058733">Lihat kandidat 2×32GB ↗</a>
       </div>
       <div class="card part">
         <span class="status pick">PILIH</span><div class="title">Phanteks Enthoo Pro II Server Edition</div>
@@ -128,13 +128,14 @@ input[type=number]{width:150px}
 
   <section id="compat">
     <h2>Compatibility Guard</h2>
-    <div class="callout"><b>RAM:</b> 2×32GB kit desktop masih kategori conditional test. Kalau mau aman, 8×16GB UDIMM matched. Jalankan JEDEC/2666 dulu dan MemTest panjang sebelum deployment.</div>
+    <div class="callout"><b>RAM:</b> preferensi sekarang <b>4×32GB UDIMM</b> karena lebih rapi dan masih menyisakan 4 slot. Statusnya tetap <b>conditional</b> sampai terbukti boot stabil di X399 AORUS PRO. Untuk pasar second dan kompatibilitas, <b>8×16GB UDIMM masih opsi paling aman dan biasanya lebih mudah ditemukan</b>. Jalankan JEDEC/2666 dulu dan MemTest panjang sebelum deployment.</div>
     <div class="table-wrap" style="margin-top:12px">
       <table>
         <thead><tr><th>Item</th><th>Kompatibilitas</th><th>Status</th><th>Catatan</th></tr></thead>
         <tbody>
           <tr><td>Threadripper 1950X + X399</td><td>✅ Native</td><td><span class="status pick">PILIH</span></td><td>Platform utama GARDA.</td></tr>
-          <tr><td>DDR4 UDIMM / Unbuffered</td><td>✅ Ya</td><td><span class="status pick">PILIH</span></td><td>Non-ECC atau ECC UDIMM jika board mendukung.</td></tr>
+          <tr><td>4×32GB DDR4 UDIMM</td><td>⚠️ Perlu proof</td><td><span class="status hold">PREFERRED / TEST</span></td><td>Lebih rapi dan menyisakan 4 slot, tetapi 32GB/DIMM tidak eksplisit di manual original board.</td></tr>
+          <tr><td>8×16GB DDR4 UDIMM</td><td>✅ Paling aman</td><td><span class="status pick">FALLBACK</span></td><td>Lebih banyak di pasar second dan paling dekat dengan konfigurasi 128GB klasik X399.</td></tr>
           <tr><td>DDR4 RDIMM / Registered</td><td>❌ Tidak</td><td><span class="status reject">REJECT</span></td><td>Murah, tapi salah jenis untuk target X399.</td></tr>
           <tr><td>4 GPU 2-slot</td><td>✅ Elektrikal</td><td><span class="status hold">PHYSICAL CHECK</span></td><td>Perlu cek ketebalan kartu, slot spacing, riser dan airflow.</td></tr>
           <tr><td>6 SATA HDD</td><td>✅</td><td><span class="status pick">READY</span></td><td>Board menyediakan 8 SATA.</td></tr>
@@ -167,8 +168,8 @@ input[type=number]{width:150px}
           <tr data-type="PSU"><td>PSU</td><td>Phanteks AMP GH 1200W</td><td>±Rp2,589 jt</td><td>CHEAP 1200W</td><td>Menarik jika total TDP 4 GPU aman.</td></tr>
           <tr data-type="PSU"><td>PSU</td><td>FSP Hydro PTM Pro 1200W</td><td>Rp4,099 jt</td><td>BASELINE</td><td>Preferred 1200W.</td></tr>
           <tr data-type="PSU"><td>PSU</td><td>Corsair AX1600i</td><td>Rp8,985 jt</td><td>SAFE</td><td>Headroom besar jika GPU belum ditentukan.</td></tr>
-          <tr data-type="RAM"><td>RAM</td><td>8×16GB DDR4-2666 UDIMM matched</td><td>Target Rp6–8 jt</td><td>PILIH</td><td>Safest production path.</td></tr>
-          <tr data-type="RAM"><td>RAM</td><td>Team T-Create 2×32GB 3200</td><td>±Rp3,95 jt / 64GB</td><td>TEST</td><td>Conditional. Harus proof di X399 + MemTest.</td></tr>
+          <tr data-type="RAM"><td>RAM</td><td>4×32GB DDR4 UDIMM</td><td>±Rp7,9–8,0 jt / 128GB</td><td>PREFERRED / TEST</td><td>Dua kit 2×32GB. Sisakan 4 DIMM kosong. Wajib proof di X399 + MemTest.</td></tr>
+          <tr data-type="RAM"><td>RAM</td><td>8×16GB DDR4-2666 UDIMM matched</td><td>Target hunting second</td><td>SAFE FALLBACK</td><td>Biasanya lebih banyak di pasar second dan paling aman secara kompatibilitas.</td></tr>
           <tr data-type="RAM"><td>RAM</td><td>ECC RDIMM / Registered server RAM</td><td>Murah</td><td>REJECT</td><td>Salah tipe untuk build X399 ini.</td></tr>
         </tbody>
       </table>
@@ -189,8 +190,9 @@ input[type=number]{width:150px}
           </label>
           <label>RAM budget
             <select id="ram" onchange="calc()">
-              <option value="6000000">Rp6.000.000</option>
-              <option value="8000000">Rp8.000.000</option>
+              <option value="7900000" selected>4×32GB target — Rp7.900.000</option>
+              <option value="8000000">4×32GB buffer — Rp8.000.000</option>
+              <option value="6000000">8×16GB used target — Rp6.000.000</option>
             </select>
           </label>
           <label>Monitor
