@@ -229,3 +229,20 @@ Before buying:
 3. Decide PSU 1200W vs 1600W after GPU power budget.
 4. Buy RAM only after confirming UDIMM and exact part numbers.
 5. For 2x32GB RAM experiments, require a return window and perform MemTest before deployment.
+
+
+## Interactive HTML report
+
+Interactive standalone report:
+https://github.com/adith92/GardaWEB/blob/main/docs/project-garda/GARDA_HARDWARE_REPORT_2026-10-07.html
+
+Path:
+`docs/project-garda/GARDA_HARDWARE_REPORT_2026-10-07.html`
+
+Features:
+- selected-build dashboard
+- compatibility guard
+- searchable/filterable alternatives
+- interactive budget calculator
+- persistent procurement/burn-in checklist
+- links to Shopee and the shared Google Sheet
