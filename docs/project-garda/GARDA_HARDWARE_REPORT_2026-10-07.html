@@ -82,10 +82,10 @@ input[type=number]{width:150px}
   <section id="summary">
     <div class="grid kpis">
       <div class="card kpi"><div class="l">CPU</div><div class="v">1950X</div><div class="meta">16C / 32T • 64 PCIe lanes</div></div>
-      <div class="card kpi"><div class="l">RAM Target</div><div class="v">128 GB</div><div class="meta">4×32GB preferred • 8×16GB fallback</div></div>
+      <div class="card kpi"><div class="l">RAM Target</div><div class="v">128 GB</div><div class="meta">8×16GB DDR4-2666 UDIMM • LOCKED</div></div>
       <div class="card kpi"><div class="l">GPU Capacity</div><div class="v">4 GPU</div><div class="meta">x16 / x8 class topology</div></div>
       <div class="card kpi"><div class="l">HDD Target</div><div class="v">6 Drive</div><div class="meta">8 SATA on selected board</div></div>
-      <div class="card kpi"><div class="l">Baseline*</div><div class="v">Rp25.815 jt</div><div class="meta">*GPU + CCTV HDD excluded</div></div>
+      <div class="card kpi"><div class="l">Baseline*</div><div class="v">Rp23.915 jt</div><div class="meta">*GPU + CCTV HDD excluded</div></div>
     </div>
     <div class="callout red" style="margin-top:14px"><b>Rule penting:</b> jangan beli DDR4 server RDIMM / Registered / LRDIMM untuk build X399 ini. Target kita UDIMM / unbuffered.</div>
   </section>
@@ -104,9 +104,9 @@ input[type=number]{width:150px}
         <a target="_blank" href="https://shopee.co.id/Motherboard-GIGABYTE-X399-Aorus-Pro-i.271960024.3557761736">Buka Shopee ↗</a>
       </div>
       <div class="card part">
-        <span class="status hold">PREFERRED / TEST</span><div class="title">128GB DDR4 UDIMM = 4×32GB preferred</div>
-        <div class="price">±Rp7,9–8,0 jt target</div><div class="why">Sesuai preferensi build: cuma 4 DIMM terisi, sisa 4 slot untuk upgrade. Tapi manual original X399 AORUS PRO hanya menyebut 128GB total dan tidak eksplisit menjamin 32GB per DIMM, jadi wajib proof boot + BIOS terbaru + MemTest. Kalau gagal, fallback paling aman adalah 8×16GB UDIMM.</div>
-        <a target="_blank" href="https://shopee.co.id/Team-T-Create-64GB-DDR4-2X32GB-3200MHZ-Garansi-Resmi-Fox-Hound-i.24274776.40378058733">Lihat kandidat 2×32GB ↗</a>
+        <span class="status pick">LOCK / HUNT</span><div class="title">128GB DDR4-2666 UDIMM = 8×16GB</div>
+        <div class="price">Target Rp6–8 jt used</div><div class="why">Setelah deep compatibility check, ini jalur procurement yang aman. Gigabyte official spec membatasi board di 128GB, QVL board memakai modul hingga 16GB, dan Kingston juga menyebut konfigurasi sampai 128GB memakai modul 4/8/16GB. 4×32GB tidak kita approve untuk board ini.</div>
+        <a target="_blank" href="https://shopee.co.id/search?keyword=DDR4%2016GB%202666%20LONGDIMM%20UDIMM">Cari 16GB UDIMM second ↗</a>
       </div>
       <div class="card part">
         <span class="status pick">PILIH</span><div class="title">Phanteks Enthoo Pro II Server Edition</div>
@@ -128,14 +128,14 @@ input[type=number]{width:150px}
 
   <section id="compat">
     <h2>Compatibility Guard</h2>
-    <div class="callout"><b>RAM:</b> preferensi sekarang <b>4×32GB UDIMM</b> karena lebih rapi dan masih menyisakan 4 slot. Statusnya tetap <b>conditional</b> sampai terbukti boot stabil di X399 AORUS PRO. Untuk pasar second dan kompatibilitas, <b>8×16GB UDIMM masih opsi paling aman dan biasanya lebih mudah ditemukan</b>. Jalankan JEDEC/2666 dulu dan MemTest panjang sebelum deployment.</div>
+    <div class="callout red"><b>RAM verdict:</b> <b>4×32GB TIDAK di-approve</b> untuk X399 AORUS PRO + 1950X sebagai rencana belanja. Official board/QVL/vendor configurator mengarah ke modul maksimal 16GB untuk konfigurasi 128GB. Procurement dikunci ke <b>8×16GB DDR4-2666 UDIMM</b>.</div>
     <div class="table-wrap" style="margin-top:12px">
       <table>
         <thead><tr><th>Item</th><th>Kompatibilitas</th><th>Status</th><th>Catatan</th></tr></thead>
         <tbody>
           <tr><td>Threadripper 1950X + X399</td><td>✅ Native</td><td><span class="status pick">PILIH</span></td><td>Platform utama GARDA.</td></tr>
-          <tr><td>4×32GB DDR4 UDIMM</td><td>⚠️ Perlu proof</td><td><span class="status hold">PREFERRED / TEST</span></td><td>Lebih rapi dan menyisakan 4 slot, tetapi 32GB/DIMM tidak eksplisit di manual original board.</td></tr>
-          <tr><td>8×16GB DDR4 UDIMM</td><td>✅ Paling aman</td><td><span class="status pick">FALLBACK</span></td><td>Lebih banyak di pasar second dan paling dekat dengan konfigurasi 128GB klasik X399.</td></tr>
+          <tr><td>4×32GB DDR4 UDIMM</td><td>❌ Tidak terkonfirmasi</td><td><span class="status reject">DO NOT BUY</span></td><td>Tidak ada dukungan resmi yang cukup untuk menjadikannya konfigurasi procurement.</td></tr>
+          <tr><td>8×16GB DDR4 UDIMM</td><td>✅ Official-safe path</td><td><span class="status pick">LOCK</span></td><td>QVL dan vendor configurator konsisten dengan modul hingga 16GB untuk total 128GB.</td></tr>
           <tr><td>DDR4 RDIMM / Registered</td><td>❌ Tidak</td><td><span class="status reject">REJECT</span></td><td>Murah, tapi salah jenis untuk target X399.</td></tr>
           <tr><td>4 GPU 2-slot</td><td>✅ Elektrikal</td><td><span class="status hold">PHYSICAL CHECK</span></td><td>Perlu cek ketebalan kartu, slot spacing, riser dan airflow.</td></tr>
           <tr><td>6 SATA HDD</td><td>✅</td><td><span class="status pick">READY</span></td><td>Board menyediakan 8 SATA.</td></tr>
@@ -168,8 +168,8 @@ input[type=number]{width:150px}
           <tr data-type="PSU"><td>PSU</td><td>Phanteks AMP GH 1200W</td><td>±Rp2,589 jt</td><td>CHEAP 1200W</td><td>Menarik jika total TDP 4 GPU aman.</td></tr>
           <tr data-type="PSU"><td>PSU</td><td>FSP Hydro PTM Pro 1200W</td><td>Rp4,099 jt</td><td>BASELINE</td><td>Preferred 1200W.</td></tr>
           <tr data-type="PSU"><td>PSU</td><td>Corsair AX1600i</td><td>Rp8,985 jt</td><td>SAFE</td><td>Headroom besar jika GPU belum ditentukan.</td></tr>
-          <tr data-type="RAM"><td>RAM</td><td>4×32GB DDR4 UDIMM</td><td>±Rp7,9–8,0 jt / 128GB</td><td>PREFERRED / TEST</td><td>Dua kit 2×32GB. Sisakan 4 DIMM kosong. Wajib proof di X399 + MemTest.</td></tr>
-          <tr data-type="RAM"><td>RAM</td><td>8×16GB DDR4-2666 UDIMM matched</td><td>Target hunting second</td><td>SAFE FALLBACK</td><td>Biasanya lebih banyak di pasar second dan paling aman secara kompatibilitas.</td></tr>
+          <tr data-type="RAM"><td>RAM</td><td>8×16GB DDR4-2666 UDIMM matched</td><td>Target Rp6–8 jt used</td><td>LOCK</td><td>Procurement-safe path untuk 128GB di X399 AORUS PRO.</td></tr>
+          <tr data-type="RAM"><td>RAM</td><td>4×32GB DDR4 UDIMM</td><td>Jangan beli untuk board ini</td><td>REJECT</td><td>32GB-per-DIMM tidak terkonfirmasi resmi pada X399 AORUS PRO.</td></tr>
           <tr data-type="RAM"><td>RAM</td><td>ECC RDIMM / Registered server RAM</td><td>Murah</td><td>REJECT</td><td>Salah tipe untuk build X399 ini.</td></tr>
         </tbody>
       </table>
@@ -190,9 +190,8 @@ input[type=number]{width:150px}
           </label>
           <label>RAM budget
             <select id="ram" onchange="calc()">
-              <option value="7900000" selected>4×32GB target — Rp7.900.000</option>
-              <option value="8000000">4×32GB buffer — Rp8.000.000</option>
-              <option value="6000000">8×16GB used target — Rp6.000.000</option>
+              <option value="6000000" selected>8×16GB used target — Rp6.000.000</option>
+              <option value="8000000">8×16GB buffer — Rp8.000.000</option>
             </select>
           </label>
           <label>Monitor
