@@ -1,27 +1,31 @@
 # AGENTS.md — Instructions for Codex in GARDA/GardaWEB
 Applies to **every** file and AI coding session in this repository. Product: PUSADA MONITORING CENTER | GARDA. Language for product-owner summaries: **Bahasa Indonesia**.
 
-## Read-first documents and precedence
-1. `docs/GARDA_DECISION_REGISTER_v0.2.md` — explicit decisions, uncertainties, IP/security policy.
-2. `docs/GARDA_MASTER_FEATURE_CATALOG_v0.2.md` — complete *candidate* feature universe + suggested minimum tiers.
-3. `docs/GARDA_TIER_IMPLEMENTATION_SPEC_v0.2.md` — delivery boundaries, architecture, RBAC, testable acceptance and roadmap.
-4. `docs/GARDA_CODEX_HANDOFF_v0.2.md` — implementation workflow, ticket breakdown and definition of done.
-5. `docs/GARDA_TIERED_PRODUCT_BRAINSTORM_v0.1.md` — historical first baseline.
-6. `docs/project-garda/` — equipment, context and procurement history. Prefer *later dated* owner decisions over earlier proposed options.
-7. `PRD_PMC_GARDA.md`, `CODEX_MASTER_PROMPT_PMC_GARDA.md`, `MOCKUP_DEMO_SPEC.md`, `RUN_DEMO.md` — existing **demo** guidance, not evidence that backend capabilities are production-ready.
+## Read-first documents and precedence (updated 2026-10-08)
+1. `docs/GARDA_DECISION_REGISTER_v0.3.md` — authoritative owner decisions 1–25, current Basic parameters and OPENs.
+2. `docs/GARDA_TIER1_BASIC_PRD_v1.0_DRAFT.md` — current T1 scope, acceptance and explicit omissions; only owner intent is accepted, **KAK approval is pending**.
+3. `docs/GARDA_MASTER_FEATURE_CATALOG_v0.3.md` — 592 candidate features and latest tier assignments.
+4. `docs/GARDA_PUSADA_KAK_GAP_MATRIX_2026-10-08.md` — mandatory first-contract KAK requirements NOT satisfied by standalone Basic.
+5. `docs/GARDA_TIER_NAMING_PROPOSAL_v0.1.md` — proposed SIAGA/WASPADA/WASKITA/KOMANDO names; **not owner approved**.
+6. `docs/GARDA_DECISION_REGISTER_v0.2.md`, `docs/GARDA_TIER_IMPLEMENTATION_SPEC_v0.2.md`, `docs/GARDA_MASTER_FEATURE_CATALOG_v0.2.md`, `docs/GARDA_CODEX_HANDOFF_v0.2.md` — **historical** initial research and planning, superseded where different.
+7. `docs/project-garda/` — equipment and procurement history; candidate hardware is **not** the KAK enterprise server.
+8. `PRD_PMC_GARDA.md`, `CODEX_MASTER_PROMPT_PMC_GARDA.md`, `MOCKUP_DEMO_SPEC.md`, `RUN_DEMO.md` — existing **synthetic demo**, not a production/KAK build order.
 
 ## Non-negotiable build guardrails
-- All four tiers are documented; **implement only the explicitly authorized active contract scope, initially Tier 1 Basic**. Do NOT automatically build or promise Tier 2–4; feature matrix is a roadmap, not a work order.
+- All four tiers are documented; **implement only the explicitly authorized active contract scope**. Tier 1 Basic is the **generic** offering; the PUSADA KAK requires extra paid/authorized functions and 90-day retention: **do NOT certify plain Basic as compliant**. Codex must not invent contractual waivers or silently implement whole Tier2/3/4.
 - Distinguish: `DECIDED`, `PROPOSED`, `OPEN`, `DEMO`, `IMPLEMENTED`, `TESTED`, `ACCEPTED`. Never mark a mock as functional camera/AI integration.
-- Preserve legacy frontend demo behavior where useful, but clearly label all simulated events, faces, plates, AI answers and streams.
-- Add real functionality via independently testable modules: ingest/restream, recorder, playback, API, UI, incident, evidence, storage health, auth, audit, policies. Separate recording from AI.
+- Preserve legacy frontend demo behavior where useful, but clearly label all simulated events, faces, plates, AI answers and streams. Do not enable full face identification or Ask GARDA in customer Basic merely because the demo has those routes.
+- Basic product entitlements: **ONE site, strictly fewer than 50 cameras (1–49), ONE concurrent operational operator**. Backend/API checks required. Basic AI: simple person presence, face presence only (NO identity), basic ANPR plate OCR. Lite evidence Vault. Native Android/iOS starts Tier 3. Tier 2 includes governed **face recognition** (old docs erroneously put all identity at Tier 3).
+- GARDA is principal WebApp, while the existing DVR/NVR records **autonomously as backup**. GARDA 7-day recording retention default must be capacity-configurable; **PUSADA KAK calls for 90-day minimum** (distinct contractual requirement).
+- Add real functionality via independently testable modules: ingest/restream, recorder or validated NVR recording access, playback, API, UI, limited AI, incidents, evidence, health, auth, audit, policies. Separate recording from AI.
 - Enforce authorization **server-side**, for every route, media URL, websocket, event message, query, export, API and integration. Default-deny cross-unit access. A code alone MUST NOT bypass RBAC, classification or approval policy.
 - Do not put secrets, real addresses of government networks, actual credentials, biometric samples, classified content or customer footage in Git.
 - Keep GARDA proprietary backend/AI source private. Do not publish repository, invite customers into private core, or include server code in customer viewer packages. Third-party OSS licenses still apply.
 - Any cross-tier HQ control/federation or classification machinery belongs to roadmap Tier 4 unless an explicit new decision changes scope.
 - No automated physical access, alarm, dispatch, drone or other consequential actuation based purely on AI or LLM output.
 - Only approved lawful biometric uses, with consent/authority and monitoring safeguards where required.
-- Treat product claims and SLAs as hypotheses until measured and agreed in KAK; do not fabricate camera limits or uptime metrics.
+- Owner's **99.99% uptime is an aspiration**, not a one-server SLA. 'All brands compatible' and 'unlimited Tier4' are architectural goals, NOT warranties or literally infinite concurrent hardware capacity. Test actual brands/firmware. No direct Internet dependency for Basic operation/licenses; controlled updates optional. True air-gap policy remains OPEN.
+- Treat product claims and SLAs as hypotheses until measured and agreed in KAK; do not fabricate camera performance or availability.
 
 ## Workflow for every change
 1. Read the documents above.
