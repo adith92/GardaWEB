@@ -11,6 +11,12 @@ Applies to **every** file and AI coding session in this repository. Product: PUS
 7. `docs/project-garda/` — equipment and procurement history; candidate hardware is **not** the KAK enterprise server.
 8. `PRD_PMC_GARDA.md`, `CODEX_MASTER_PROMPT_PMC_GARDA.md`, `MOCKUP_DEMO_SPEC.md`, `RUN_DEMO.md` — existing **synthetic demo**, not a production/KAK build order.
 
+## Mobile application proposal under review (2026-10-08)
+- Read `docs/GARDA_MOBILE_TABLET_BUNDLING_PROPOSAL_v0.1.md` before designing any viewer/mobile/tablet interface.
+- **PROPOSED, NOT YET OWNER-APPROVED:** T2 viewer-only Android/iOS GARDA VIEW; T3 dedicated bundled GARDA FIELD tablet/app; T4 managed GARDA COMMAND tablet. Previous owner decision said native Android/iOS begins T3, so do **not** silently treat the proposed T2 exception as approved.
+- App can potentially be copied, so GARDA backend must authorize **enrolled device certificate/attestation + named user + site + RBAC + license** for every stream. Kiosk/MDM is defense in depth, not DRM proof.
+- GARDA remains on-prem/offline-first; cloud-dependent MDM/Google Play attestation may fail on true air-gapped networks. Do not make product critical functions depend on cloud or enable any future mobile feature before owner and KAK scope approval.
+
 ## Non-negotiable build guardrails
 - All four tiers are documented; **implement only the explicitly authorized active contract scope**. Tier 1 Basic is the **generic** offering; the PUSADA KAK requires extra paid/authorized functions and 90-day retention: **do NOT certify plain Basic as compliant**. Codex must not invent contractual waivers or silently implement whole Tier2/3/4.
 - Distinguish: `DECIDED`, `PROPOSED`, `OPEN`, `DEMO`, `IMPLEMENTED`, `TESTED`, `ACCEPTED`. Never mark a mock as functional camera/AI integration.

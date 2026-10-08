@@ -7,6 +7,8 @@
 - **Tier2:** authorized face recognition. **Tier4:** governed hierarchical federation of subordinate T1–T4 nodes, no arbitrary software federation count cap but scalable capacity planning.
 - **Conflict warning:** PUSADA TNI KAK requires `90 days` and face enrollment/recognition, Ask GARDA, audio zonation, advanced rules/analytics, enterprise redundant hardware, etc. These go **beyond standalone T1**, so special contract bundle and signed KAK mapping required. **99.99%** is a goal, not guaranteed SLA.
 
+**NEW MOBILE/TABLET BRAINSTORM (NOT APPROVED):** [Mobile View Only Tier2 + Managed GARDA Field/Command Tablets Tier3/4](./docs/GARDA_MOBILE_TABLET_BUNDLING_PROPOSAL_v0.1.md). A T2 native viewer would be a **change** to the earlier T3-only native-mobile decision and must await owner approval. Device-locked backend access, enterprise kiosk/MDM and offline-first are required design goals, NOT DRM guarantees.
+
 ## CURRENT CANONICAL DOCUMENTS
 1. [Current decision register v0.3](./docs/GARDA_DECISION_REGISTER_v0.3.md)
 2. [Tier1 Basic PRD v1.0 DRAFT](./docs/GARDA_TIER1_BASIC_PRD_v1.0_DRAFT.md)
