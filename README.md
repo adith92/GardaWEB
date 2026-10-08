@@ -1,3 +1,20 @@
+# GARDA — ACTIVE PRODUCT CONTEXT (2026-10-08)
+
+**Codex MUST begin with `AGENTS.md`.** Latest owner-confirmed Tier1 product intent (KAK approval pending):
+- **1 site, 1–49 camera channels, 1 concurrent operator; GARDA is the principal on-prem WebApp; existing NVR continues independent backup recording.**
+- GARDA default 7-day local recording retention (HDD-dependent), **offline** with optional controlled updates and signed **offline license**.
+- **Limited AI in Basic:** person presence, face presence **without names/recognition**, simple ANPR OCR; light GARDA Vault; Indonesian/English UI; native mobile starts Tier3.
+- **Tier2:** authorized face recognition. **Tier4:** governed hierarchical federation of subordinate T1–T4 nodes, no arbitrary software federation count cap but scalable capacity planning.
+- **Conflict warning:** PUSADA TNI KAK requires `90 days` and face enrollment/recognition, Ask GARDA, audio zonation, advanced rules/analytics, enterprise redundant hardware, etc. These go **beyond standalone T1**, so special contract bundle and signed KAK mapping required. **99.99%** is a goal, not guaranteed SLA.
+
+## CURRENT CANONICAL DOCUMENTS
+1. [Current decision register v0.3](./docs/GARDA_DECISION_REGISTER_v0.3.md)
+2. [Tier1 Basic PRD v1.0 DRAFT](./docs/GARDA_TIER1_BASIC_PRD_v1.0_DRAFT.md)
+3. [Master 592-feature catalog v0.3](./docs/GARDA_MASTER_FEATURE_CATALOG_v0.3.md)
+4. [PUSADA TNI KAK gap matrix](./docs/GARDA_PUSADA_KAK_GAP_MATRIX_2026-10-08.md)
+5. [Indonesian tier-name proposals (unapproved)](./docs/GARDA_TIER_NAMING_PROPOSAL_v0.1.md)
+
+---
 # GARDA — Codex Documentation Entry Point (2026-10-08)
 
 **Current project intent:** Four-tier PUSADA MONITORING CENTER / GARDA for Indonesian government/TNI, initial contracted deliverable **T1 BASIC only**, with a fully documented, separately contracted T2–T4 roadmap. Top T4 integrates all lower-tier GARDA deployments into a policy-governed command center. **All source/core AI is proprietary; client source deliverables, if any, are restricted to separately approved viewer/basic-client code.**
