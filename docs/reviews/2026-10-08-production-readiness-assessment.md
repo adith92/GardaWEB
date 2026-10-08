@@ -11,6 +11,8 @@ Tujuan yang tercatat: GARDA menjadi WebApp keamanan utama yang berjalan lokal/of
 
 Asumsi untuk kajian ini: KAK yang diberikan merupakan kerangka persyaratan yang harus dipetakan, tetapi status persetujuan kontraktual dan perubahan resminya belum dibuktikan. Tidak ada asumsi bahwa 592 fitur, nama pemasaran, seluruh tier, server kandidat, atau SLA sudah disetujui untuk dibangun. Validasi tujuan dan keputusan arsitektur tetap diperlukan dari owner.
 
+Koreksi owner pada 8 Oktober 2026: topology awal dipilih sebagai GARDA recorder mandiri dengan NVR sebagai copy independen; jadwal kerja yang dipakai untuk perencanaan adalah minggu 1–10; dukungan operasional adalah 12 minggu; target genset operasional adalah 50 kVA; model GPU masih TBA. Retensi 90 hari tetap menjadi target KAK yang harus dipetakan, sedangkan praktik hot retention GARDA direncanakan 7 hari. Pembagian 90 hari antara GARDA, NVR, atau archive belum dianggap selesai sampai availability footage dan metadata dapat diuji serta diterima tertulis.
+
 Jalur brainstorming: **architectural**, dipecah menjadi subsistem. Urutan berikutnya adalah keputusan kebutuhan → alternatif → review desain per bagian → spec tertulis → review owner → implementation plan tertulis dan pilihan eksekusi. Tidak ada kode produk, koneksi kamera pelanggan, dependensi produk, layanan cloud baru, atau deployment yang dibuat dalam kajian ini.
 
 ## 2. Sumber dan status bukti
@@ -46,9 +48,9 @@ Rekomendasi utama: pertahankan Basic komersial sebagai paket reusable, lalu buat
 
 | Temuan | Bukti | Dampak dan saran |
 |---|---|---|
-| Basic bukan seluruh paket KAK | Basic 7 hari/presence; KAK 90 hari, face enrollment/watchlist, Ask GARDA, audio/rules/analytics | Pertahankan dua baseline: produk komersial dan konfigurasi kontrak PUSADA. Jangan menyebut Basic otomatis patuh KAK. |
-| Jadwal dan support berbeda dalam KAK | §2: implementasi 8 bulan + testing 2 bulan + support 12 bulan; §8: minggu 1–10 + support 12 minggu; §9 kembali menyebut support 12 bulan | Minta klarifikasi tertulis dari pemilik KAK sebelum estimasi/kontrak. Jangan memilih sepihak versi paling pendek. |
-| Genset berbeda antara dokumen | KAK §4: 500 kVA; tiga HPS lokal item 11: 100 kVA | Survey beban kritis dan fasilitas; tetapkan kebutuhan dengan engineer daya/customer. Tidak mengubah KAK menjadi 100 kVA tanpa otorisasi. |
+| Basic bukan seluruh paket KAK | Basic 7 hari/presence; KAK 90 hari, face enrollment/watchlist, Ask GARDA, audio/rules/analytics | Pertahankan dua baseline: produk komersial dan konfigurasi kontrak PUSADA. Jangan menyebut Basic otomatis patuh KAK. GARDA hot 7 hari dan availability 90 hari harus dibuktikan sebagai dua lapisan yang jelas. |
+| Jadwal dan support perlu dirapikan | Owner mengonfirmasi jadwal kerja minggu 1–10 dan support 12 minggu; narasi KAK masih menyebut 8+2 bulan dan 12 bulan | Pakai 1–10 minggu dan 12 minggu sebagai baseline perencanaan internal. Minta perubahan/interpretasi tertulis bila teks KAK yang ditandatangani masih memuat angka lain. |
+| Genset berbeda antara dokumen | KAK §4: 500 kVA; HPS lokal item 11: 100 kVA; koreksi owner: target operasional 50 kVA | Catat 50 kVA sebagai target owner yang belum menyelesaikan konflik KAK. Lakukan survey beban dan dapatkan klarifikasi/variasi tertulis sebelum BOM atau klaim compliance. |
 | Jumlah titik tidak konsisten | KAK: 16; HPS lokal item 14: “Dashboard monitoring 116 titik” | Konfirmasi kemungkinan typo vs scope baru, kemudian seragamkan KAK/BOM/HPS/SOW. Tidak menganggap 116 adalah keputusan. |
 | Redundansi ambigu | KAK menyebut “1 unit redundant ... per unit”; HPS lokal NVR/storage/server masing-masing dua unit/set pada beberapa item | Nyatakan node count, active/standby, shared-storage dependencies, failover dan RPO/RTO. Dua box tidak otomatis memberi HA. |
 | Shortlist custom bukan KAK enterprise | Threadripper/X399/UDIMM/four-GPU target vs Xeon/EPYC, ECC, rack, NVMe RAID1, redundant PSU, 10GbE dan warranty onsite 3 tahun | Pisahkan BOM lab dari BOM kontraktual. Kapasitas lab tetap harus dibuktikan; jangan substitusi diam-diam. |
@@ -107,7 +109,7 @@ PUSADA final tetap memerlukan seluruh fungsi wajib KAK kecuali perubahan resmi d
 Contoh aritmetika, **bukan spesifikasi bitrate aktual**:
 
 - 16 stream × 4 Mbps × 90 hari = **62.208 TB decimal** video sebelum filesystem/index, cadangan evidence, peak bitrate dan margin.
-- 16 stream × 8 Mbps × 90 hari = **124,416 TB decimal** sebelum margin.
+- 16 stream × 8 Mbps × 90 hari = **124.416 TB decimal** sebelum margin.
 - RAID6 + hot spare mengurangi usable terhadap raw. Misalnya seluruh 14 bay terisi disk 16 TB dan satu disk hot spare: 13 disk aktif dikurangi dua parity memberi 176 TB nominal, sebelum overhead; KAK belum menetapkan jumlah disk terpasang final. Jangan menyimpulkan semua 14 bay harus terisi hanya dari ukuran chassis.
 - Jika GARDA dan NVR masing-masing menyimpan copy independen, kapasitas dan target retensi masing-masing harus dihitung. Backup/evidence protected mempunyai anggaran kapasitas terpisah.
 
