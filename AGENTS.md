@@ -11,6 +11,12 @@ Applies to **every** file and AI coding session in this repository. Product: PUS
 7. `docs/project-garda/` — equipment and procurement history; candidate hardware is **not** the KAK enterprise server.
 8. `PRD_PMC_GARDA.md`, `CODEX_MASTER_PROMPT_PMC_GARDA.md`, `MOCKUP_DEMO_SPEC.md`, `RUN_DEMO.md` — existing **synthetic demo**, not a production/KAK build order.
 
+## Visual PRD entrypoint (2026-10-08)
+- **START MOBILE/TABLET WORK HERE:** `docs/mobile/PRD_GARDA_MOBILE_VISUAL_v1.0_DRAFT.md` and its six original SVG images in `docs/mobile/assets/`. Quick picture gallery: `docs/mobile/README.md`.
+- Illustrations show **intended UX only** and do not mean built, security-tested, legally approved, or included in PUSADA procurement.
+- Never reinterpret illustrated Tier2 VIEW as an approved tier change: mobile native was previously planned starting Tier3; it remains a proposal pending product-owner approval.
+- Acceptance checklist `MOB-001`–`MOB-012` must be tied to individual implementation issues after scope authorization; do not deploy live biometric/physical control data or source to user devices.
+
 ## Mobile application proposal under review (2026-10-08)
 - Read `docs/GARDA_MOBILE_TABLET_BUNDLING_PROPOSAL_v0.1.md` before designing any viewer/mobile/tablet interface.
 - **PROPOSED, NOT YET OWNER-APPROVED:** T2 viewer-only Android/iOS GARDA VIEW; T3 dedicated bundled GARDA FIELD tablet/app; T4 managed GARDA COMMAND tablet. Previous owner decision said native Android/iOS begins T3, so do **not** silently treat the proposed T2 exception as approved.
