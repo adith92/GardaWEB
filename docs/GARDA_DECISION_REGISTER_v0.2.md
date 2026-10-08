@@ -1,4 +1,4 @@
-# GARDA — Product Owner Decision Register v0.2
+> **ARCHIVED BASELINE NOTICE (2026-10-08):** This file is retained for history or demo only. New authoritative docs are [Decision Register v0.3](GARDA_DECISION_REGISTER_v0.3.md), [Basic PRD v1.0](GARDA_TIER1_BASIC_PRD_v1.0_DRAFT.md), [Catalog v0.3](GARDA_MASTER_FEATURE_CATALOG_v0.3.md), and [PUSADA KAK Gap Matrix](GARDA_PUSADA_KAK_GAP_MATRIX_2026-10-08.md). Owner now includes Basic person/face-presence/ANPR Lite; face *identity* starts T2; Base recording retention 7d while PUSADA KAK separately requires 90d. Do not use older T1/T2/T3 constraints as current truth.\n\n# GARDA — Product Owner Decision Register v0.2
 Updated: 2026-10-08 | Status: **brainstorm accepted inputs**, not final KAK or procurement acceptance.
 Owner: GARDA / PUSADA MONITORING CENTER; primary clients Indonesian government including TNI.
 Repository: `adith92/GardaWEB` (PRIVATE).
