@@ -129,12 +129,15 @@ Vercel saat ini adalah tempat demo sintetis publik. Jangan mengunggah footage ny
 - Belum dilakukan pada kajian ini: runtime/browser retest, camera/model/hardware benchmark, security audit/pentest, backup/DR drill, validation quotation/tax/legal, acceptance pelanggan. Hasil demo sebelumnya tidak dijadikan bukti produksi.
 - Perubahan produk/code/config: **tidak ada**. File HPS lokal, raw KAK, `.env*`, `.vercel`, `dist`, `node_modules` tidak ditambahkan ke PR.
 
-## 11. Pertanyaan brainstorming pertama
+## 11. Keputusan owner terbaru
 
-Pertahankan keputusan NVR merekam mandiri sebagai backup. **Untuk PUSADA, rekaman primer yang diandalkan GARDA sebaiknya:**
+Pada 8 Oktober 2026 owner mengonfirmasi:
 
-1. GARDA merekam sendiri, NVR menyimpan copy independen (rekomendasi jika budget/storage/stream support lolos survey).
-2. GARDA mengakses archive NVR sebagai sumber utama; harus lebih dulu membuktikan playback/export API, retensi, failover dan availability NVR.
-3. Belum dipilih: lakukan survey inventory NVR/kamera dan kapasitas sebelum menetapkan topology.
+- GARDA merekam sendiri dan NVR menyimpan copy independen.
+- Jadwal perencanaan menggunakan minggu 1–10.
+- Dukungan operasional menggunakan 12 minggu.
+- Target genset operasional adalah 50 kVA; konflik dengan angka 500 kVA pada KAK tetap membutuhkan klarifikasi/variasi tertulis.
+- GPU masih TBA; tidak boleh ada klaim kapasitas AI sebelum model dan benchmark dipilih.
+- Model retensi yang dipakai untuk rancangan adalah GARDA hot retention 7 hari dan NVR/archive menyediakan availability 90 hari. PRD harus menyebut sumber, metadata, restore path, dan acceptance test untuk 90 hari secara terpisah; “90 hari” tidak boleh hanya menjadi label UI.
 
-Pilihan ini belum dijawab. Setelah jawaban, lanjut satu pertanyaan per giliran sesuai skill brainstorming. Persetujuan opsi ini tidak sama dengan persetujuan spec tertulis atau izin implementasi.
+Persetujuan ini memperbarui keputusan topology dan retention, tetapi belum menjadi persetujuan spec tertulis, kontrak, atau izin implementasi produksi.
