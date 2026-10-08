@@ -106,7 +106,7 @@ PUSADA final tetap memerlukan seluruh fungsi wajib KAK kecuali perubahan resmi d
 
 Contoh aritmetika, **bukan spesifikasi bitrate aktual**:
 
-- 16 stream × 4 Mbps × 90 hari = **62,208 TB decimal** video sebelum filesystem/index, cadangan evidence, peak bitrate dan margin.
+- 16 stream × 4 Mbps × 90 hari = **62.208 TB decimal** video sebelum filesystem/index, cadangan evidence, peak bitrate dan margin.
 - 16 stream × 8 Mbps × 90 hari = **124,416 TB decimal** sebelum margin.
 - RAID6 + hot spare mengurangi usable terhadap raw. Misalnya seluruh 14 bay terisi disk 16 TB dan satu disk hot spare: 13 disk aktif dikurangi dua parity memberi 176 TB nominal, sebelum overhead; KAK belum menetapkan jumlah disk terpasang final. Jangan menyimpulkan semua 14 bay harus terisi hanya dari ukuran chassis.
 - Jika GARDA dan NVR masing-masing menyimpan copy independen, kapasitas dan target retensi masing-masing harus dihitung. Backup/evidence protected mempunyai anggaran kapasitas terpisah.
