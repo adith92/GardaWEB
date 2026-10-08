@@ -1,3 +1,5 @@
+**🖼️ GARDA MOBILE VISUAL PRD (new):** [6 mockup screens + mobile/tablet PRD for Codex](./docs/mobile/README.md) · [Full annotated Visual PRD](./docs/mobile/PRD_GARDA_MOBILE_VISUAL_v1.0_DRAFT.md). Includes Tier2 GARDA VIEW (proposal), Tier3 FIELD KIT, Tier4 COMMAND KIT, device activation and admin registry. Illustrations only; no native app has been implemented by this docs change.
+
 # GARDA — ACTIVE PRODUCT CONTEXT (2026-10-08)
 
 **Codex MUST begin with `AGENTS.md`.** Latest owner-confirmed Tier1 product intent (KAK approval pending):
