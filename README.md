@@ -11,7 +11,7 @@
 6. **[Initial 4-Tier Brainstorm v0.1](./docs/GARDA_TIERED_PRODUCT_BRAINSTORM_v0.1.md)** — earlier brainstorming preserved as history.
 7. **[GARDA historical technical/hardware context](./docs/project-garda/)** — camera/ONVIF, procurement and earlier architectural choices.
 
-**Scope alert**: The feature catalog is NOT an implementation order; the existing UI is a demo and is NOT evidence of a functional deployed CCTV/biometric product. Pending product questions and the actual customer **KAK** must be resolved before a binding SOW/acceptance baseline is set. Government/classified material and secrets must never enter Git.
+**Naming brainstorm (NOT FINAL):** [Indonesian T1–T4 name proposals](./docs/GARDA_TIER_NAMING_PROPOSAL_v0.1.md): **SIAGA / WASPADA / WASKITA / KOMANDO** plus alternatives. Keep internal T1–T4 IDs and contract scope unchanged until owner selects names.\n\n**Scope alert**: The feature catalog is NOT an implementation order; the existing UI is a demo and is NOT evidence of a functional deployed CCTV/biometric product. Pending product questions and the actual customer **KAK** must be resolved before a binding SOW/acceptance baseline is set. Government/classified material and secrets must never enter Git.
 
 ---
 
