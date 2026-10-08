@@ -140,4 +140,22 @@ Pada 8 Oktober 2026 owner mengonfirmasi:
 - GPU masih TBA; tidak boleh ada klaim kapasitas AI sebelum model dan benchmark dipilih.
 - Model retensi yang dipakai untuk rancangan adalah GARDA hot retention 7 hari dan NVR/archive menyediakan availability 90 hari. PRD harus menyebut sumber, metadata, restore path, dan acceptance test untuk 90 hari secara terpisah; “90 hari” tidak boleh hanya menjadi label UI.
 
+## 12. Jawaban production questionnaire yang baru diterima
+
+Pada 8 Oktober 2026 owner mengisi Q01–Q14. Catatan ini menormalkan jawaban ke keputusan desain tanpa mengubah kewenangan PPK atau mengesahkan perubahan KAK secara sepihak.
+
+- **Scope KAK dan retensi:** fungsi KAK tetap menjadi ekspektasi, tetapi praktik hot retention GARDA tetap 7 hari. PUSADA Bundle harus memisahkan GARDA hot window dari availability 90 hari yang dapat dipulihkan dan diuji.
+- **Inventory kamera:** baseline adalah 16 kanal/titik utama: 13 titik dual-camera, 2 kamera face recognition, dan 1 kamera LPR/ANPR. Arti operasional “13 dual-camera” harus diturunkan menjadi daftar kamera fisik dan stream sebelum sizing.
+- **Jadwal dan daya:** baseline kerja adalah minggu 1–10; target genset owner 50 kVA. Konflik dengan narasi KAK 8+2 bulan/500 kVA tetap membutuhkan klarifikasi tertulis PPK.
+- **Storage:** NVR 1 TB hanya copy backup; GARDA CPU/storage 16 TB menjadi recorder utama. Kapasitas ini belum membuktikan 7 hari untuk seluruh stream atau 90 hari availability, sehingga sizing, archive/restore dan acceptance harus dihitung dari bitrate aktual.
+- **Kamera:** 13 dual-camera memakai spesifikasi umum; kamera face dan ANPR/LPR memakai spesifikasi sedikit lebih tinggi. Resolusi, FPS, codec, bitrate, lensa dan pencahayaan tetap harus dikunci melalui inventory/quotation dan uji lapangan.
+- **AI:** baseline diminta sederhana/basic. Tidak ada klaim kapasitas GPU sebelum model, VRAM, FPS, thermal, daya dan benchmark dipilih. Face identity, advanced LPR dan Ask GARDA tetap modul kontrak/tier terpisah bila KAK mewajibkan.
+- **Akses:** role User bersifat view-only dan tidak boleh replay. Role di atasnya harus dirinci untuk playback, export, watchlist dan akses biometrik, dengan pemeriksaan server-side.
+- **Operasi:** owner menerima rekomendasi untuk alarm storage/disk failure, concurrent-operator lease, acceptance thresholds, serta offline-first dengan update online opsional.
+- **Kewenangan:** PPK adalah pemilik keputusan akhir scope, privacy, hardware, acceptance dan perubahan kontrak. Tim pelaksana hanya memberi rekomendasi dan melaksanakan keputusan yang disahkan.
+
+### Dampak terhadap rekomendasi
+
+Rekomendasi tetap menggunakan reusable GARDA core + PUSADA Contract Bundle, tetapi bundle awal harus menyebut GARDA sebagai recorder utama, NVR sebagai backup 1 TB, hot retention 7 hari, dan 16 TB GARDA sebagai kapasitas kandidat yang wajib divalidasi. Dokumen PRD berikutnya perlu memuat channel inventory, storage calculation, restore test, role matrix, RACI PPK, serta pemisahan modul basic dari fungsi KAK yang belum dipilih.
+
 Persetujuan ini memperbarui keputusan topology dan retention, tetapi belum menjadi persetujuan spec tertulis, kontrak, atau izin implementasi produksi.
