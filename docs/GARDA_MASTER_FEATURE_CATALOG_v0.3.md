@@ -15,9 +15,6 @@ State: **DRAFT / PROPOSED** except explicitly confirmed owner choices in `GARDA_
 
 ## Feature matrix (minimum tier)
 
-| Feature ID | Min tier | Capability | Status |
-|---|---|---|
-
 **Feature-level interpretation overrides:** T1 face `VID-149` is **only face present/quality cue** (no face identity matching or biometric embedding enrollment); T1 ANPR `VID-167/169/170` is **simple plate OCR + evidence** only; T1 `VID-392` is limited evidence folder/file upload/download (no enterprise share); T1 `VID-494` bilingual UI (not all federated localization features); T3 `VID-500` means native mobile app (not a Tier2 app). See authoritative **Tier1 PRD v1.0 DRAFT** and Decision Register v0.3.
 
 ### 1. Camera discovery & multi-vendor ingest
