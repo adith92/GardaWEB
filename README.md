@@ -1,3 +1,5 @@
+**⚠️ GARDA NAMING UPDATE (2026-10-09):** Tier 3 name **WASKITA has been rejected** by product owner due to overlap concerns. **GARDA NALAR** is the preferred replacement, **not yet approved**. [Decision + alternatives + trademark cautions](./docs/GARDA_TIER_NAMING_REVIEW_2026-10-09.md). Previous executive PDF/infographics with WASKITA are **outdated** until regenerated. Preserve internal tier ID T3 and all feature allocations.
+
 **🖼️ GARDA MOBILE VISUAL PRD (new):** [6 mockup screens + mobile/tablet PRD for Codex](./docs/mobile/README.md) · [Full annotated Visual PRD](./docs/mobile/PRD_GARDA_MOBILE_VISUAL_v1.0_DRAFT.md). Includes Tier2 GARDA VIEW (proposal), Tier3 FIELD KIT, Tier4 COMMAND KIT, device activation and admin registry. Illustrations only; no native app has been implemented by this docs change.
 
 # GARDA — ACTIVE PRODUCT CONTEXT (2026-10-08)
