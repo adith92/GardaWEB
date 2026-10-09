@@ -6,7 +6,7 @@ Applies to **every** file and AI coding session in this repository. Product: PUS
 2. `docs/GARDA_TIER1_BASIC_PRD_v1.0_DRAFT.md` — current T1 scope, acceptance and explicit omissions; only owner intent is accepted, **KAK approval is pending**.
 3. `docs/GARDA_MASTER_FEATURE_CATALOG_v0.3.md` — 592 candidate features and latest tier assignments.
 4. `docs/GARDA_PUSADA_KAK_GAP_MATRIX_2026-10-08.md` — mandatory first-contract KAK requirements NOT satisfied by standalone Basic.
-5. `docs/GARDA_TIER_NAMING_PROPOSAL_v0.1.md` — proposed SIAGA/WASPADA/WASKITA/KOMANDO names; **not owner approved**.
+5. **CURRENT NAMING CHANGE:** `docs/GARDA_TIER_NAMING_REVIEW_2026-10-09.md`. Owner **REJECTED WASKITA** for Tier 3; **GARDA NALAR** is preferred but NOT APPROVED. Never publish/implement WASKITA as an active product name. Internal code tier ID remains `T3`; existing v0.1 tier naming proposal and PDF are historical.
 6. `docs/GARDA_DECISION_REGISTER_v0.2.md`, `docs/GARDA_TIER_IMPLEMENTATION_SPEC_v0.2.md`, `docs/GARDA_MASTER_FEATURE_CATALOG_v0.2.md`, `docs/GARDA_CODEX_HANDOFF_v0.2.md` — **historical** initial research and planning, superseded where different.
 7. `docs/project-garda/` — equipment and procurement history; candidate hardware is **not** the KAK enterprise server.
 8. `PRD_PMC_GARDA.md`, `CODEX_MASTER_PROMPT_PMC_GARDA.md`, `MOCKUP_DEMO_SPEC.md`, `RUN_DEMO.md` — existing **synthetic demo**, not a production/KAK build order.
