@@ -1,3 +1,5 @@
+> **ARCHIVED EXECUTIVE ARTWORK — 2026-10-09:** The PDF and illustrated tier pages linked below still show **GARDA WASKITA**. Owner explicitly rejected that name. **DO NOT distribute the PDF/images as a current proposal until a renamed edition has been regenerated and rechecked.** Suggested replacement **GARDA NALAR** awaits approval; do not imply existing Drive PDF was updated. Read [Naming decision and update instructions](GARDA_TIER_NAMING_REVIEW_2026-10-09.md). Technical catalog tier IDs/features remain valid.
+
 # GARDA — Executive 4-Tier Proposal & PDF Catalog (2026-10-08)
 
 **Status:** Prepared for internal leadership consideration; four Indonesian tier names and emblem concepts are **PROPOSED**, not trademark-cleared, approved or official TNI insignia.
