@@ -1,3 +1,5 @@
+> **SUPERSEDED 2026-10-09:** Product owner has rejected the Tier 3 brand **WASKITA** due to confusion concerns with Waskita Karya. Do not use the name on new executive decks or in Codex outputs. Current recommendation (not yet approved) is **GARDA NALAR**. Read [Naming Decision 2026-10-09](GARDA_TIER_NAMING_REVIEW_2026-10-09.md). This older document remains available ONLY as historic brainstorming.
+
 # GARDA — Tier Naming Brainstorm v0.1
 Date: 2026-10-08
 Status: **PROPOSED, NOT APPROVED**. Do not modify programmatic tier IDs, SKU names, contracts or shipped UI until owner approval.
