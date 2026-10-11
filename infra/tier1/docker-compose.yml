@@ -1,0 +1,42 @@
+name: garda-tier1-video
+
+services:
+  mediamtx:
+    image: bluenviron/mediamtx:1.15.1
+    restart: unless-stopped
+    ports:
+      - "8554:8554"       # RTSP ingest and playback
+      - "8888:8888"       # HLS
+      - "8889:8889"       # WebRTC HTTP/WHEP
+      - "8189:8189/udp"   # WebRTC media
+    volumes:
+      - ./mediamtx.yml:/mediamtx.yml:ro
+
+  go2rtc:
+    image: alexxit/go2rtc:1.9.9
+    profiles: ["bridge"]
+    restart: unless-stopped
+    ports:
+      - "1984:1984"
+      - "8555:8555"
+    volumes:
+      - ./go2rtc.yaml:/config/go2rtc.yaml:ro
+
+  frigate:
+    image: ghcr.io/blakeblackshear/frigate:0.16.2
+    profiles: ["analytics"]
+    restart: unless-stopped
+    shm_size: "256mb"
+    ports:
+      - "8971:8971"
+      - "5000:5000"
+      - "8556:8555/tcp"
+      - "8556:8555/udp"
+    volumes:
+      - ./frigate.yml:/config/config.yml:ro
+      - frigate_storage:/media/frigate
+      - frigate_db:/db
+
+volumes:
+  frigate_storage:
+  frigate_db:

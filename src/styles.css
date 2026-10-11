@@ -3164,3 +3164,491 @@ dialog h3 {
     scroll-behavior: auto !important;
   }
 }
+
+/* GARDA TNI red-white mission theme -------------------------------------- */
+:root {
+  color-scheme: dark;
+  --red: #d31636;
+  --red-strong: #f02043;
+  --red-soft: #34131d;
+  --white: #f4f7f9;
+  --ink: #edf2f5;
+  --muted: #91a0aa;
+  --border: #29343d;
+  --surface: #10171d;
+  --surface-raised: #151f27;
+  --surface-deep: #080c10;
+  --olive: #87966a;
+  --cyan: #5ab3c5;
+}
+
+html {
+  background: var(--surface-deep);
+}
+
+body {
+  color: var(--ink);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    var(--surface-deep);
+  background-size: 32px 32px;
+}
+
+body::before {
+  content: "";
+  display: block;
+  position: fixed;
+  z-index: 100;
+  inset: 0 0 auto;
+  height: 3px;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--red) 0 50%, var(--white) 50% 100%);
+}
+
+button,
+.button,
+input,
+select,
+textarea {
+  color: var(--ink);
+  background: var(--surface-raised);
+  border-color: var(--border);
+}
+
+button:hover,
+.button:hover {
+  color: var(--white);
+  background: #1c2932;
+  border-color: #50606c;
+}
+
+button.primary,
+.primary {
+  color: #fff;
+  background: var(--red);
+  border-color: var(--red);
+  box-shadow: 0 0 0 1px rgba(211, 22, 54, 0.18), 0 8px 24px rgba(211, 22, 54, 0.16);
+}
+
+button.primary:hover {
+  background: var(--red-strong);
+  border-color: var(--red-strong);
+}
+
+button.danger {
+  color: #ff8195;
+  border-color: #692634;
+}
+
+.active {
+  color: #fff !important;
+  background: var(--red) !important;
+  border-color: var(--red) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #71818c;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline-color: #ff627e;
+}
+
+.app-shell {
+  background: transparent;
+}
+
+.sidebar {
+  background: #0b1116;
+  border-right-color: var(--border);
+  box-shadow: 14px 0 40px rgba(0, 0, 0, 0.18);
+}
+
+.brand {
+  background: linear-gradient(135deg, rgba(211, 22, 54, 0.13), transparent 58%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.brand strong,
+.topbar-title b {
+  color: var(--white);
+}
+
+.brand strong span,
+.topbar-title b,
+.red {
+  color: var(--red-strong);
+}
+
+.brand small,
+.topbar-title,
+.nav-label {
+  color: #9aa8b1;
+}
+
+.nav-label {
+  letter-spacing: 1.35px;
+}
+
+.nav-item {
+  color: #aab6bd;
+}
+
+.nav-item:hover {
+  color: var(--white);
+  background: #15212a;
+}
+
+.nav-item.selected {
+  color: #fff;
+  background: linear-gradient(90deg, rgba(211, 22, 54, 0.88), rgba(211, 22, 54, 0.18));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+.nav-item.selected:before {
+  background: #fff;
+}
+
+.nav-item b,
+.nav-ai {
+  color: #ff9bad;
+  background: #3b1721;
+  border-color: #6e2c3b;
+}
+
+.sidebar-foot {
+  color: var(--olive);
+}
+
+.sidebar-foot > small {
+  color: #687984;
+}
+
+.camo {
+  opacity: 1;
+  background-color: #b90f2d;
+  background-image:
+    linear-gradient(135deg, transparent 0 44%, rgba(255,255,255,.92) 44% 56%, transparent 56%),
+    linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px);
+  background-size: 52px 30px, 13px 30px;
+}
+
+.workspace,
+.topbar,
+main {
+  background: transparent;
+}
+
+.topbar {
+  position: relative;
+  background: rgba(10, 16, 21, 0.94);
+  border-bottom-color: var(--border);
+  backdrop-filter: blur(14px);
+}
+
+.topbar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--red), transparent 42%, rgba(255,255,255,.35));
+  opacity: .7;
+}
+
+.topbar-title i {
+  background: #43515b;
+}
+
+.site-select,
+.profile,
+.health-link {
+  color: #b5c1c8;
+  background: transparent;
+}
+
+.global-search {
+  color: #82929d;
+  background: #111b22;
+  border-color: #2b3943;
+}
+
+.global-search kbd {
+  color: #95a6af;
+  border-color: #3b4a55;
+}
+
+.health-link {
+  color: #8bc5a1;
+}
+
+.health-link i,
+.online i,
+.app-footer i {
+  background: #6fc28b;
+  box-shadow: 0 0 10px rgba(111, 194, 139, .75);
+}
+
+.notification-button i {
+  border-color: #0b1116;
+}
+
+.profile {
+  border-left-color: var(--border);
+}
+
+.profile small,
+.muted,
+.date-label,
+.page-title p,
+.app-footer {
+  color: var(--muted);
+}
+
+.avatar {
+  color: #fff;
+  background: #273d48;
+  border-color: #48616e;
+}
+
+h1,
+h2,
+h3,
+td strong,
+td b,
+.panel-head h2,
+.kpi-value {
+  color: var(--white);
+}
+
+.panel,
+.kpi-strip,
+.infra-strip,
+.segmented,
+.modal-body,
+dialog,
+.search-results,
+.tooltip {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--border);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .2);
+}
+
+.panel-head,
+th,
+td,
+.kpi,
+.infra-strip > a,
+.recent-panel td,
+.folder-tree,
+.file-row,
+.case-item,
+.context-list li {
+  border-color: var(--border);
+}
+
+th {
+  color: #93a1ab;
+  background: #121c23;
+}
+
+td {
+  color: #aab5bc;
+  background: transparent;
+}
+
+tbody tr:hover,
+.kpi:hover {
+  background: #18242c;
+}
+
+.kpi-top,
+.kpi small,
+.rail-subtitle,
+.live-strip-heading,
+.infra-strip small {
+  color: #93a1aa;
+}
+
+.progress {
+  background: #25333c;
+}
+
+.progress i {
+  background: linear-gradient(90deg, var(--red), #ff5b72);
+}
+
+.badge {
+  color: #b6c2c9;
+  background: #202d35;
+}
+
+.badge.critical,
+.badge.high {
+  color: #ff9bad;
+  background: #421823;
+}
+
+.badge.medium {
+  color: #f0c978;
+  background: #3d301d;
+}
+
+.badge.low {
+  color: #8fc4d4;
+  background: #1a3039;
+}
+
+.badge.success {
+  color: #8bd3a2;
+  background: #173328;
+}
+
+.site-map {
+  background: #17242b;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.1);
+}
+
+.site-map::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(211,22,54,.12), transparent 36%, rgba(0,0,0,.28));
+  mix-blend-mode: multiply;
+}
+
+.map-camera {
+  color: #dbe5ea;
+  background: #17232bd9;
+  border-color: #66808d;
+}
+
+.map-camera > span {
+  background: var(--red);
+}
+
+.map-camera:hover {
+  background: #22333e;
+  box-shadow: 0 0 0 3px rgba(211, 22, 54, .42);
+}
+
+.map-caption {
+  color: #e7eef1;
+  background: #101920e8;
+  border: 1px solid #3a4b56;
+}
+
+.map-caption span {
+  color: #92a4ad;
+}
+
+.live-wall,
+.wall-summary {
+  background: #0b1116;
+}
+
+.wall-summary {
+  color: #92ac9a;
+  border-color: #48624f;
+  background: #12211b;
+}
+
+.camera-tile {
+  background: #0a1014;
+  border-color: #26353e;
+}
+
+.camera-tile:hover,
+.camera-tile.selected {
+  border-color: var(--red-strong);
+  box-shadow: 0 0 0 1px rgba(240,32,67,.35), 0 10px 26px rgba(0,0,0,.25);
+}
+
+.incident-card {
+  background: #121c23;
+  border-color: #2c3942;
+  border-left-color: var(--red);
+}
+
+.incident-card.medium {
+  border-left-color: #c69432;
+}
+
+.incident-title {
+  color: #dce6ea;
+}
+
+.incident-title:hover {
+  color: #ff8397;
+}
+
+.incident-preview p,
+.incident-preview span {
+  color: #92a1aa;
+}
+
+.rail-footer {
+  color: #ff7e94;
+}
+
+.text-button {
+  color: #ff7e94;
+}
+
+.text-button:hover {
+  color: #fff;
+}
+
+.app-footer b {
+  color: #ff7e94;
+}
+
+.login {
+  min-height: 100vh;
+  color: var(--ink);
+  background:
+    linear-gradient(135deg, rgba(211,22,54,.18), transparent 38%),
+    linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px),
+    var(--surface-deep);
+  background-size: auto, 28px 28px, 28px 28px, auto;
+}
+
+.login h1 {
+  color: #fff;
+  text-shadow: 0 0 28px rgba(211, 22, 54, .24);
+}
+
+.login p {
+  color: #9baab3;
+}
+
+.toast {
+  color: #fff;
+  background: #17252c;
+  border-color: #48626d;
+  box-shadow: 0 12px 30px rgba(0,0,0,.32);
+}
+
+dialog::backdrop {
+  background: rgba(1, 5, 8, .72);
+}
+
+@media (max-width: 800px) {
+  .sidebar {
+    box-shadow: 12px 0 35px rgba(0,0,0,.45);
+  }
+
+  .topbar {
+    background: rgba(10, 16, 21, .98);
+  }
+}

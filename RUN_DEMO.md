@@ -2,6 +2,8 @@
 
 React 19, TypeScript, Vite, Tailwind CSS, Lucide, and Recharts. Opens directly into COMMAND. Original planning files and the supplied PUSADA logo are retained.
 
+The current demo theme is **GARDA TNI Merah Putih Futuristik**: graphite mission surfaces, red/white command accents, technical grid treatment, and readable operational density. The redesign is visual only; all camera, AI, incident, and storage interactions remain synthetic demo behavior.
+
 ## Run locally
 
 ```sh
@@ -10,6 +12,8 @@ npm run dev -- --port 5173
 ```
 
 Open http://127.0.0.1:5173. Production check: `npm run build`. Logic checks: `npm test` (four tests covering filters, incident state, seeded queries, evidence references, and report totals).
+
+Tier 1 LAN toolchain preparation is documented in [`infra/tier1/README.md`](./infra/tier1/README.md), with an optional MediaMTX/ONVIF/stream bridge compose harness. The standalone feature traceability page is [`docs/GARDA_TIER1_KAK_FEATURES_2026-10-11.html`](./docs/GARDA_TIER1_KAK_FEATURES_2026-10-11.html).
 
 ## Routes and interactions
 

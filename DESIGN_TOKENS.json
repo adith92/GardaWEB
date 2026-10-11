@@ -1,16 +1,17 @@
 {
   "colors": {
-    "bg": "#0B0F12",
-    "surface1": "#11171C",
-    "surface2": "#161E24",
-    "border": "#273139",
-    "text": "#E8EEF2",
-    "muted": "#8E9BA5",
-    "primary": "#5E8C61",
-    "primaryStrong": "#79A77B",
-    "critical": "#D44A4A",
-    "warning": "#D39A3A",
-    "info": "#4F89A8"
+    "bg": "#070B0F",
+    "surface1": "#101820",
+    "surface2": "#151F27",
+    "border": "#2A3943",
+    "text": "#EDF3F6",
+    "muted": "#9AABB5",
+    "primary": "#D31636",
+    "primaryStrong": "#FA4665",
+    "critical": "#FF8195",
+    "warning": "#E4B55B",
+    "info": "#70C5D8",
+    "white": "#FFFFFF"
   },
   "radius": {
     "sm": 6,
@@ -27,6 +28,6 @@
   },
   "typography": {
     "ui": "Inter, Geist, IBM Plex Sans, sans-serif",
-    "heading": "IBM Plex Sans Condensed, Inter, sans-serif"
+    "heading": "Inter, Segoe UI, sans-serif"
   }
 }

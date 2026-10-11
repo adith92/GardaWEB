@@ -88,9 +88,9 @@ function Shell() {
         <img src="/logo.png" alt="Pusada TNI" />
         <h1>GARDA</h1>
         <p>PUSADA MONITORING CENTER</p>
-        <Badge>Demonstration workspace</Badge>
+        <Badge>Ruang kerja demonstrasi · T1 BASIC</Badge>
         <h2>Siap kembali bertugas?</h2>
-        <p>Masuk ke sesi demo lokal. Tidak memerlukan kredensial.</p>
+        <p>Masuk ke sesi demo lokal GARDA. Tidak memerlukan kredensial.</p>
         <button
           className="primary"
           onClick={() => {
@@ -98,7 +98,7 @@ function Shell() {
             log("Demo login", "Operator 01");
           }}
         >
-          Enter demo <ArrowUpRight size={18} />
+          Masuk ke demo <ArrowUpRight size={18} />
         </button>
       </div>
     );
@@ -114,7 +114,7 @@ function Shell() {
             <small>PUSADA MONITORING CENTER</small>
           </div>
         </NavLink>
-        <div className="nav-label">OPERATIONS WORKSPACE</div>
+        <div className="nav-label">RUANG OPERASI TNI · T1 BASIC</div>
         <nav>
           {nav.map(([name, url, Icon], i) => (
             <NavLink
@@ -164,11 +164,11 @@ function Shell() {
           </button>
           <button className="global-search" onClick={() => setSearch(true)}>
             <Search size={16} />
-            <span>Search workspace…</span>
+            <span>Cari modul atau event…</span>
             <kbd>⌘ K</kbd>
           </button>
           <button className="health-link" onClick={() => navigate("/system")}>
-            <i /> Operational
+            <i /> Sistem operasional
           </button>
           <button
             className="notification-button icon-button"

@@ -4,6 +4,8 @@
 
 **🖼️ GARDA MOBILE VISUAL PRD (new):** [6 mockup screens + mobile/tablet PRD for Codex](./docs/mobile/README.md) · [Full annotated Visual PRD](./docs/mobile/PRD_GARDA_MOBILE_VISUAL_v1.0_DRAFT.md). Includes Tier2 GARDA VIEW (proposal), Tier3 FIELD KIT, Tier4 COMMAND KIT, device activation and admin registry. Illustrations only; no native app has been implemented by this docs change.
 
+**🎖️ T1 GUI + KAK FEATURE MATRIX (2026-10-11):** The demo now uses the GARDA TNI red-white futuristic mission theme. See the [standalone Tier 1/KAK HTML matrix](./docs/GARDA_TIER1_KAK_FEATURES_2026-10-11.html) for the complete feature traceability and the [Tier 1 video toolchain](./infra/tier1/README.md) for MediaMTX, ONVIF, go2rtc, Frigate, face and ANPR integration boundaries.
+
 # GARDA — ACTIVE PRODUCT CONTEXT (2026-10-08)
 
 **Codex MUST begin with `AGENTS.md`.** Latest owner-confirmed Tier1 product intent (KAK approval pending):
