@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Video,
@@ -33,6 +33,7 @@ import {
   Panel,
 } from "./ui";
 import { filterEvents } from "./logic.mjs";
+const ThreeMissionScene = lazy(() => import("./ThreeMissionScene").then((module) => ({ default: module.ThreeMissionScene })));
 const positions = [
   [49, 86],
   [50, 69],
@@ -312,6 +313,15 @@ export function Command() {
   ];
   return (
     <>
+      <section className="command-visual">
+        <div className="command-visual-copy">
+          <span className="visual-kicker">TAHAP 2 · MISSION GRID</span>
+          <h2>Pantau seluruh perimeter dari satu ruang kendali.</h2>
+          <p>Animasi ini mewakili 16 titik referensi dan tetap bersifat sintetis untuk kebutuhan demo.</p>
+          <div className="visual-status"><i /> 8 feed demo online <span>·</span> 16 kanal referensi</div>
+        </div>
+        <Suspense fallback={<div className="mission-scene-loading">Memuat mission grid…</div>}><ThreeMissionScene /></Suspense>
+      </section>
       <PageTitle
         title="Command Overview"
         description="Pantau kawasan. Kenali kejadian. Kendalikan respons."
