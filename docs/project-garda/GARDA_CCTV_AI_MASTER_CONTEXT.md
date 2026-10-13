@@ -1,6 +1,6 @@
 # PROJECT GARDA — CCTV AI / ONVIF / NVR MASTER CONTEXT
 
-_Last updated: 2026-10-02_
+_Last updated: 2026-10-13_
 
 ## Purpose
 
@@ -601,3 +601,111 @@ Linux host as the primary GARDA hypervisor/server, with optional Windows VM(s) o
 8. Test exact camera model/firmware because ONVIF capability varies widely.
 9. Build GARDA so changing camera brands does not require rewriting the entire platform.
 10. Use Linux as the 24/7 server baseline; use Windows only where a specific application requires it.
+
+
+---
+
+## 20. Virtualization, 4-GPU, and Windows interactive workloads
+
+Latest architecture decision:
+
+- Use **Proxmox VE** as the preferred physical host/hypervisor rather than Ubuntu bare metal when Windows workloads must coexist on the same physical server.
+- Run the core GARDA services in an Ubuntu/Linux VM or dedicated Linux guest.
+- Run a separate Windows VM for interactive Windows workloads.
+- Windows users may connect with:
+  - RDP for administration, office, and light desktop use.
+  - Sunshine + Moonlight or Parsec-class low-latency streaming for gaming and GPU-accelerated interactive work.
+- Windows may be used for gaming, Photoshop, Premiere, Resolve, Blender, OBS, and other Windows applications when a physical GPU is passed through.
+
+Important GPU ownership rule:
+
+- A normal consumer NVIDIA GPU passed through with VFIO is normally owned exclusively by one VM while attached.
+- Do not design around one RTX-class consumer GPU being simultaneously used by Linux GARDA and a Windows VM.
+- GPU reassignment can be automated, but it is not a seamless live hot-swap. The current workload/VM must safely release the GPU before another VM takes ownership.
+
+Possible GARDA resource modes:
+
+### GARDA MAX
+
+- Ubuntu GARDA: 4 GPUs.
+- Windows VM: off or no passed-through GPU.
+- Intended for maximum AI throughput / overnight processing.
+
+### BALANCED
+
+- Ubuntu GARDA: 3 GPUs.
+- Windows VM: 1 GPU.
+- Intended for normal operation when Windows access is needed but GARDA remains primary.
+
+### WINDOWS GAMING / EDITING
+
+- Ubuntu GARDA: 2 GPUs.
+- Windows VM: up to 2 GPUs if the software/use case benefits and passthrough topology is validated.
+- Intended for gaming, editing, rendering, or other GPU-heavy Windows sessions.
+
+Automation concept:
+
+1. Stop or drain GARDA AI workers using a GPU that is about to be reassigned.
+2. Detach/rebind the PCIe device as required by the Proxmox/VFIO configuration.
+3. Start/restart the target Windows VM with the selected GPU(s).
+4. When the Windows session ends, shut down the VM cleanly.
+5. Reattach the GPU to the GARDA Linux workload.
+6. Restart the corresponding AI workers.
+
+This should be exposed later in the GARDA admin UI as explicit resource modes rather than attempting unsafe GPU hot removal.
+
+---
+
+## 21. Current hardware direction
+
+Current user-selected direction for the GARDA lab/workstation build:
+
+- **AMD Threadripper platform**.
+- **128 GB RAM**.
+- **4 NVIDIA GPUs** target.
+- X399/TR4 used-market platform has been investigated as the value baseline.
+- Threadripper 1950X + Gigabyte X399 AORUS PRO is currently documented as a preferred value combination in the hardware plan.
+- Exact four-GPU model is still pending unless superseded by a later decision.
+- 2 x NVMe plus a multi-HDD CCTV storage pool is the current storage direction.
+- Proxmox VE is the preferred virtualization layer when Linux GARDA and Windows interactive workloads share the machine.
+
+Physical design requirements remain critical:
+
+- Four usable PCIe slots with appropriate electrical lane allocation.
+- Sufficient slot spacing or quality risers for four GPUs.
+- High-airflow chassis.
+- PSU sized only after exact GPU power requirements are known.
+- Separate consideration for NVMe, 10GbE, HBA/storage expansion, and IOMMU grouping.
+
+---
+
+## 22. Procurement-spec separation
+
+The Threadripper/X399 machine above is a **GARDA development/lab/value workstation direction** discussed in chat.
+
+Do not automatically treat it as compliant with the formal PUSADA TNI production procurement specification.
+
+The formal KAK currently specifies, for the AI server, a rack 2U/4U system with Xeon/EPYC CPU, minimum 128 GB ECC RAM, NVIDIA enterprise CUDA-compatible GPU, NVMe OS RAID 1, redundant PSU, 10GbE, rail kit, monitoring, and minimum three-year onsite warranty.
+
+Therefore:
+
+- Threadripper/X399 can be used for development, prototype, integration lab, or internal testing when appropriate.
+- If the same machine is intended to satisfy the formal KAK AI-server line item, the hardware specification must be reconciled or formally amended before procurement.
+- Keep the development hardware decision separate from the contractual production-server requirement unless the procurement documents are changed.
+
+---
+
+## 23. Continuity rule
+
+For future GARDA sessions, this file is the canonical architecture/context summary.
+
+When a major decision changes any of the following, update this file and add a dated conversation log:
+
+- camera/protocol strategy
+- server OS/hypervisor
+- CPU/motherboard/RAM/GPU selection
+- storage topology
+- Windows virtualization/passthrough strategy
+- AI pipeline
+- production procurement requirements
+- security/network architecture
