@@ -3612,6 +3612,26 @@ tbody tr:hover,
   color: #ff7e94;
 }
 
+.app-footer a,
+.stage2-link {
+  color: #ff9bad;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+
+.stage2-link {
+  border: 1px solid rgba(255, 126, 148, .45);
+  border-radius: 999px;
+  padding: 6px 9px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.stage2-link:hover,
+.app-footer a:hover {
+  color: #fff;
+}
+
 .login {
   min-height: 100vh;
   color: var(--ink);

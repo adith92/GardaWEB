@@ -265,13 +265,13 @@ export function Command() {
   const active = state.incidents.filter((i) => i.status !== "resolved");
   const metrics = [
     {
-      name: "Cameras Online",
+      name: "Demo Feeds Online",
       value: "8",
       suffix: "/8",
       icon: Video,
       color: "green",
       to: "/live",
-      note: "Seluruh kamera terhubung",
+      note: "16 kanal/titik · feed sintetis",
     },
     {
       name: "Active Incidents",
@@ -325,7 +325,8 @@ export function Command() {
                 {
                   simulated: true,
                   date: "2026-10-01",
-                  cameras: 8,
+                  demoFeeds: 8,
+                  contractChannels: 16,
                   activeIncidents: active.length,
                   incidents: state.incidents,
                 },
@@ -361,7 +362,7 @@ export function Command() {
             actions={
               <div className="actions">
                 <span className="online">
-                  <i /> 8 cameras online
+                  <i /> 8 demo feeds online · 16 kanal referensi
                 </span>
                 <Link className="text-button" to="/map">
                   Open map <ArrowRight size={14} />

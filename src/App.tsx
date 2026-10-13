@@ -159,6 +159,9 @@ function Shell() {
           <span className="topbar-title">
             PUSADA MONITORING CENTER <i /> <b>GARDA</b>
           </span>
+          <a className="stage2-link" href="/garda-stage2.html" target="_blank" rel="noreferrer">
+            DEMO TAHAP 2
+          </a>
           <button className="site-select" onClick={() => setSite(true)}>
             <Map size={15} /> PUSADA HQ <ChevronDown size={13} />
           </button>
@@ -224,7 +227,7 @@ function Shell() {
               <span>· Simulated environment</span>
             </span>
             <span>
-              GMT+7 / JAKARTA <b>SECURE LOCAL DEMO</b>
+              GMT+7 / JAKARTA <a href="/garda-stage2.html" target="_blank" rel="noreferrer">TAHAP 2 BRIEF</a> <b>SECURE LOCAL DEMO</b>
             </span>
           </footer>
         </main>

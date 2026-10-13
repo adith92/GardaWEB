@@ -13,6 +13,8 @@ npm run dev -- --port 5173
 
 Open http://127.0.0.1:5173. Production check: `npm run build`. Logic checks: `npm test` (four tests covering filters, incident state, seeded queries, evidence references, and report totals).
 
+Untuk membaca baseline Demo Tahap 2 dalam format interaktif, buka `/garda-stage2.html`. Halaman ini berisi keputusan owner, arsitektur recorder/NVR, checklist kesiapan lokal, dan estimator retensi. Semua feed pada demo tetap sintetis.
+
 Tier 1 LAN toolchain preparation is documented in [`infra/tier1/README.md`](./infra/tier1/README.md), with an optional MediaMTX/ONVIF/stream bridge compose harness. The standalone feature traceability page is [`docs/GARDA_TIER1_KAK_FEATURES_2026-10-11.html`](./docs/GARDA_TIER1_KAK_FEATURES_2026-10-11.html).
 
 ## Routes and interactions

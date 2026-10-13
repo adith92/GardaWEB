@@ -6,6 +6,8 @@
 
 **🎖️ T1 GUI + KAK FEATURE MATRIX (2026-10-11):** The demo now uses the GARDA TNI red-white futuristic mission theme. See the [standalone Tier 1/KAK HTML matrix](./docs/GARDA_TIER1_KAK_FEATURES_2026-10-11.html) for the complete feature traceability and the [Tier 1 video toolchain](./infra/tier1/README.md) for MediaMTX, ONVIF, go2rtc, Frigate, face and ANPR integration boundaries.
 
+**🧭 DEMO TAHAP 2:** Buka [brief baseline interaktif](./public/garda-stage2.html) untuk melihat keputusan owner terbaru: 16 kanal/titik, GARDA 16 TB sebagai recorder utama, NVR 1 TB sebagai backup independen, hot retention praktik 7 hari, GPU TBA, genset 50 kVA, minggu 1–10, support 12 minggu, dan operasi offline-first.
+
 # GARDA — ACTIVE PRODUCT CONTEXT (2026-10-08)
 
 **Codex MUST begin with `AGENTS.md`.** Latest owner-confirmed Tier1 product intent (KAK approval pending):

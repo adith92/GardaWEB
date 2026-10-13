@@ -7,6 +7,7 @@ import {
   answerQuery,
   prompts,
 } from "../src/logic.mjs";
+import { readFile } from "node:fs/promises";
 test("event filters combine query, camera, severity, status and date", () => {
   assert.equal(
     filterEvents(seed.events, {
@@ -56,4 +57,13 @@ test("shift report reflects resolved incidents instead of a hardcoded total", ()
     answerQuery(prompts[4], resolved, seed.plates).text,
     /0 insiden aktif/,
   );
+});
+test("stage 2 brief exposes the final owner baseline and demo boundary", async () => {
+  const html = await readFile(new URL("../public/garda-stage2.html", import.meta.url), "utf8");
+  assert.match(html, /16 kanal\/titik/);
+  assert.match(html, /GARDA 16 TB/);
+  assert.match(html, /NVR 1 TB/);
+  assert.match(html, /hot 7 hari/);
+  assert.match(html, /GPU TBA/);
+  assert.match(html, /feed.*sintetis/i);
 });
