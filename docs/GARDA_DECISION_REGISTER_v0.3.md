@@ -89,6 +89,12 @@ These answers supersede the questionnaire's temporary OPEN labels for owner inte
 - Recording: NVR continuous independent recording is distinct from GARDA recording. If parallel, independently size storage and retention on both; never assume GARDA's 7-day default satisfies the KAK's 90-day requirement.
 - Data rights: encrypted biometric records only when matching is a contracted/licensed lawful capability; Basic face detection shouldn't persist face embeddings or identity labels.
 
+## Owner naming update — 2026-10-14
+
+- **DECIDED:** The face module's UI name is **Face Recognitions**; the Tier 1 label is **Face Recognitions Basic**. Do not display “Face Detection” as the customer-facing module name.
+- This is a naming decision: T1-008 still covers face presence, camera and time only. Identity matching, enrollment and watchlists remain Tier 2 capabilities.
+- **DEMO:** The existing synthetic identity preview remains explicitly fictional and does not demonstrate a real biometric integration.
+
 ## Links
 - `docs/GARDA_TIER1_BASIC_PRD_v1.0_DRAFT.md`
 - `docs/GARDA_MASTER_FEATURE_CATALOG_v0.3.md`

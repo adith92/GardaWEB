@@ -47,7 +47,7 @@ const navGroups: Array<{ label: string; items: NavItem[] }> = [
   { label: "Overview", items: [["COMMAND", "/command", LayoutDashboard]] },
   { label: "Monitoring", items: [["LIVE", "/live", Video], ["PLAYBACK", "/playback", CirclePlay], ["MAP", "/map", Map]] },
   { label: "Response", items: [["EVENTS", "/events", Bell], ["INCIDENTS", "/incidents", ShieldAlert]] },
-  { label: "Intelligence", items: [["FACES", "/faces", ScanFace], ["PLATES", "/plates", CarFront], ["ASK GARDA", "/ask-garda", Sparkles], ["ANALYTICS", "/analytics", ChartNoAxesCombined]] },
+  { label: "Intelligence", items: [["FACE RECOGNITIONS", "/faces", ScanFace], ["PLATES", "/plates", CarFront], ["ASK GARDA", "/ask-garda", Sparkles], ["ANALYTICS", "/analytics", ChartNoAxesCombined]] },
   { label: "Evidence", items: [["VAULT", "/vault", FolderLock]] },
   { label: "Administration", items: [["DEVICES", "/devices", Network], ["SYSTEM", "/system", Server], ["AUDIT", "/audit", ScrollText], ["SETTINGS", "/settings", SettingsIcon]] },
 ];
