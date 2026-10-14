@@ -27,6 +27,8 @@ import {
   ChevronDown,
   Command as CommandIcon,
   Menu,
+  Moon,
+  Sun,
   LogOut,
   ShieldCheck,
   ArrowUpRight,
@@ -65,6 +67,21 @@ function Shell() {
   const [site, setSite] = useState(false);
   const [mobile, setMobile] = useState(false);
   const [loggedOut, setLoggedOut] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    try {
+      return localStorage.getItem("garda-root-theme") === "light" ? "light" : "dark";
+    } catch {
+      return "dark";
+    }
+  });
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try {
+      localStorage.setItem("garda-root-theme", theme);
+    } catch {
+      // Keep the chosen theme for this tab when storage is unavailable.
+    }
+  }, [theme]);
   useEffect(() => {
     const f = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -163,6 +180,14 @@ function Shell() {
           <a className="stage2-link" href="/garda-stage2.html" target="_blank" rel="noreferrer">
             DEMO TAHAP 2
           </a>
+          <button
+            className="root-theme-toggle icon-button"
+            aria-label={`Gunakan tema ${theme === "dark" ? "terang" : "gelap"}`}
+            title={`Gunakan tema ${theme === "dark" ? "terang" : "gelap"}`}
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
+            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
           <button className="site-select" onClick={() => setSite(true)}>
             <Map size={15} /> PUSADA HQ <ChevronDown size={13} />
           </button>
