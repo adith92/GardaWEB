@@ -3288,6 +3288,13 @@ html[data-theme="light"] .brand.active {
   border-bottom-color: #d7e2e6;
 }
 
+html[data-theme="light"] .brand img,
+html[data-theme="light"] .brand.active img {
+  background: #ffffff;
+  border-radius: 0;
+  padding: 0;
+}
+
 html[data-theme="light"] .brand strong,
 html[data-theme="light"] .brand.active strong {
   color: #17252e !important;
@@ -4069,27 +4076,63 @@ dialog::backdrop {
   background: rgba(1, 5, 8, .72);
 }
 
-/* Keep the logo panel consistent and readable across Root and Stage 2 themes. */
+/* Dark theme: blend the logo panel into the sidebar while framing the crest. */
 .brand,
 .brand.active {
+  color: #e8eef1 !important;
+  background: linear-gradient(135deg, #17232a, #0b1116 72%) !important;
+  border-bottom-color: #26343d;
+}
+
+.brand img,
+.brand.active img {
+  background: #ffffff;
+  border-radius: 7px;
+  padding: 2px;
+}
+
+.brand strong,
+.brand.active strong {
+  color: #f1f5f7 !important;
+}
+
+.brand strong span,
+.brand.active strong span {
+  color: #ff627e !important;
+}
+
+.brand small,
+.brand.active small {
+  color: #a5b3bb !important;
+}
+
+html[data-theme="light"] .brand,
+html[data-theme="light"] .brand.active {
   color: #17252e !important;
   background: linear-gradient(135deg, #ffffff, #f3f7f8) !important;
   border-bottom-color: #d7e2e6;
 }
 
-.brand strong,
-.brand.active strong {
+html[data-theme="light"] .brand strong,
+html[data-theme="light"] .brand.active strong {
   color: #17252e !important;
 }
 
-.brand strong span,
-.brand.active strong span {
+html[data-theme="light"] .brand strong span,
+html[data-theme="light"] .brand.active strong span {
   color: #c82430 !important;
 }
 
-.brand small,
-.brand.active small {
+html[data-theme="light"] .brand small,
+html[data-theme="light"] .brand.active small {
   color: #71818d !important;
+}
+
+html[data-theme="light"] .brand img,
+html[data-theme="light"] .brand.active img {
+  background: #ffffff;
+  border-radius: 0;
+  padding: 0;
 }
 
 @media (max-width: 800px) {
