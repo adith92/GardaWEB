@@ -8,6 +8,8 @@
 
 **🧭 DEMO TAHAP 2:** Buka [brief baseline interaktif](./public/garda-stage2.html) untuk melihat keputusan owner terbaru: 16 kanal/titik, GARDA 16 TB sebagai recorder utama, NVR 1 TB sebagai backup independen, hot retention praktik 7 hari, GPU TBA, genset 50 kVA, minggu 1–10, support 12 minggu, dan operasi offline-first.
 
+**Demo design routes (2026-10-14):** `/` memakai desain sebelum refresh Tahap 2; `/V2` memakai desain terbaru dengan thumbnails, tema dan animasi Three.js. Semua route modul V2 memakai awalan `/V2`. Lihat [route design note](./docs/GARDA_DEMO_DESIGN_ROUTES.md).
+
 **Face module naming (2026-10-14):** UI memakai **Face Recognitions** dengan label **Face Recognitions Basic** untuk Tier 1. T1-008 tetap hanya mencatat keberadaan wajah; identifikasi orang mulai Tier 2. Lihat [decision register](./docs/GARDA_DECISION_REGISTER_v0.3.md).
 
 # GARDA — ACTIVE PRODUCT CONTEXT (2026-10-08)

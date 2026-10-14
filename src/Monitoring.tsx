@@ -258,7 +258,7 @@ export function EventTable({
     </div>
   );
 }
-export function Command() {
+export function Command({ legacy = false }: { legacy?: boolean } = {}) {
   const { state, updateIncident, log } = useDemo();
   const [camera, setCamera] = useState<Camera | null>(null);
   const [event, setEvent] = useState<Event | null>(null);
@@ -313,7 +313,7 @@ export function Command() {
   ];
   return (
     <>
-      <section className="command-visual">
+      {!legacy && <section className="command-visual">
         <div className="command-visual-copy">
           <span className="visual-kicker">TAHAP 2 · MISSION GRID</span>
           <h2>Pantau seluruh perimeter dari satu ruang kendali.</h2>
@@ -321,7 +321,7 @@ export function Command() {
           <div className="visual-status"><i /> 8 feed demo online <span>·</span> 16 kanal referensi</div>
         </div>
         <Suspense fallback={<div className="mission-scene-loading">Memuat mission grid…</div>}><ThreeMissionScene /></Suspense>
-      </section>
+      </section>}
       <PageTitle
         title="Command Overview"
         description="Pantau kawasan. Kenali kejadian. Kendalikan respons."
