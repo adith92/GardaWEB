@@ -3673,10 +3673,19 @@ dialog::backdrop {
   }
 }
 
-/* Keep the active logo readable on its white header panel. */
-.brand.active strong { color: #17252e; }
-.brand.active strong span { color: #c82430; }
-.brand.active small { color: #71818d; }
+/* Keep the brand panel consistent and readable in both Root themes. */
+.brand,
+.brand.active {
+  color: #17252e !important;
+  background: linear-gradient(135deg, #fff, #f3f7f8) !important;
+  border-bottom: 1px solid #d7e2e6;
+}
+.brand strong,
+.brand.active strong { color: #17252e !important; }
+.brand strong span,
+.brand.active strong span { color: #c82430 !important; }
+.brand small,
+.brand.active small { color: #71818d !important; }
 
 .root-theme-toggle {
   min-width: 35px;
@@ -3712,7 +3721,11 @@ html[data-theme="light"] body {
 html[data-theme="light"] .sidebar,
 html[data-theme="light"] .topbar { background: rgba(255,255,255,.96); border-color: var(--border); }
 html[data-theme="light"] .sidebar { box-shadow: 14px 0 40px rgba(42,60,69,.09); }
-html[data-theme="light"] .brand { background: linear-gradient(135deg, rgba(211,22,54,.08), transparent 58%); border-bottom-color: var(--border); }
+html[data-theme="light"] .brand,
+html[data-theme="light"] .brand.active {
+  background: linear-gradient(135deg, #fff, #f3f7f8) !important;
+  border-bottom-color: #d7e2e6;
+}
 html[data-theme="light"] .brand strong,
 html[data-theme="light"] .brand.active strong { color: #17252e !important; }
 html[data-theme="light"] .brand small,
