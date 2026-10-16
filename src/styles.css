@@ -4144,3 +4144,25 @@ html[data-theme="light"] .brand.active img {
     background: rgba(10, 16, 21, .98);
   }
 }
+
+
+/* V2 camera and GARDA identity animation, 2026-10-16. */
+.garda-visual { display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.garda-visual-art { width:100%; height:220px; display:grid; place-items:center; overflow:hidden; }
+.garda-visual-art svg { width:min(100%,520px); height:100%; }
+.cctv-pan { transform-origin:235px 165px; animation:garda-camera-pan 7s ease-in-out infinite; }
+.cctv-rec { animation:garda-record-pulse 2s ease-in-out infinite; }
+.garda-motion-controls { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; z-index:2; margin:0 10px 12px; }
+.garda-motion-controls button { min-height:30px; padding:5px 10px; font-size:10px; background:var(--surface); color:var(--ink); border:1px solid var(--border); border-radius:7px; }
+.garda-motion-controls button[aria-pressed="true"] { color:#fff; background:#aa1632; border-color:#d31636; }
+.garda-logo-stage { display:grid; place-items:center; gap:6px; perspective:700px; color:var(--ink); }
+.garda-logo-stage strong { font-size:22px; letter-spacing:5px; }
+.garda-logo-stage span { font-size:8px; letter-spacing:2px; }
+.garda-logo-coin { width:100px; height:124px; animation:garda-logo-turn 9s linear infinite; }
+.garda-logo-coin img { width:100%; height:100%; object-fit:contain; }
+.motion-paused .cctv-pan,.motion-paused .cctv-rec,.motion-paused .garda-logo-coin { animation-play-state:paused; }
+@keyframes garda-camera-pan { 0%,100%{transform:rotate(-6deg)} 50%{transform:rotate(7deg)} }
+@keyframes garda-record-pulse { 0%,100%{opacity:.45} 50%{opacity:1} }
+@keyframes garda-logo-turn { to{transform:rotateY(360deg)} }
+@media(prefers-reduced-motion:reduce){.cctv-pan,.cctv-rec,.garda-logo-coin{animation:none}}
+@media(max-width:780px){.garda-visual-art{height:170px}.garda-logo-coin{width:75px;height:90px}}

@@ -1,3 +1,5 @@
+**PMC V2 — pembaruan 16 Oktober 2026:** [Baseline demo final PUSADA](./docs/PMC_V2_FINAL_DEMO_2026-10-16.md). Jadwal final: implementasi 8 minggu + testing/commissioning 2 minggu; support 12 bulan sejak BAST. V2 memakai animasi CCTV / logo GARDA berputar. Seluruh data tetap sintetis.
+
 **🗺️ CURRENT INTERACTIVE PRD / BUILD BLUEPRINT (2026-10-11):** [GARDA PRD Visual Build Blueprint](./docs/GARDA_PRD_VISUAL_BUILD_BLUEPRINT_2026-10-11.html) — light standalone interactive HTML mapping current T1 Basic vs proposed PUSADA KAK bundle, feature modules, architecture, repo demo status, implementation roadmap, acceptance and code handoff. For implementation decisions, canonical docs in AGENTS.md still take precedence; this visualization is explanatory and not customer acceptance.
 
 **⚠️ GARDA NAMING UPDATE (2026-10-09):** Tier 3 name **WASKITA has been rejected** by product owner due to overlap concerns. **GARDA NALAR** is the preferred replacement, **not yet approved**. [Decision + alternatives + trademark cautions](./docs/GARDA_TIER_NAMING_REVIEW_2026-10-09.md). Previous executive PDF/infographics with WASKITA are **outdated** until regenerated. Preserve internal tier ID T3 and all feature allocations.
@@ -73,3 +75,4 @@ This package contains the planning assets for a Codex-built interactive demo.
 7. Verify desktop layouts at 1920x1080 and 1366x768.
 
 The demo should use synthetic data only and should not require live CCTV integrations during the first frontend phase.
+

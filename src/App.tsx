@@ -105,7 +105,7 @@ function Shell() {
         <img src="/logo.png" alt="Pusada TNI" />
         <h1>GARDA</h1>
         <p>PUSADA MONITORING CENTER</p>
-        <Badge>Ruang kerja demonstrasi · T1 BASIC</Badge>
+        <Badge>Ruang kerja demonstrasi · PUSADA KAK</Badge>
         <h2>Siap kembali bertugas?</h2>
         <p>Masuk ke sesi demo lokal GARDA. Tidak memerlukan kredensial.</p>
         <button
@@ -138,7 +138,7 @@ function Shell() {
         >
           {sidebarCollapsed ? <PanelLeftOpen size={17} /> : <PanelLeftClose size={17} />}
         </button>
-        {!sidebarCollapsed && <div className="nav-label">RUANG OPERASI TNI · T1 BASIC</div>}
+        {!sidebarCollapsed && <div className="nav-label">PUSADA · DEMO KAK V2</div>}
         <nav>
           {navGroups.map((group) => (
             <div className="nav-group" key={group.label}>
@@ -183,7 +183,7 @@ function Shell() {
             <ShieldCheck size={17} />
             <span>LOCAL-FIRST. MISSION-READY.</span>
           </div>
-          <small>PMC GARDA · Demo Tahap 2</small>
+          <small>PMC GARDA · V2 · Data Demo</small>
           <div className="camo" />
         </div>
         </>}
@@ -407,3 +407,4 @@ export default function App() {
     </StoreProvider>
   );
 }
+

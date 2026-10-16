@@ -1,3 +1,10 @@
+## Keputusan final owner 16 Oktober 2026
+
+- **DECIDED:** Implementasi 8 minggu (minggu 1–8), testing/UAT/commissioning 2 minggu (minggu 9–10). Support/warranty **12 bulan sejak BAST/serah terima operasional**. Seluruh pernyataan jadwal/support terdahulu yang bertentangan digantikan keputusan ini; tidak perlu ditanyakan ulang.
+- **DECIDED DEMO:** PMC V2 diarahkan menjadi demo final khusus kebutuhan KAK PUSADA, memakai data sintetis. Ini tidak mengubah entitlement paket Basic produksi atau berarti uji penerimaan sistem nyata sudah lulus.
+- **IMPLEMENTED DEMO:** Animasi jaringan abstrak diganti kamera CCTV bergerak; pilihan logo GARDA berputar, jeda dan reduced motion tersedia.
+- Rincian pembahasan tahap final: `docs/PMC_V2_FINAL_DEMO_2026-10-16.md`.
+
 # GARDA — Decision Register Addendum v0.3
 Date: **2026-10-08** | Authoritative owner answers: questions 1–20, after decisions 21–25.
 **Status:** Product owner intent = **DECIDED**; technical/commercial acceptance, legal feasibility and KAK compliance = **PENDING**.
@@ -45,7 +52,7 @@ This addendum **supersedes the 'Still open from questions 1–20' section** in `
 
 ## KAK conflict warning — no silent waiver
 The uploaded KAK for PUSADA calls for **16 monitoring points, 90-day video/metadata retention, face enrollment/watchlists, LPR, Ask Garda, zone audio, rules and integrations, redundant NVR/storage, ECC enterprise GPU server, and tests**. The owner’s **generic Tier1 Basic commercial package** does NOT cover all KAK-mandated modules or infrastructure. Do **not** call plain Tier1 KAK-compliant. Prepare a distinct **PUSADA Contract Bundle: T1 Core + separately priced/contracted T2/T3/T4 selected modules and KAK infrastructure** (or agree written changes to KAK) and validate procurement/legal compliance. See `GARDA_PUSADA_KAK_GAP_MATRIX_2026-10-08.md`.
-The KAK itself also appears to conflict on **duration/support** (narrative vs schedule); seek clarification before signing.
+Duration/support resolved by owner on 2026-10-16: 8 weeks implementation + 2 weeks testing/UAT/commissioning; 12 months support from BAST.
 
 ## Items remaining OPEN (do not invent)
 - Q10: need for **true air gap** vs offline with controlled update access.
@@ -68,7 +75,7 @@ The following answers are now the owner intent for the PUSADA planning baseline.
 |---|---|---|
 | Q01 | KAK functions remain expected, while practical GARDA hot retention remains **7 days**. | Keep the PUSADA Contract Bundle for KAK functions. Treat 90-day availability as a separate NVR/archive acceptance obligation; do not label a 7-day hot window as 90-day compliance. |
 | Q02 | **16 principal channels/points**: 13 dual-camera points, 2 face-recognition cameras and 1 LPR/ANPR camera. | Use this inventory for the next design pass. Confirm whether “13 dual-camera” means 26 physical cameras and record each stream/channel ID before sizing. |
-| Q03 | KAK schedule uses **weeks**, with weeks **1–10** as the planning baseline. | Update planning documents to weeks 1–10; contractual text that still says 8+2 months needs written PPK/KAK clarification. |
+| Q03 | KAK schedule uses **weeks**, with weeks **1–10** as the planning baseline. | Superseded on 2026-10-16: 8 weeks implementation + 2 weeks testing/UAT/commissioning; 12 months support from BAST. |
 | Q04 | **50 kVA final owner target** for the generator. | Use 50 kVA as the owner BOM target, subject to load/power survey and written resolution of the KAK 500 kVA conflict. |
 | Q05 | **Combination storage**: NVR has 1 TB; GARDA CPU/storage has 16 TB; NVR is only a backup of GARDA. | GARDA is the primary recorder. Prove 7-day hot retention and backup restore. A 1 TB NVR cannot be assumed to provide 90 days; 90-day KAK availability remains an explicit capacity, archive and acceptance item. |
 | Q06 | 13 dual-camera channels use ordinary camera specification; face and ANPR/LPR cameras use a somewhat higher specification. | Keep exact resolution, FPS, codec, bitrate, lighting and lens requirements open until camera quotation/survey and benchmark. |
@@ -100,3 +107,4 @@ These answers supersede the questionnaire's temporary OPEN labels for owner inte
 - `docs/GARDA_MASTER_FEATURE_CATALOG_v0.3.md`
 - `docs/GARDA_PUSADA_KAK_GAP_MATRIX_2026-10-08.md`
 - `AGENTS.md`
+

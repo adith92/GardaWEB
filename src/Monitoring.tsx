@@ -315,12 +315,12 @@ export function Command({ legacy = false }: { legacy?: boolean } = {}) {
     <>
       {!legacy && <section className="command-visual">
         <div className="command-visual-copy">
-          <span className="visual-kicker">TAHAP 2 · MISSION GRID</span>
+          <span className="visual-kicker">PMC V2 · DEMO PUSADA</span>
           <h2>Pantau seluruh perimeter dari satu ruang kendali.</h2>
-          <p>Animasi ini mewakili 16 titik referensi dan tetap bersifat sintetis untuk kebutuhan demo.</p>
+          <p>Pemantauan 16 titik, pencarian bukti dan respons operator. Seluruh data pada demo bersifat sintetis.</p>
           <div className="visual-status"><i /> 8 feed demo online <span>·</span> 16 kanal referensi</div>
         </div>
-        <Suspense fallback={<div className="mission-scene-loading">Memuat mission grid…</div>}><ThreeMissionScene /></Suspense>
+        <Suspense fallback={<div className="mission-scene-loading">Memuat animasi CCTV…</div>}><ThreeMissionScene /></Suspense>
       </section>}
       <PageTitle
         title="Command Overview"
@@ -961,3 +961,4 @@ export function Playback() {
     </>
   );
 }
+

@@ -36,7 +36,7 @@ The KAK describes a **more capable first procurement** than GARDA commercial T1 
 | p4 §5 supplier | Running base demo, proven delivery, personnel, licenses, data security and documentation; "**source code or usage rights as required**" | Core proprietary; client source only viewer/basic allowed | **VERIFY** not automatic source transfer. KAK permits source code **or usage rights as required**; contract controls | Written license and source-deliverable schedule, legal/procurement review before award |
 | p4 §6 acceptance | Test all cameras, NVR failover, storage/backup, face/LPR accuracy, zones, trends, Ask Garda periods, hardening and UAT | T1 acceptance narrowly scoped, some tests not yet developed | **GAP** | Map each KAK test to bundle module, funded engineering, test script and signoff |
 | p4 §7 data protection | Wajah/plat require special controls, lawful access, retention, backup/deletion and responsibilities | T1 limited detection/OCR plus RBAC; recognized identity only T2 | **VERIFY** | Document processing basis, access policy, storage and deletion schedule even for basic plate images |
-| p1 §2 duration vs p5 §8 timeline | §2: implementation **8 months**, testing/commissioning **2 months**, warranty/support **12 months**; §8: week1–10 implementation/UAT, **12 weeks warranty** | Prior internal development plan 2 months, not signed | **CONFLICT inside KAK** | Written clarification: actual delivery months/weeks and post-BAST 12 months vs 12 weeks; do not quote based on contradictory sections |
+| §2 / §8 jadwal final 2026-10-16 | Implementasi **8 minggu** + testing/UAT/commissioning **2 minggu**; support **12 bulan sejak BAST** | Keputusan final owner 16 Oktober 2026 | **RESOLVED** | Gunakan minggu 1–8, minggu 9–10, support 12 bulan; jangan tanyakan ulang |
 | p5 §8 change limits | New modules/locations/capacity require contractual variation and appropriations | Tier upgrade across contracts | **BASE** in business intent | Each add-on explicitly itemized, independently approved in contract/HPS |
 | p5 §8 HPS pricing | Camera hardware and software AI cost separately; 10 software packages; licensing/support as separately justified | Four tier licensing + optional add-ons | **VERIFY** | Map HPS line items and pricing so no double charge or undocumented tier inclusion |
 
@@ -49,7 +49,7 @@ The KAK describes a **more capable first procurement** than GARDA commercial T1 
 
 ## Questions to resolve with KAK owner and procurement
 1. Is full original KAK an active obligatory baseline, or a draft still negotiable?
-2. Resolve the 8+2 months vs weeks 1–10 timetable, and 12 months vs 12 weeks support.
+2. RESOLVED 2026-10-16: implementasi 8 minggu + testing/UAT/commissioning 2 minggu, support 12 bulan sejak BAST.
 3. Are 16 points equivalent to 16 cameras/16 channels, and what exact PTZ camera models/firmware?
 4. Verify enterprise GPU server versus current Threadripper wishlist, actual warranty and license rights.
 5. Verify storage minimum phrase and 90-day policy: both NVR and GARDA? Which metadata/index?
@@ -61,3 +61,4 @@ The KAK describes a **more capable first procurement** than GARDA commercial T1 
 
 ## Codex gate
 **DO NOT** mark `T1 Basic` as `KAK_COMPLIANT`. Keep a matrix of source requirements, assigned module, owner status, implemented status and measured UAT evidence. Highlight mismatches in any RFP/contract proposal. No attempts to disguise missing AI functionality as "basic" compliance.
+
