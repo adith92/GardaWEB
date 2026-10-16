@@ -25,7 +25,7 @@
         <ul>
           <li>GARDA merekam sendiri; NVR menyimpan copy independen.</li>
           <li>Hot retention GARDA 7 hari; NVR/archive menyediakan availability 90 hari.</li>
-          <li>PUSADA: 16 titik; jadwal internal minggu 1–10; support 12 minggu.</li>
+          <li>PUSADA: 16 titik; implementasi 8 minggu + testing/commissioning 2 minggu; support 12 bulan sejak BAST.</li>
           <li>Genset target owner 50 kVA; perlu klarifikasi tertulis terhadap angka KAK 500 kVA.</li>
           <li>GPU masih TBA. Tidak ada klaim kapasitas sebelum model dan benchmark dipilih.</li>
         </ul>
@@ -35,7 +35,7 @@
         <section class="section"><h2>1. Scope dan kontrak</h2>
           <article class="card" data-id="Q01"><div class="qhead"><div><div class="qid">Q01 · OPEN</div><div class="qtext">Apakah KAK PUSADA yang berlaku tetap meminta face recognition, advanced LPR, rules, audio zonasi, analytics, Ask GARDA, dan 90 hari availability sebagai deliverable hari pertama?</div></div><span class="status open">OPEN</span></div><div class="recommend"><b>Rekomendasi:</b> Ya, masukkan hanya fungsi KAK yang wajib ke “PUSADA Contract Bundle”; jangan menyebutnya Basic murni. Jika ada pengurangan, minta perubahan KAK tertulis.</div><textarea class="answer" data-question="Q01" placeholder="Jawaban owner..."></textarea><p class="hint">Contoh: “Ya, semua wajib hari pertama” atau “Tidak, modul X ditunda melalui addendum.”</p></article>
           <article class="card" data-id="Q02"><div class="qhead"><div><div class="qid">Q02 · OPEN</div><div class="qtext">Apakah 16 titik berarti tepat 16 kanal kamera aktif untuk acceptance, atau ada kamera tambahan/stream cadangan yang ikut dihitung?</div></div><span class="status open">OPEN</span></div><div class="recommend"><b>Rekomendasi:</b> Tetapkan daftar kanal per titik, termasuk main/substream dan kamera cadangan, sebelum sizing storage dan tes.</div><textarea class="answer" data-question="Q02" placeholder="Jawaban owner..."></textarea></article>
-          <article class="card" data-id="Q03"><div class="qhead"><div><div class="qid">Q03 · DECIDED + CLARIFY</div><div class="qtext">Untuk jadwal minggu 1–10 dan support 12 minggu, apakah ini yang akan dipakai sebagai baseline penawaran internal sementara teks KAK lain masih menyebut 8+2 bulan dan 12 bulan?</div></div><span class="status decided">DECIDED</span></div><div class="recommend"><b>Rekomendasi:</b> Pakai minggu 1–10 dan 12 minggu sebagai baseline perencanaan, tetapi tandai kontrak sebagai pending klarifikasi sampai pemilik KAK mengesahkan teks final.</div><textarea class="answer" data-question="Q03" placeholder="Konfirmasi atau koreksi..."></textarea></article>
+          <article class="card" data-id="Q03"><div class="qhead"><div><div class="qid">Q03 · FINAL 16 OKTOBER 2026</div><div class="qtext">Implementasi 8 minggu (minggu 1–8), testing/UAT/commissioning 2 minggu (minggu 9–10), support 12 bulan sejak BAST/serah terima operasional.</div></div><span class="status decided">DECIDED</span></div><div class="recommend"><b>Keputusan final owner:</b> Jadwal ini sudah ditetapkan dan tidak perlu ditanyakan ulang.</div><textarea class="answer" data-question="Q03" readonly aria-label="Jadwal final owner">8 minggu implementasi + 2 minggu testing/commissioning; support 12 bulan sejak BAST.</textarea></article>
           <article class="card" data-id="Q04"><div class="qhead"><div><div class="qid">Q04 · OPEN</div><div class="qtext">Apakah target genset 50 kVA adalah angka final untuk BOM owner, atau masih harus menunggu power survey dan klarifikasi terhadap angka 500 kVA di KAK?</div></div><span class="status open">OPEN</span></div><div class="recommend"><b>Rekomendasi:</b> Catat 50 kVA sebagai target owner, tetapi jangan jadikan compliance final sebelum beban kritis, UPS, ATS/AMF, runtime, dan kewajiban KAK disahkan tertulis.</div><textarea class="answer" data-question="Q04" placeholder="Jawaban owner..."></textarea></article>
         </section>
 
@@ -77,3 +77,4 @@
     </script>
   </body>
 </html>
+

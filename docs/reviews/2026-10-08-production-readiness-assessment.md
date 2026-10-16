@@ -1,3 +1,5 @@
+> Jadwal diperbarui mengikuti keputusan final owner 16 Oktober 2026: implementasi 8 minggu + testing/UAT/commissioning 2 minggu; support 12 bulan sejak BAST. Penilaian teknis lain tetap merupakan kajian historis.
+
 # Kajian awal GARDA menuju produksi PUSADA TNI
 
 Tanggal: 8 Oktober 2026. Baseline GitHub yang dibaca: `67c659a` pada `adith92/GardaWEB/main` (private).
@@ -11,7 +13,7 @@ Tujuan yang tercatat: GARDA menjadi WebApp keamanan utama yang berjalan lokal/of
 
 Asumsi untuk kajian ini: KAK yang diberikan merupakan kerangka persyaratan yang harus dipetakan, tetapi status persetujuan kontraktual dan perubahan resminya belum dibuktikan. Tidak ada asumsi bahwa 592 fitur, nama pemasaran, seluruh tier, server kandidat, atau SLA sudah disetujui untuk dibangun. Validasi tujuan dan keputusan arsitektur tetap diperlukan dari owner.
 
-Koreksi owner pada 8 Oktober 2026: topology awal dipilih sebagai GARDA recorder mandiri dengan NVR sebagai copy independen; jadwal kerja yang dipakai untuk perencanaan adalah minggu 1–10; dukungan operasional adalah 12 minggu; target genset operasional adalah 50 kVA; model GPU masih TBA. Retensi 90 hari tetap menjadi target KAK yang harus dipetakan, sedangkan praktik hot retention GARDA direncanakan 7 hari. Pembagian 90 hari antara GARDA, NVR, atau archive belum dianggap selesai sampai availability footage dan metadata dapat diuji serta diterima tertulis.
+Koreksi owner pada 8 Oktober 2026: topology awal dipilih sebagai GARDA recorder mandiri dengan NVR sebagai copy independen; jadwal kerja yang dipakai untuk perencanaan adalah minggu 1–10; dukungan operasional adalah 12 bulan sejak BAST; target genset operasional adalah 50 kVA; model GPU masih TBA. Retensi 90 hari tetap menjadi target KAK yang harus dipetakan, sedangkan praktik hot retention GARDA direncanakan 7 hari. Pembagian 90 hari antara GARDA, NVR, atau archive belum dianggap selesai sampai availability footage dan metadata dapat diuji serta diterima tertulis.
 
 Jalur brainstorming: **architectural**, dipecah menjadi subsistem. Urutan berikutnya adalah keputusan kebutuhan → alternatif → review desain per bagian → spec tertulis → review owner → implementation plan tertulis dan pilihan eksekusi. Tidak ada kode produk, koneksi kamera pelanggan, dependensi produk, layanan cloud baru, atau deployment yang dibuat dalam kajian ini.
 
@@ -49,7 +51,7 @@ Rekomendasi utama: pertahankan Basic komersial sebagai paket reusable, lalu buat
 | Temuan | Bukti | Dampak dan saran |
 |---|---|---|
 | Basic bukan seluruh paket KAK | Basic 7 hari/presence; KAK 90 hari, face enrollment/watchlist, Ask GARDA, audio/rules/analytics | Pertahankan dua baseline: produk komersial dan konfigurasi kontrak PUSADA. Jangan menyebut Basic otomatis patuh KAK. GARDA hot 7 hari dan availability 90 hari harus dibuktikan sebagai dua lapisan yang jelas. |
-| Jadwal dan support perlu dirapikan | Owner mengonfirmasi jadwal kerja minggu 1–10 dan support 12 minggu; narasi KAK masih menyebut 8+2 bulan dan 12 bulan | Pakai 1–10 minggu dan 12 minggu sebagai baseline perencanaan internal. Minta perubahan/interpretasi tertulis bila teks KAK yang ditandatangani masih memuat angka lain. |
+| Jadwal dan support perlu dirapikan | Owner mengonfirmasi jadwal kerja minggu 1–10 dan support 12 bulan sejak BAST; jadwal final owner 16 Oktober 2026 menetapkan 8+2 minggu dan support 12 bulan sejak BAST | Pakai 1–10 minggu dan 12 bulan sejak BAST sebagai baseline perencanaan internal. Minta perubahan/interpretasi tertulis bila teks KAK yang ditandatangani masih memuat angka lain. |
 | Genset berbeda antara dokumen | KAK §4: 500 kVA; HPS lokal item 11: 100 kVA; koreksi owner: target operasional 50 kVA | Catat 50 kVA sebagai target owner yang belum menyelesaikan konflik KAK. Lakukan survey beban dan dapatkan klarifikasi/variasi tertulis sebelum BOM atau klaim compliance. |
 | Jumlah titik tidak konsisten | KAK: 16; HPS lokal item 14: “Dashboard monitoring 116 titik” | Konfirmasi kemungkinan typo vs scope baru, kemudian seragamkan KAK/BOM/HPS/SOW. Tidak menganggap 116 adalah keputusan. |
 | Redundansi ambigu | KAK menyebut “1 unit redundant ... per unit”; HPS lokal NVR/storage/server masing-masing dua unit/set pada beberapa item | Nyatakan node count, active/standby, shared-storage dependencies, failover dan RPO/RTO. Dua box tidak otomatis memberi HA. |
@@ -135,7 +137,7 @@ Pada 8 Oktober 2026 owner mengonfirmasi:
 
 - GARDA merekam sendiri dan NVR menyimpan copy independen.
 - Jadwal perencanaan menggunakan minggu 1–10.
-- Dukungan operasional menggunakan 12 minggu.
+- Dukungan operasional menggunakan 12 bulan sejak BAST.
 - Target genset operasional adalah 50 kVA; konflik dengan angka 500 kVA pada KAK tetap membutuhkan klarifikasi/variasi tertulis.
 - GPU masih TBA; tidak boleh ada klaim kapasitas AI sebelum model dan benchmark dipilih.
 - Model retensi yang dipakai untuk rancangan adalah GARDA hot retention 7 hari dan NVR/archive menyediakan availability 90 hari. PRD harus menyebut sumber, metadata, restore path, dan acceptance test untuk 90 hari secara terpisah; “90 hari” tidak boleh hanya menjadi label UI.
@@ -146,7 +148,7 @@ Pada 8 Oktober 2026 owner mengisi Q01–Q14. Catatan ini menormalkan jawaban ke 
 
 - **Scope KAK dan retensi:** fungsi KAK tetap menjadi ekspektasi, tetapi praktik hot retention GARDA tetap 7 hari. PUSADA Bundle harus memisahkan GARDA hot window dari availability 90 hari yang dapat dipulihkan dan diuji.
 - **Inventory kamera:** baseline adalah 16 kanal/titik utama: 13 titik dual-camera, 2 kamera face recognition, dan 1 kamera LPR/ANPR. Arti operasional “13 dual-camera” harus diturunkan menjadi daftar kamera fisik dan stream sebelum sizing.
-- **Jadwal dan daya:** baseline kerja adalah minggu 1–10; target genset owner 50 kVA. Konflik dengan narasi KAK 8+2 bulan/500 kVA tetap membutuhkan klarifikasi tertulis PPK.
+- **Jadwal dan daya:** baseline kerja adalah minggu 1–10; target genset owner 50 kVA. Jadwal 8+2 minggu sudah final; perbedaan genset 50/500 kVA tetap merupakan catatan terpisah.
 - **Storage:** NVR 1 TB hanya copy backup; GARDA CPU/storage 16 TB menjadi recorder utama. Kapasitas ini belum membuktikan 7 hari untuk seluruh stream atau 90 hari availability, sehingga sizing, archive/restore dan acceptance harus dihitung dari bitrate aktual.
 - **Kamera:** 13 dual-camera memakai spesifikasi umum; kamera face dan ANPR/LPR memakai spesifikasi sedikit lebih tinggi. Resolusi, FPS, codec, bitrate, lensa dan pencahayaan tetap harus dikunci melalui inventory/quotation dan uji lapangan.
 - **AI:** baseline diminta sederhana/basic. Tidak ada klaim kapasitas GPU sebelum model, VRAM, FPS, thermal, daya dan benchmark dipilih. Face identity, advanced LPR dan Ask GARDA tetap modul kontrak/tier terpisah bila KAK mewajibkan.
@@ -159,3 +161,4 @@ Pada 8 Oktober 2026 owner mengisi Q01–Q14. Catatan ini menormalkan jawaban ke 
 Rekomendasi tetap menggunakan reusable GARDA core + PUSADA Contract Bundle, tetapi bundle awal harus menyebut GARDA sebagai recorder utama, NVR sebagai backup 1 TB, hot retention 7 hari, dan 16 TB GARDA sebagai kapasitas kandidat yang wajib divalidasi. Dokumen PRD berikutnya perlu memuat channel inventory, storage calculation, restore test, role matrix, RACI PPK, serta pemisahan modul basic dari fungsi KAK yang belum dipilih.
 
 Persetujuan ini memperbarui keputusan topology dan retention, tetapi belum menjadi persetujuan spec tertulis, kontrak, atau izin implementasi produksi.
+
