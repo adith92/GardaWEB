@@ -1,6 +1,6 @@
 # PROJECT GARDA — CCTV AI / ONVIF / NVR MASTER CONTEXT
 
-_Last updated: 2026-10-13_
+_Last updated: 2026-11-03_
 
 ## Purpose
 
@@ -709,3 +709,45 @@ When a major decision changes any of the following, update this file and add a d
 - AI pipeline
 - production procurement requirements
 - security/network architecture
+
+
+---
+
+## 24. Camera lab procurement update — 2026-11-03
+
+User selected **NEXTCAM NC-858** as a GARDA lab camera.
+
+Verified marketplace specification available during research:
+
+- ONVIF support is explicitly advertised.
+- RJ45 LAN port is present for wired network use.
+- Wi-Fi 2.4 GHz is also supported.
+- PTZ is advertised at approximately 320° pan / 90° tilt.
+- Built-in microphone and speaker with two-way audio are advertised.
+- Motion/human detection and human tracking are advertised.
+- H.264 is listed.
+- microSD up to 128 GB is listed.
+- Outdoor/IP66 is advertised.
+- Power remains **12V 1A via separate adapter**, so this camera must **not** be treated as native IEEE 802.3af/802.3at PoE.
+
+Purpose in GARDA:
+
+- Use NC-858 as the primary inexpensive interoperability lab camera for ONVIF discovery, RTSP/media-profile probing, PTZ, audio, and event testing.
+- Validate actual exposed ONVIF capabilities on the purchased unit/firmware rather than assuming every advertised feature is exposed through ONVIF.
+
+User also wants a second ultra-low-cost camera at **<= Rp250,000** for compatibility testing.
+
+Current market candidates observed around this budget include:
+
+- **YOOSEE JW28 PTZ** around Rp220,000, explicitly advertised as ONVIF.
+- Generic YOOSEE PTZ/5-antenna ONVIF units around Rp200,000-Rp205,000.
+- **DINGS Smart CCTV WiFi 2K PTZ** around Rp225,900, advertised with ONVIF/NVR support.
+- Some generic YOOSEE outdoor ONVIF listings around Rp246,000 or lower.
+
+Important qualification:
+
+- For the second cheap camera, do not assume RJ45, RTSP, or PoE solely from the word ONVIF in a marketplace title.
+- Prefer a unit where the seller can show the physical RJ45 port and confirm wired LAN use.
+- True IEEE 802.3af/at PoE at <= Rp250,000 was not verified in the current market check.
+- The goal of this second camera is interoperability stress testing, not production deployment quality.
+
