@@ -1,4 +1,5 @@
 import { createCipheriv, createDecipheriv, randomBytes, timingSafeEqual } from 'node:crypto';
+import { isIP } from 'node:net';
 
 export function parseCameraKey(value) {
   if (typeof value !== 'string' || !/^[a-fA-F0-9]{64}$/.test(value))
@@ -36,7 +37,12 @@ export function assertRtspUrl(value) {
   try { uri = new URL(value); } catch { throw new Error('Invalid RTSP URL'); }
   if (!['rtsp:', 'rtsps:'].includes(uri.protocol) || !uri.hostname || uri.hash)
     throw new Error('RTSP URL must use rtsp or rtsps without a fragment');
-  if (['localhost', '127.0.0.1', '::1'].includes(uri.hostname))
-    throw new Error('Loopback camera URLs are not permitted');
+  // Basic LAN lab: deny arbitrary outbound domains and public network endpoints.
+  if (isIP(uri.hostname) !== 4) throw new Error('Use a private IPv4 camera address for initial LAN trials');
+  const parts = uri.hostname.split('.').map(Number);
+  const privateAddress = parts[0] === 10 ||
+    (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) ||
+    (parts[0] === 192 && parts[1] === 168);
+  if (!privateAddress) throw new Error('Camera source must be on an RFC1918 LAN');
   return value;
 }
