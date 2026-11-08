@@ -1,0 +1,8 @@
+FROM node:24-bookworm-slim
+WORKDIR /app
+COPY services/garda-api/package.json ./package.json
+RUN npm install --omit=dev --ignore-scripts --no-audit --no-fund
+COPY services/garda-api/src ./src
+USER node
+EXPOSE 8088
+CMD ["node", "src/index.mjs"]
