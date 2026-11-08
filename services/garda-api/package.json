@@ -1,0 +1,19 @@
+{
+  "name": "@garda/local-api",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node src/index.mjs",
+    "test": "node --test test/*.test.mjs",
+    "check": "node --check src/index.mjs && node --check src/app.mjs && node --check src/media.mjs && node --check src/security.mjs"
+  },
+  "dependencies": {
+    "fastify": "5.12.8",
+    "@fastify/helmet": "13.2.0",
+    "pg": "8.23.1"
+  }
+}
