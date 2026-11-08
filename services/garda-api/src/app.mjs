@@ -11,7 +11,10 @@ const createCameraSchema = {
   }
 };
 const cameraParamSchema = {
-  type: 'object', required: ['id'], properties: { id: { type: 'string', pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}
+  type: 'object', required: ['id'],
+  properties: {
+    id: { type: 'string', minLength: 36, maxLength: 36, pattern: '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}' }
+  }
 };
 
 export async function createApp({ pool, media, key, adminToken, logger = false }) {
