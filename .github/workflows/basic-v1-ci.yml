@@ -32,4 +32,9 @@ jobs:
           GARDA_CAMERA_KEY_HEX: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
           MEDIAMTX_API_PASSWORD: ci_only_test_media_password
           GARDA_RECORDINGS_DIR: ./data/recordings
-        run: docker compose -f infra/basic-v1/docker-compose.yml config --quiet
+        run: |
+          docker compose -f infra/basic-v1/docker-compose.yml config --quiet
+          docker compose -f infra/basic-v1/docker-compose.yml up -d --build --wait
+          curl --retry 10 --retry-connrefused --retry-delay 2 -fsS http://127.0.0.1:8088/healthz
+          curl --retry 10 --retry-connrefused --retry-delay 2 -fsS -H "Authorization: Bearer $GARDA_ADMIN_TOKEN" http://127.0.0.1:8088/v1/cameras
+          docker compose -f infra/basic-v1/docker-compose.yml down
