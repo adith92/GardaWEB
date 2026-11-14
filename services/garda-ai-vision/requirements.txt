@@ -1,0 +1,9 @@
+fastapi>=0.115,<1
+uvicorn>=0.30,<1
+python-multipart>=0.0.12,<1
+pydantic>=2.8,<3
+cryptography>=43,<48
+opencv-python-headless>=4.10,<5
+numpy>=2,<3
+# For basic OCR: pip install -r requirements-ocr.txt
+# For ONVIF PTZ: pip install onvif-zeep (verify camera WSDL)
