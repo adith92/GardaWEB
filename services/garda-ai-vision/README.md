@@ -45,3 +45,6 @@ Same Python runtime, camera environment variables and API. Use isolated systemd/
 
 ## Handoff
 Audit TODO: robust plate localization (ONNX inference provider), face alignment+anti-spoof, quality metrics and validated thresholds, PTZ presets/pan/tilt with per-device tests, audit tamper resistance, event/outbox delivery and offline mobile device enrollment, GDPR/UU PDP basis, 90-day retention enforcement and evidence manifest checksum, model provenance and licenses, NVR failover, load tests for 16 concurrent channels. See `docs/GARDA_AI_VISION_AUDIT_HANDOFF_2026-11-14.md`.
+
+## Fetch upstream ClearCam separately
+From the source bundle root, `powershell -ExecutionPolicy Bypass -File scripts/fetch_clearcam.ps1` on Windows, or `sh scripts/fetch_clearcam.sh` on Linux. This only checks out the GPL-3.0 source at a reviewed commit, and **does not** assert original ClearCam can execute on Windows. Keep vendor checkout separate from proprietary GARDA.

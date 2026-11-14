@@ -40,3 +40,6 @@ Read `AGENTS.md`, `docs/GARDA_DECISION_REGISTER_v0.3.md`, KAK, and `services/gar
 - Local logical unit/API tests: `tests/test_core.py`, `tests/test_api.py`, five tests passed in isolated test environment on 2026-11-14.
 - No real RTSP, FFmpeg, physical PTZ, licensed ONNX embedding, OCR recognition benchmark, Android APK build, NVR, or 16-camera soak test conducted.
 - Any identified issue must be fixed in reviewed PR without deleting existing GARDA functionality.
+
+## Upstream reproducibility
+Optional `scripts/fetch_clearcam.ps1` / `.sh` clones unmodified GPL-3.0 source into an ignored `vendor/clearcam` folder at verified ClearCam commit `553be39ba6f20ce055a7418ed54636b32059b4ad`. GARDA never vendors that code into its proprietary Python modules. Check all inherited dependency and model licenses separately.
