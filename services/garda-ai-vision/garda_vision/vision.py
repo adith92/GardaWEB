@@ -27,6 +27,12 @@ class Vision:
                 raise RuntimeError("Face ID enabled but GARDA_FACE_ONNX is missing")
             self.face_model = cv2.dnn.readNetFromONNX(face_model_path)
         self.reader = None
+        self.plate_net = None
+        plate_model_path = os.getenv("GARDA_PLATE_ONNX")
+        if plate_model_path:
+            if not os.path.isfile(plate_model_path):
+                raise RuntimeError("GARDA_PLATE_ONNX points to a missing model")
+            self.plate_net = cv2.dnn.readNetFromONNX(plate_model_path)
 
     def _ocr(self, frame: np.ndarray) -> list[tuple[str, float]]:
         # Optional dependency. Downloads weights at first use; pre-cache for offline.
@@ -37,6 +43,48 @@ class Vision:
             return [(str(text), float(conf)) for _, text, conf in self.reader.readtext(frame, detail=1)]
         except ImportError:
             return []
+
+    def plate_rois(self, frame: np.ndarray) -> list[np.ndarray]:
+        """Optional 1-class YOLOv8 ONNX plate detector; otherwise full-frame OCR.
+
+        No weights are shipped. Only the exported YOLOv8 single-class tensor
+        layout [1,5,N] or [1,N,5] is supported; other exports require an adapter.
+        """
+        if self.plate_net is None:
+            return [frame]
+        height, width = frame.shape[:2]
+        target = 640
+        ratio = min(target / width, target / height)
+        new_w, new_h = round(width * ratio), round(height * ratio)
+        scaled = cv2.resize(frame, (new_w, new_h))
+        left, top = (target - new_w) // 2, (target - new_h) // 2
+        canvas = cv2.copyMakeBorder(scaled, top, target - new_h - top, left, target - new_w - left, cv2.BORDER_CONSTANT, value=(114, 114, 114))
+        self.plate_net.setInput(cv2.dnn.blobFromImage(canvas, scalefactor=1/255.0, size=(target, target), swapRB=True, crop=False))
+        output = np.asarray(self.plate_net.forward())
+        if output.ndim != 3 or output.shape[0] != 1:
+            raise RuntimeError("Unsupported plate ONNX output tensor")
+        rows = output[0].T if output.shape[1] == 5 else output[0]
+        if rows.shape[1] != 5:
+            raise RuntimeError("Only YOLOv8 single-class plate detector is supported")
+        boxes, scores = [], []
+        for cx, cy, bw, bh, conf in rows:
+            if not np.isfinite([cx, cy, bw, bh, conf]).all() or conf < 0.4:
+                continue
+            x1 = max(0, min(width - 1, int((cx - bw/2 - left) / ratio)))
+            y1 = max(0, min(height - 1, int((cy - bh/2 - top) / ratio)))
+            x2 = max(0, min(width, int((cx + bw/2 - left) / ratio)))
+            y2 = max(0, min(height, int((cy + bh/2 - top) / ratio)))
+            if x2 - x1 < 20 or y2 - y1 < 8:
+                continue
+            boxes.append([x1, y1, x2-x1, y2-y1]); scores.append(float(conf))
+        keep = cv2.dnn.NMSBoxes(boxes, scores, 0.4, 0.45)
+        if len(keep) == 0:
+            return []
+        rois = []
+        for i in np.asarray(keep).reshape(-1)[:10]:
+            x, y, w, h = boxes[int(i)]
+            rois.append(frame[y:y+h, x:x+w])
+        return rois
 
     def faces(self, frame: np.ndarray) -> list[tuple[int, int, int, int]]:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -58,7 +106,9 @@ class Vision:
     def analyze(self, frame: np.ndarray, enrolled: dict[str, list[float]] | None = None, threshold: float = 0.60) -> dict[str, Any]:
         faces = self.faces(frame)
         results: dict[str, Any] = {"face_count": len(faces), "plates": [], "face_candidates": [], "ocr_available": True}
-        reads = self._ocr(frame)
+        reads = []
+        for crop in self.plate_rois(frame):
+            reads.extend(self._ocr(crop))
         if self.reader is None:
             results["ocr_available"] = False
         for text, conf in reads:

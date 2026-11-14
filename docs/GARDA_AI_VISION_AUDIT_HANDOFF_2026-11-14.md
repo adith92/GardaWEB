@@ -12,7 +12,7 @@ Date: 2026-11-14 | Status: **IMPLEMENTED DEV SCAFFOLD**, not deployed; tests are
 
 ## In-scope development code
 1. FastAPI REST service that binds to localhost by default; three distinct bearer tokens; encrypted SQLite event payload and face template table; audit rows; role-based denial and redaction.
-2. OpenCV RTSP read-only substream sampler (inference every ~2s); candidate face presence + optional whole-frame OCR; decoupled from NVR recording. No main-stream evidence extraction, tracking, or 16-channel optimization yet.
+2. OpenCV RTSP read-only substream sampler (inference every ~2s); candidate face presence + optional license-provided YOLOv8 plate ROI detector + EasyOCR; whole-frame fallback; decoupled from NVR recording. No main-stream evidence extraction, tracking, or 16-channel optimization yet.
 3. Optional licensed ONNX face-embedding provider with explicit contract gate; face enrollment restricted to admin, reference only, manual human review required. This does not establish legal/consent verification by itself.
 4. PTZ ONVIF zoom ± speed with 2s maximum command and Stop on exit; only after camera-specific capability verification.
 5. ClearCam multipart notification compatibility via local forwarding relay (no image persistence).
@@ -24,7 +24,7 @@ Date: 2026-11-14 | Status: **IMPLEMENTED DEV SCAFFOLD**, not deployed; tests are
 | BLOCKER | Authorization | Replace static role tokens with named user JWT/OIDC, MFA, scoped site policy, device binding, short TTL/revocation; TLS and audit token use. |
 | BLOCKER | Face identity | Validate model provenance/license, embedding preprocess + alignment + liveness/quality, false-match thresholds, ground truth, encrypted retention and deletion. Validate authority and legal basis before collecting templates. |
 | BLOCKER | Privacy | Defined retention policy for plate and face, data minimization, incident response, key rotation, access review, encrypted storage, backup, chain of custody. |
-| HIGH | ANPR | Add calibrated license-plate detector, vehicle tracking/ROI, optical-zoom to native pixels (not digital crop), high-res dual-stream verification, glare/night/angle test matrix, plate OCR benchmark. |
+| HIGH | ANPR | Validate licensed plate ONNX detector, vehicle tracking/ROI, optical-zoom to native pixels (not digital crop), high-res dual-stream verification, glare/night/angle test matrix, plate OCR benchmark. |
 | HIGH | PTZ | ONVIF WSDL packaging Windows, GetConfigurations/Status, camera limits, preset recall, profiles, safety stop recovery and no concurrent commands. |
 | HIGH | ClearCam | Run upstream separately on supported Linux/Mac; confirm real multipart notification paths, trigger rules and availability; review GPL-3.0 distribution and upstream model licenses. |
 | HIGH | Evidence | Separate recorder + playback index, watermarked export + SHA256 manifest, time sync, video retention >=90 days per PUSADA, NVR failover, immutable logs. |
@@ -37,6 +37,6 @@ Date: 2026-11-14 | Status: **IMPLEMENTED DEV SCAFFOLD**, not deployed; tests are
 Read `AGENTS.md`, `docs/GARDA_DECISION_REGISTER_v0.3.md`, KAK, and `services/garda-ai-vision` end to end. Do not rewrite or distribute the upstream ClearCam GPL code inside GARDA. Audit implementation for Windows 11 / Python 3.11 and Linux: dependency and licensing compatibility, invalid FastAPI dependencies, race conditions in threaded OpenCV inference and SQLite, camera secrets/SSRF, privacy/RBAC/site isolation, actual ONVIF zoom and stop, license plate detection accuracy gaps and ONNX preprocessing assumptions. Provide prioritized findings with file:line references and corrected code with tests. Do not invent model weights, successful camera PTZ tests, hardware frame rates or procurement acceptance.
 
 ## Source status and verification
-- Local logical unit/API tests: `tests/test_core.py`, `tests/test_api.py`, three tests passed in isolated test environment on 2026-11-14.
+- Local logical unit/API tests: `tests/test_core.py`, `tests/test_api.py`, five tests passed in isolated test environment on 2026-11-14.
 - No real RTSP, FFmpeg, physical PTZ, licensed ONNX embedding, OCR recognition benchmark, Android APK build, NVR, or 16-camera soak test conducted.
 - Any identified issue must be fixed in reviewed PR without deleting existing GARDA functionality.

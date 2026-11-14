@@ -38,14 +38,13 @@ def zoom(camera: Camera, speed: float, seconds: float) -> dict:
         request = ptz.create_type("ContinuousMove")
         request.ProfileToken = token
         request.Velocity = {"Zoom": {"x": speed}}
-        moved = False
         try:
             ptz.ContinuousMove(request)
-            moved = True
             time.sleep(seconds)
         finally:
-            if moved:
-                ptz.Stop({"ProfileToken": token, "PanTilt": False, "Zoom": True})
+            # Attempt STOP even if network fails after the camera received move.
+            # Operator must check physical response if Stop itself fails.
+            ptz.Stop({"ProfileToken": token, "PanTilt": False, "Zoom": True})
         return {"camera_id": camera.id, "zoom_speed": speed, "seconds": seconds, "stopped": True}
     finally:
         lock.release()
