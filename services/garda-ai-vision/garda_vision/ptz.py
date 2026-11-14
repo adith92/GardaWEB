@@ -7,6 +7,7 @@ from __future__ import annotations
 import os
 import threading
 import time
+from datetime import timedelta
 
 from .core import Camera
 
@@ -38,6 +39,8 @@ def zoom(camera: Camera, speed: float, seconds: float) -> dict:
         request = ptz.create_type("ContinuousMove")
         request.ProfileToken = token
         request.Velocity = {"Zoom": {"x": speed}}
+        # ONVIF device-side timeout limits motion even if host loses connection.
+        request.Timeout = timedelta(seconds=seconds)
         try:
             ptz.ContinuousMove(request)
             time.sleep(seconds)
