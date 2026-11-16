@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 
 from .auth import Identity
 from .runtime import Runtime
+from .network import NetworkScanner, interfaces, DEFAULT_PORTS
 
 
 class Login(BaseModel):
@@ -28,6 +29,11 @@ class CameraInput(BaseModel):
     rtsp_url: str = Field(min_length=1, max_length=2048)
     face_provider: str = "sface"
     plate_provider: str = "fastalpr"
+
+
+class ScanInput(BaseModel):
+    target: str = Field(min_length=1, max_length=32)
+    ports: str = Field(default=DEFAULT_PORTS, min_length=1, max_length=512)
 
 
 def decode_image(raw):
@@ -51,6 +57,7 @@ class Unified:
         self.lab_actor = {"name": "Admin lokal", "role": "admin", "csrf": secrets.token_urlsafe(32),
                           "lab_no_login": True}
         self.runtime = Runtime(root, store)
+        self.scanner = NetworkScanner()
         self.secure_cookie = os.environ.get("GARDA_COOKIE_SECURE", "1") != "0"
         self.allowed_origin = os.environ.get("GARDA_PUBLIC_ORIGIN", "").rstrip("/")
         self._routes(app)
@@ -90,6 +97,27 @@ class Unified:
         read = self.require("admin", "operator", "viewer")
         operate = self.require("admin", "operator")
         admin = self.require("admin")
+
+        @app.get("/api/v1/network/interfaces")
+        def network_interfaces(actor=Depends(admin)):
+            return {"interfaces": interfaces(), "default_ports": DEFAULT_PORTS, "source": "server"}
+
+        @app.get("/api/v1/network/scan")
+        def network_scan(actor=Depends(admin)):
+            return self.scanner.snapshot()
+
+        @app.post("/api/v1/network/scan")
+        def start_scan(command: ScanInput, actor=Depends(admin)):
+            try:
+                return self.scanner.start(command.target, command.ports)
+            except ValueError as exc:
+                raise HTTPException(422, str(exc))
+            except RuntimeError as exc:
+                raise HTTPException(409, str(exc))
+
+        @app.post("/api/v1/network/scan/cancel")
+        def cancel_scan(actor=Depends(admin)):
+            return self.scanner.cancel()
 
         @app.middleware("http")
         async def headers(request, call_next):

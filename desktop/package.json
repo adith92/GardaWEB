@@ -2,6 +2,7 @@
   "name": "garda-workspace-desktop",
   "version": "0.13.0",
   "description": "GARDA shared workspace client for Windows, Apple Silicon macOS and Ubuntu",
+  "author": { "name": "GARDA Internal", "email": "garda-internal@users.noreply.github.com" },
   "private": true,
   "main": "main.cjs",
   "scripts": {
@@ -30,13 +31,17 @@
     ],
     "mac": {
       "category": "public.app-category.utilities",
-      "hardenedRuntime": true
+      "hardenedRuntime": true,
+      "identity": "-",
+      "entitlements": "entitlements.mac.plist",
+      "entitlementsInherit": "entitlements.mac.plist"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
     },
     "linux": {
+      "executableName": "garda-workspace-desktop",
       "category": "Utility"
     }
   }
