@@ -1,0 +1,70 @@
+name: GARDA owner-approved internal package build
+on:
+  workflow_dispatch:
+    inputs:
+      approved_build:
+        description: 'Owner reviewed this source revision and approves internal desktop/Web packaging'
+        type: boolean
+        required: true
+        default: false
+permissions:
+  contents: read
+jobs:
+  web:
+    if: inputs.approved_build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GARDA-Web-v0.13.0
+          path: dist/
+          retention-days: 7
+  desktop:
+    if: inputs.approved_build
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            task: package:windows
+            target: Windows-x64
+          - os: macos-14
+            task: package:mac
+            target: macOS-arm64
+          - os: ubuntu-latest
+            task: package:linux
+            target: Ubuntu-x64
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci
+      - run: npm test
+      - name: Internal package (signing/notarization status must be declared)
+        run: npm run ${{ matrix.task }}
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GARDA-Desktop-v0.13.0-${{ matrix.target }}-INTERNAL
+          path: |
+            desktop/release/*.exe
+            desktop/release/*.dmg
+            desktop/release/*.AppImage
+            desktop/release/*.deb
+          if-no-files-found: error
+          retention-days: 7

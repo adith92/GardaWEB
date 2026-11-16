@@ -148,3 +148,5 @@ Ubuntu and macOS. APK assembly/upload is gated by workflow_dispatch with
 `approved_build=true`; source archive upload is optional. This branch disables
 Vercel auto-preview. Do not run production web/desktop/APK packaging before the
 owner's requested confirmation. Builds do not by themselves approve a release.
+
+Owner-approved desktop/Web packaging is prepared in `.github/workflows/garda-approved-packages.yml`, with an explicit false-by-default dispatch input. Android packaging uses its separate guarded workflow. These workflows have not been dispatched. GitHub artifact quota may still block uploads even if packaging succeeds.
