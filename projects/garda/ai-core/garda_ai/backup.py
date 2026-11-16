@@ -6,6 +6,7 @@ Restore is intentionally restricted to a NEW data directory, never a live one.
 from __future__ import annotations
 
 import argparse
+from contextlib import closing
 import getpass
 import hashlib
 import io
@@ -62,9 +63,10 @@ def _sqlite_snapshot(src: Path) -> bytes:
         raise ValueError("Refusing SQLite symlink")
     with tempfile.TemporaryDirectory(prefix="garda-sqlite-") as folder:
         dst = Path(folder) / "snapshot.db"
-        with sqlite3.connect(src.as_uri() + "?mode=ro", uri=True, timeout=20) as source:
-            with sqlite3.connect(dst) as target:
+        with closing(sqlite3.connect(src.as_uri() + "?mode=ro", uri=True, timeout=20)) as source:
+            with closing(sqlite3.connect(dst)) as target:
                 source.backup(target)
+                target.commit()
         if dst.stat().st_size > MAX_TOTAL:
             raise ValueError("SQLite snapshot too large for bounded backup")
         return dst.read_bytes()
