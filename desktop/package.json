@@ -1,0 +1,50 @@
+{
+  "name": "garda-workspace-desktop",
+  "version": "0.13.0",
+  "description": "GARDA shared workspace client for Windows, Apple Silicon macOS and Ubuntu",
+  "author": { "name": "GARDA Internal", "email": "garda-internal@users.noreply.github.com" },
+  "private": true,
+  "repository": {"type": "git", "url": "https://github.com/adith92/GardaWEB.git", "directory": "desktop"},
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test policy.test.cjs",
+    "package:windows": "electron-builder --win nsis --x64 --publish never",
+    "package:mac": "electron-builder --mac dmg --arm64 --publish never",
+    "package:linux": "electron-builder --linux AppImage deb --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "45.3.3",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "publish": null,
+    "appId": "id.garda.workspace",
+    "productName": "GARDA Workspace",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "policy.cjs",
+      "connect.html",
+      "connect.js"
+    ],
+    "mac": {
+      "category": "public.app-category.utilities",
+      "hardenedRuntime": true,
+      "identity": "-",
+      "entitlements": "entitlements.mac.plist",
+      "entitlementsInherit": "entitlements.mac.plist"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "linux": {
+      "executableName": "garda-workspace-desktop",
+      "category": "Utility"
+    }
+  }
+}

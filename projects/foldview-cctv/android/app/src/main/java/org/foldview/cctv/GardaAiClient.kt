@@ -81,19 +81,64 @@ internal class GardaAiClient(context: Context) {
             .commit()) { "Failed to save GARDA AI connection securely" }
     }
 
+    fun login(url: String, username: String, password: String) {
+        val target = origin(url)
+        val c = URL(target + "/api/v1/auth/login").openConnection() as HttpURLConnection
+        try {
+            c.requestMethod = "POST"
+            c.instanceFollowRedirects = false
+            c.connectTimeout = 5000
+            c.readTimeout = 10000
+            c.doOutput = true
+            c.setRequestProperty("Content-Type", "application/json")
+            val body = JSONObject().put("username", username).put("password", password).toString()
+            c.outputStream.use { it.write(body.toByteArray(Charsets.UTF_8)) }
+            require(c.responseCode == 200) { "Login failed (HTTP ${c.responseCode})" }
+            val response = c.inputStream.use { it.readNBytes(16385) }
+            require(response.size <= 16384) { "Login response too large" }
+            remember(target, JSONObject(String(response, Charsets.UTF_8)).getString("access_token"))
+        } finally { c.disconnect() }
+    }
+
     fun forget() { prefs.edit().clear().apply() }
+
+    /** Initial lab server grants local Admin without a username/password. */
+    fun connect(url: String): Boolean {
+        val target = origin(url)
+        val c = URL(target + "/api/v1/auth/me").openConnection() as HttpURLConnection
+        try {
+            c.instanceFollowRedirects = false
+            c.connectTimeout = 4500
+            c.readTimeout = 4500
+            if (target == savedUrl() && savedKey().isNotBlank()) {
+                c.setRequestProperty("Authorization", "Bearer " + savedKey())
+            }
+            require(c.responseCode == 200) { "Server requires named login (HTTP ${c.responseCode})" }
+            val bytes = c.inputStream.use { it.readNBytes(16385) }
+            require(bytes.size <= 16384) { "Server response too large" }
+            val actor = JSONObject(String(bytes, Charsets.UTF_8))
+            val lab = actor.optBoolean("lab_no_login", false)
+            if (lab) {
+                require(actor.optString("role") == "admin") { "Local Admin unavailable" }
+                prefs.edit().putString("url", target).remove("secret").apply()
+            } else {
+                require(target == savedUrl() && savedKey().isNotBlank()) { "Server requires named login" }
+            }
+            return lab
+        } finally { c.disconnect() }
+    }
 
     private fun get(path: String): JSONObject {
         val url = origin(savedUrl()) + path
         val secret = savedKey()
-        require(secret.length >= 24) { "GARDA AI key is not configured" }
+        require(secret.isEmpty() || secret.length >= 24) { "GARDA session is invalid" }
         val connection = URL(url).openConnection() as HttpURLConnection
         try {
             connection.requestMethod = "GET"
             connection.connectTimeout = 4500
             connection.readTimeout = 4500
             connection.instanceFollowRedirects = false
-            connection.setRequestProperty("X-GARDA-KEY", secret)
+            if (secret.isNotBlank()) connection.setRequestProperty("Authorization", "Bearer " + secret)
             connection.setRequestProperty("Accept", "application/json")
             val code = connection.responseCode
             if (code !in 200..299) error("GARDA AI returned HTTP $code")
@@ -114,11 +159,11 @@ internal class GardaAiClient(context: Context) {
         }
     }
 
-    fun stats(): JSONObject = get("/api/stats")
+    fun stats(): JSONObject = get("/api/v1/stats")
     fun events(kind: String = ""): List<GardaAiEvent> {
         require(kind.isEmpty() || kind in listOf("plate", "face", "motion"))
         val suffix = if (kind.isEmpty()) "" else "&kind=$kind"
-        val items: JSONArray = get("/api/events?limit=30$suffix").getJSONArray("events")
+        val items: JSONArray = get("/api/v1/events?limit=30$suffix").getJSONArray("events")
         return (0 until items.length()).map { index ->
             val item = items.getJSONObject(index)
             GardaAiEvent(
@@ -134,19 +179,19 @@ internal class GardaAiClient(context: Context) {
     }
     fun photoIds(eventId: String): List<String> {
         require(Regex("[a-f0-9]{32}").matches(eventId))
-        val items = get("/api/events/$eventId/photos").getJSONArray("photos")
+        val items = get("/api/v1/events/$eventId/photos").getJSONArray("photos")
         return (0 until items.length()).map { items.getJSONObject(it).getString("id") }
     }
     fun photo(eventId: String, photoId: String): ByteArray {
         require(Regex("[a-f0-9]{32}").matches(eventId) &&
             Regex("[a-f0-9]{32}").matches(photoId))
-        val url = origin(savedUrl()) + "/api/events/$eventId/photos/$photoId"
+        val url = origin(savedUrl()) + "/api/v1/events/$eventId/photos/$photoId"
         val con = URL(url).openConnection() as HttpURLConnection
         try {
             con.connectTimeout = 4500
             con.readTimeout = 6000
             con.instanceFollowRedirects = false
-            con.setRequestProperty("X-GARDA-KEY", savedKey())
+            con.setRequestProperty("Authorization", "Bearer " + savedKey())
             require(con.responseCode == 200) { "Evidence could not be opened" }
             con.inputStream.use { input ->
                 val output = java.io.ByteArrayOutputStream()

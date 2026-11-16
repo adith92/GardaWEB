@@ -7,40 +7,53 @@ import os
 import secrets
 from pathlib import Path
 
-from fastapi import Depends, FastAPI, HTTPException, Query, Security
+from fastapi import Depends, FastAPI, HTTPException, Query, Security, Request
 from fastapi.responses import FileResponse
 from fastapi.security import APIKeyHeader
 
 from .storage import EventStore
 
 
-def create_app(data_dir: str | Path | None = None, key: str | None = None) -> FastAPI:
+def create_app(data_dir: str | Path | None = None, key: str | None = None,
+               unified: bool = False, lab_no_login: bool = False) -> FastAPI:
     configured_key = key or os.environ.get("GARDA_AI_API_KEY", "")
-    if len(configured_key) < 24:
+    if not unified and len(configured_key) < 24:
         raise RuntimeError("Set GARDA_AI_API_KEY to a random secret of at least 24 characters")
     root = Path(data_dir or os.environ.get("GARDA_AI_DATA_DIR", "./var"))
     store = EventStore(root)
+    service = None
 
     @asynccontextmanager
     async def lifespan(_app: FastAPI):
         try:
             yield
         finally:
-            store.close()
+            if service is not None:
+                service.close()
+            if service is None or not service.runtime.workers:
+                store.close()
 
     app = FastAPI(title="GARDA AI Core", version="0.2.0",
                   docs_url=None, redoc_url=None, openapi_url=None,
                   lifespan=lifespan)
     api_key = APIKeyHeader(name="X-GARDA-KEY", auto_error=False)
 
-    def require_key(header: str | None = Security(api_key)):
-        if header is None or not secrets.compare_digest(header, configured_key):
+    def require_key(request: Request, header: str | None = Security(api_key)):
+        if header and len(configured_key) >= 24 and secrets.compare_digest(header, configured_key):
+            return
+        if service is not None:
+            actor = service.authorize(request)
+            if actor["role"] not in ("admin", "operator"):
+                raise HTTPException(403, detail="Permission denied")
+            return
+        else:
             raise HTTPException(status_code=401, detail="Unauthorized",
                                 headers={"WWW-Authenticate": "APIKey"})
 
     @app.get("/health")
     def health():
-        return {"service": "garda-ai-core", "status": "up"}
+        return {"service": "garda-ai-core", "status": "up",
+                "auth_mode": "local_admin" if service is not None and service.lab_no_login else "named_sessions"}
 
     @app.get("/api/events", dependencies=[Depends(require_key)])
     def events(kind: str | None = None, camera: str | None = None,
@@ -71,4 +84,8 @@ def create_app(data_dir: str | Path | None = None, key: str | None = None) -> Fa
         store.audit("stats")
         return store.stats()
 
+    if unified:
+        from .unified import Unified
+        service = Unified(app, store, root, lab_no_login=lab_no_login)
+        app.state.unified = service
     return app

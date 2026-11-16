@@ -47,8 +47,8 @@ def load_config(path: str | Path) -> GardaConfig:
         if not 0.2 <= fps <= 5:
             raise ValueError("sample_fps must be between 0.2 and 5")
         cameras.append(CameraConfig(camera_id, url, str(item.get("location", camera_id)), fps))
-    if not 1 <= len(cameras) <= 2:
-        raise ValueError("Stage 1 supports only 1-2 camera streams. Multi-site pool comes later.")
+    if not 1 <= len(cameras) <= 49:
+        raise ValueError("One site supports configuration of 1-49 cameras; throughput requires hardware testing.")
     if len({c.id for c in cameras}) != len(cameras):
         raise ValueError("Duplicate camera ID")
     data_dir = Path(os.environ.get("GARDA_AI_DATA_DIR", data.get("data_dir", "./var"))).expanduser().resolve()

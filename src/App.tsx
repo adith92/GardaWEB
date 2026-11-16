@@ -37,6 +37,7 @@ import { Command, Live, MapPage, Playback, Events } from "./Monitoring";
 import { Incidents, AskGarda, Vault, Intelligence } from "./Operations";
 import { System, Devices, Audit, Settings } from "./Administration";
 const Analytics = lazy(() => import("./Analytics"));
+const Workspace = lazy(() => import("./workspace/Workspace"));
 const nav = [
   ["COMMAND", "/command", LayoutDashboard],
   ["LIVE", "/live", Video],
@@ -350,6 +351,10 @@ function Shell() {
   );
 }
 export default function App() {
+  const { pathname } = useLocation();
+  if (pathname === "/workspace" || pathname.startsWith("/workspace/")) {
+    return <Suspense fallback={<main>Memuat GARDA Workspace…</main>}><Workspace /></Suspense>;
+  }
   return (
     <StoreProvider>
       <Shell />
