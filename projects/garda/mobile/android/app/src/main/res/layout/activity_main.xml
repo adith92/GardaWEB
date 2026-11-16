@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_root">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- HEADER BAR -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingVertical="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🛡️ GARDA MOBILE"
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/tvOnvifBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_badge"
+                    android:text="ONVIF :8899"
+                    android:textColor="@color/text_muted"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="6dp" />
+
+                <TextView
+                    android:id="@+id/tvStreamBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_badge"
+                    android:text="STANDBY"
+                    android:textColor="@color/text_muted"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- TELEMETRY CHIPS -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:id="@+id/tvUptimeChip"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_card"
+                    android:padding="6dp"
+                    android:text="⏱️ Uptime: -"
+                    android:textColor="@color/sky_accent"
+                    android:textSize="11sp"
+                    android:gravity="center"
+                    android:layout_marginEnd="4dp"/>
+
+                <TextView
+                    android:id="@+id/tvRamChip"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_card"
+                    android:padding="6dp"
+                    android:text="🧠 Free RAM: -"
+                    android:textColor="@color/purple_accent"
+                    android:textSize="11sp"
+                    android:gravity="center"
+                    android:layout_marginStart="4dp"/>
+            </LinearLayout>
+
+            <!-- CONNECTION ROW -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="10dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:boxStrokeColor="@color/cyan_accent"
+                    app:hintTextColor="@color/cyan_accent"
+                    android:textColorHint="@color/text_muted">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etCameraIp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="IP Kamera"
+                        android:text="192.168.18.249"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp"
+                        android:inputType="textUri" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/btnScanLan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="SCAN"
+                    android:textSize="12sp"
+                    android:backgroundTint="@color/bg_card"
+                    android:textColor="@color/sky_accent" />
+
+                <Button
+                    android:id="@+id/btnConnect"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="CONNECT"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="@color/cyan_accent"
+                    android:textColor="#000000" />
+            </LinearLayout>
+
+            <!-- VIEW SELECTOR BAR -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mode Tampilan:"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"
+                    android:layout_marginEnd="8dp" />
+
+                <Spinner
+                    android:id="@+id/spnViewMode"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/cyan_accent" />
+            </LinearLayout>
+
+            <!-- DUAL VIDEO CONTAINER -->
+            <LinearLayout
+                android:id="@+id/videoContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="12dp">
+
+                <!-- LENS 1 WRAPPER -->
+                <LinearLayout
+                    android:id="@+id/lens1Wrapper"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_card"
+                    android:padding="4dp"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📹 LENSA 1 (PTZ UTAMA) — RTSP :1234"
+                        android:textColor="@color/sky_accent"
+                        android:textStyle="bold"
+                        android:textSize="11sp"
+                        android:padding="4dp" />
+
+                    <androidx.media3.ui.PlayerView
+                        android:id="@+id/playerViewLens1"
+                        android:layout_width="match_parent"
+                        android:layout_height="210dp"
+                        android:background="#000000"
+                        app:use_controller="false"
+                        app:resize_mode="fit" />
+                </LinearLayout>
+
+                <!-- LENS 2 WRAPPER -->
+                <LinearLayout
+                    android:id="@+id/lens2Wrapper"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_card"
+                    android:padding="4dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📹 LENSA 2 (WIDE-ANGLE) — RTSP :1235"
+                        android:textColor="@color/purple_accent"
+                        android:textStyle="bold"
+                        android:textSize="11sp"
+                        android:padding="4dp" />
+
+                    <androidx.media3.ui.PlayerView
+                        android:id="@+id/playerViewLens2"
+                        android:layout_width="match_parent"
+                        android:layout_height="210dp"
+                        android:background="#000000"
+                        app:use_controller="false"
+                        app:resize_mode="fit" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- CONTROLS CARD -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="12dp"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🕹️ GIMBAL PTZ CONTROLLER"
+                    android:textColor="@color/sky_accent"
+                    android:textStyle="bold"
+                    android:textSize="13sp"
+                    android:layout_marginBottom="10dp" />
+
+                <!-- D-PAD GRID -->
+                <GridLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:columnCount="3"
+                    android:rowCount="3"
+                    android:alignmentMode="alignMargins">
+
+                    <Button
+                        android:id="@+id/btnPtzUpLeft"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:text="⬉"
+                        android:textSize="18sp"
+                        android:background="@drawable/bg_btn_ptz"
+                        android:textColor="@color/sky_accent"
+                        android:layout_margin="3dp"/>
+
+                    <Button
+                        android:id="@+id/btnPtzUp"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:text="▲"
+                        android:textSize="16sp"
+                        android:background="@drawable/bg_btn_ptz"
+                        android:textColor="@color/sky_accent"
+                        android:layout_margin="3dp"/>
+
+                    <Button
+                        android:id="@+id/btnPtzUpRight"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:text="⬈"
+                        android:textSize="18sp"
+                        android:background="@drawable/bg_btn_ptz"
+                        android:textColor="@color/sky_accent"
+                        android:layout_margin="3dp"/>
+
+                    <Button
+                        android:id="@+id/btnPtzLeft"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:text="◀"
+                        android:textSize="16sp"
+                        android:background="@drawable/bg_btn_ptz"
+                        android:textColor="@color/sky_accent"
+                        android:layout_margin="3dp"/>
+
+                    <Button
+                        android:id="@+id/btnPtzCenter"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:text="🏠"
+                        android:textSize="18sp"
+                        android:background="@drawable/bg_btn_center"
+                        android:layout_margin="3dp"/>
+
+                    <Button
+                        android:id="@+id/btnPtzRight"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:text="▶"
+                        android:textSize="16sp"
+                        android:background="@drawable/bg_btn_ptz"
+                        android:textColor="@color/sky_accent"
+                        android:layout_margin="3dp"/>
+
+                    <Button
+                        android:id="@+id/btnPtzDownLeft"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:text="⬋"
+                        android:textSize="18sp"
+                        android:background="@drawable/bg_btn_ptz"
+                        android:textColor="@color/sky_accent"
+                        android:layout_margin="3dp"/>
+
+                    <Button
+                        android:id="@+id/btnPtzDown"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:text="▼"
+                        android:textSize="16sp"
+                        android:background="@drawable/bg_btn_ptz"
+                        android:textColor="@color/sky_accent"
+                        android:layout_margin="3dp"/>
+
+                    <Button
+                        android:id="@+id/btnPtzDownRight"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:text="⬊"
+                        android:textSize="18sp"
+                        android:background="@drawable/bg_btn_ptz"
+                        android:textColor="@color/sky_accent"
+                        android:layout_margin="3dp"/>
+                </GridLayout>
+
+                <!-- STEP SIZE SLIDER -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp">
+
+                    <TextView
+                        android:id="@+id/tvStepLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Step: 30"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp"
+                        android:layout_marginEnd="8dp" />
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/sliderStep"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:valueFrom="10.0"
+                        android:valueTo="100.0"
+                        android:stepSize="5.0"
+                        android:value="30.0"
+                        app:thumbColor="@color/cyan_accent"
+                        app:trackColorActive="@color/cyan_accent"
+                        app:trackColorInactive="@color/border_primary" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnPtzCalibrate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="⚙️ KALIBRASI MANDIRI MOTOR PTZ"
+                    android:textSize="12sp"
+                    android:backgroundTint="@color/border_primary"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
+
+            <!-- HARDWARE TOGGLES CARD -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="12dp"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="💡 PENCAHAYAAN &amp; FILTER OPTIK"
+                    android:textColor="@color/sky_accent"
+                    android:textStyle="bold"
+                    android:textSize="13sp"
+                    android:layout_marginBottom="8dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnToggleSpotlight"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="💡 Spotlight: OFF"
+                        android:textSize="12sp"
+                        android:backgroundTint="@color/border_primary"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginEnd="4dp" />
+
+                    <Button
+                        android:id="@+id/btnToggleNightIr"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="🌙 Night IR: OFF"
+                        android:textSize="12sp"
+                        android:backgroundTint="@color/border_primary"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginStart="4dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="4dp">
+
+                    <Button
+                        android:id="@+id/btnIrCutDay"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="☀️ Filter Siang"
+                        android:textSize="12sp"
+                        android:backgroundTint="@color/border_primary"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginEnd="4dp" />
+
+                    <Button
+                        android:id="@+id/btnIrCutNight"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="🌑 Filter Malam"
+                        android:textSize="12sp"
+                        android:backgroundTint="@color/border_primary"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginStart="4dp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🎯 OTOMASI &amp; PATROLI AI"
+                    android:textColor="@color/sky_accent"
+                    android:textStyle="bold"
+                    android:textSize="13sp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="8dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnToggleTracking"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="🎯 Auto Track: OFF"
+                        android:textSize="12sp"
+                        android:backgroundTint="@color/border_primary"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginEnd="4dp" />
+
+                    <Button
+                        android:id="@+id/btnToggleCruise"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="🔄 360° Patroli: OFF"
+                        android:textSize="12sp"
+                        android:backgroundTint="@color/border_primary"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginStart="4dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ACTIVITY LOG -->
+            <TextView
+                android:id="@+id/tvLogConsole"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@drawable/bg_card"
+                android:padding="8dp"
+                android:textColor="@color/text_secondary"
+                android:fontFamily="monospace"
+                android:textSize="11sp"
+                android:scrollbars="vertical"
+                android:text="GARDA Mobile Controller Siap.\n" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

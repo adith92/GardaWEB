@@ -1,0 +1,15 @@
+var/
+*.db
+*.db-shm
+*.db-wal
+__pycache__/
+.pytest_cache/
+.venv/
+.env
+config.json
+*.onnx
+*.pt
+*.mp4
+*.jpg
+*.jpeg
+*.png

@@ -1,0 +1,22 @@
+{
+  "data_dir": "./var",
+  "retention_days": 90,
+  "motion_min_fraction": 0.016,
+  "plate_min_confidence": 0.7,
+  "enable_plates": true,
+  "cameras": [
+    {
+      "id": "garda_ptz",
+      "location": "Demo - Entrance PTZ",
+      "rtsp_env": "GARDA_CAMERA_PTZ_RTSP",
+      "sample_fps": 2
+    },
+    {
+      "id": "garda_wide",
+      "location": "Demo - Entrance Wide",
+      "rtsp_env": "GARDA_CAMERA_WIDE_RTSP",
+      "sample_fps": 1.5
+    }
+  ],
+  "face_match_threshold": 0.55
+}

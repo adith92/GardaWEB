@@ -1,0 +1,85 @@
+name: GARDA CCTV FOLD + Standard Android APKs
+
+on:
+  pull_request:
+    paths:
+      - 'projects/foldview-cctv/android/**'
+      - '.github/workflows/foldview-build.yml'
+  push:
+    paths:
+      - 'projects/foldview-cctv/android/**'
+      - '.github/workflows/foldview-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android-debug-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: projects/foldview-cctv/android
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install Android SDK 37 (use hosted runner SDK)
+        run: |
+          set -e
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -path '*/bin/sdkmanager' | sort -V | tail -1)"
+          test -x "$SDKMANAGER"
+          yes | "$SDKMANAGER" --channel=3 --install "platforms;android-37.0" "build-tools;37.0.0"
+      - name: Gradle 9.6.0
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.6.0'
+      - name: Verify both editions (ONVIF, PTZ, adaptive UI, contrast)
+        run: gradle --no-daemon :app:testFoldDebugUnitTest :app:testStandardDebugUnitTest
+      - name: Verify Python GARDA LAN OTA manifest server
+        run: python3 -m unittest discover -s ota-server -p 'test*.py' -v
+      - name: Build two independent APK flavors (debug signed)
+        run: gradle --no-daemon --stacktrace :app:assembleFoldDebug :app:assembleStandardDebug
+      - name: Validate both package IDs, version, labels and signatures
+        run: |
+          set -euo pipefail
+          FOLD="app/build/outputs/apk/fold/debug/app-fold-debug.apk"
+          STANDARD="app/build/outputs/apk/standard/debug/app-standard-debug.apk"
+          test -s "$FOLD"
+          test -s "$STANDARD"
+          AAPT="$ANDROID_HOME/build-tools/37.0.0/aapt"
+          SIGNER="$ANDROID_HOME/build-tools/36.0.0/apksigner"
+          "$AAPT" dump badging "$FOLD" | tee package-fold.txt
+          "$AAPT" dump badging "$STANDARD" | tee package-standard.txt
+          grep -q "package: name='org.foldview.cctv'" package-fold.txt
+          grep -q "package: name='org.garda.cctv.standard'" package-standard.txt
+          grep -q "versionCode='16'" package-fold.txt
+          grep -q "versionCode='16'" package-standard.txt
+          grep -q "application-label:'GARDA CCTV FOLD edition'" package-fold.txt
+          grep -q "application-label:'GARDA CCTV Standard edition'" package-standard.txt
+          "$SIGNER" verify --verbose --print-certs "$FOLD" | tee signing-fold.txt
+          "$SIGNER" verify --verbose --print-certs "$STANDARD" | tee signing-standard.txt
+          grep -q 'Verified using v2 scheme (APK Signature Scheme v2): true' signing-fold.txt
+          grep -q 'Verified using v2 scheme (APK Signature Scheme v2): true' signing-standard.txt
+          cp "$FOLD" GARDA-CCTV-FOLD-edition-v0.12.2-DEBUG-SIDELOAD.apk
+          cp "$STANDARD" GARDA-CCTV-Standard-edition-v0.12.2-DEBUG-SIDELOAD.apk
+          sha256sum GARDA-CCTV-*-v0.12.2-DEBUG-SIDELOAD.apk | tee SHA256SUMS.txt
+      - name: Upload both verified APKs and signing reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: GARDA-CCTV-FOLD-Standard-v0.12.2-signed-debug
+          path: |
+            projects/foldview-cctv/android/GARDA-CCTV-FOLD-edition-v0.12.2-DEBUG-SIDELOAD.apk
+            projects/foldview-cctv/android/GARDA-CCTV-Standard-edition-v0.12.2-DEBUG-SIDELOAD.apk
+            projects/foldview-cctv/android/signing-fold.txt
+            projects/foldview-cctv/android/signing-standard.txt
+            projects/foldview-cctv/android/package-fold.txt
+            projects/foldview-cctv/android/package-standard.txt
+            projects/foldview-cctv/android/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 14

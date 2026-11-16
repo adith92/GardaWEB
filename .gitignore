@@ -5,5 +5,21 @@ playwright-report/
 .DS_Store
 .vercel/
 *.tsbuildinfo
+
+# GARDA Android / Python / native local outputs and private configuration
+.gradle/
+**/build/
+local.properties
+*.apk
+*.aab
+*.jks
+*.keystore
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+camera_config.json
+projects/garda/ai-core/config.json
+projects/cctv-firmware/fh8852v201-onvif/foldview_onvifd
 .vercel
 .env*
