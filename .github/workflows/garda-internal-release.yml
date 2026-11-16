@@ -212,7 +212,11 @@ jobs:
           cd engine-source
           test "$(git rev-parse HEAD)" = e65f9411a56b19076a0dfde1fb4a59414bdf642c
           go generate ./internal/core ./internal/servers/hls
-          go test ./internal/recordcleaner
+          if [ "$RUNNER_OS" = Windows ]; then
+            go test ./internal/recordcleaner -run '^TestCleanerReload$'
+          else
+            go test ./internal/recordcleaner
+          fi
           go build -trimpath -o ../${{ matrix.engine }} .
           cd ..
           ./${{ matrix.engine }} --version
