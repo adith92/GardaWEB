@@ -6,7 +6,8 @@ import type { Actor, Camera, Event, Provider } from "./api";
 import "./workspace.css";
 
 const NetworkPanel = lazy(() => import("./NetworkPanel"));
-const tabs = ["Live", "Kejadian", "Perangkat", "Jaringan", "Wajah", "Engine", "Update"] as const;
+const RecorderPanel = lazy(() => import("./RecorderPanel"));
+const tabs = ["Live", "Rekaman", "Kejadian", "Perangkat", "Jaringan", "Wajah", "Engine", "Update"] as const;
 type Tab = typeof tabs[number];
 const date = (value: string) => new Date(value).toLocaleString("id-ID");
 
@@ -157,7 +158,7 @@ export default function Workspace() {
   if (checking) return <main className="gw"><p role="status">Memeriksa sesi…</p></main>;
   if (connectionError) return <main className="gw login-surface"><section className="login-form"><h1>GARDA Workspace</h1><p role="alert">{connectionError}</p><button onClick={() => setRetry(v => v+1)}>Coba hubungkan kembali</button></section></main>;
   if (!actor) return <Login onLogin={setActor}/>;
-  const visibleTabs = tabs.filter(t => actor.role === "admin" || (t !== "Perangkat" && t !== "Jaringan" && t !== "Wajah" && (actor.role !== "viewer" || (t !== "Kejadian" && t !== "Update"))));
+  const visibleTabs = tabs.filter(t => actor.role === "admin" || (t !== "Perangkat" && t !== "Jaringan" && t !== "Wajah" && (actor.role !== "viewer" || (t !== "Kejadian" && t !== "Rekaman" && t !== "Update"))));
   return <main className="gw"><header className="gw-header"><a className="gw-brand" href="/workspace"><img src="/logo.png" alt="GARDA"/><span>GARDA<strong>Workspace</strong></span></a>
     <div className="gw-user"><ShieldCheck size={18}/><span>{actor.lab_no_login ? "Admin lokal · Semua akses" : `${actor.name} · ${actor.role}`}</span>{!actor.lab_no_login ? <button aria-label="Keluar" onClick={async () => { try { await request("/api/v1/auth/logout", { method: "POST" }, actor.csrf); setActor(null); setCameras([]); setEvents([]); } catch (e) { setNotice((e as Error).message); } }}><LogOut size={18}/></button> : null}</div>
   </header><nav className="gw-nav">{visibleTabs.map(t => <button key={t} aria-current={tab === t ? "page" : undefined} onClick={() => setTab(t)}>{t}</button>)}</nav>
@@ -168,6 +169,7 @@ export default function Workspace() {
         <div className="gw-table-wrap"><table><thead><tr><th>Waktu</th><th>Kamera</th><th>Jenis</th><th>Hasil kandidat</th><th>Confidence</th><th>Bukti</th></tr></thead><tbody>{events.map(e => <tr key={e.id}><td>{date(e.observed_at)}</td><td>{e.camera_id}</td><td>{e.kind}</td><td>{e.plate_text || e.face_label || "Belum teridentifikasi"}</td><td>{typeof e.confidence === "number" ? `${(e.confidence*100).toFixed(1)}%` : "—"}</td><td><button onClick={() => void openEvidence(e)}>Snapshot</button></td></tr>)}</tbody></table>{events.length === 0 ? <p className="gw-empty-line">Belum ada kejadian yang cocok.</p> : null}</div></section> : null}
       {tab === "Perangkat" && actor.role === "admin" ? <Devices cameras={cameras} actor={actor} refresh={() => void refresh()} notice={setNotice}/> : null}
       {tab === "Jaringan" && actor.role === "admin" ? <Suspense fallback={<p role="status">Membuka scanner…</p>}><NetworkPanel csrf={actor.csrf}/></Suspense> : null}
+      {tab === "Rekaman" && canOperate ? <Suspense fallback={<p role="status">Membuka rekaman…</p>}><RecorderPanel csrf={actor.csrf} admin={actor.role === "admin"}/></Suspense> : null}
       {tab === "Wajah" && actor.role === "admin" ? <Faces actor={actor} notice={setNotice}/> : null}
       {tab === "Engine" ? <section className="gw-section"><h2>Provider AI</h2><p>Model dimuat ketika digunakan. Status loaded menunjukkan inisialisasi, sedangkan akurasi membutuhkan pengujian lokasi.</p><div className="gw-table-wrap"><table><thead><tr><th>Provider</th><th>Tugas</th><th>Dependency</th><th>Status</th></tr></thead><tbody>{providers.map(p => <tr key={p.id}><td>{p.id}</td><td>{p.task}</td><td>{p.installed ? "Tersedia" : "Belum terpasang"}</td><td>{p.state}</td></tr>)}</tbody></table></div></section> : null}
       {tab === "Update" && canOperate ? <section className="gw-section"><h2>Distribusi aplikasi</h2><p>Android menggunakan manifest dari server GARDA yang mengambil paket rilis GitHub terverifikasi.</p><div className="gw-actions">{["fold", "standard"].map(channel => <button key={channel} onClick={async () => { try { const result = await request<{ versionName: string }>(`/api/v1/updates/${channel}/manifest.json`); setNotice(`${channel}: versi ${result.versionName}. Instal melalui updater Android.`); } catch (e) { setNotice((e as Error).message); } }}><Download size={16}/> Periksa {channel}</button>)}</div><p>Instalasi lama dengan signing key berbeda memerlukan backup profil dan migrasi sideload manual. Kata sandi kamera harus dimasukkan kembali setelah instalasi baru.</p></section> : null}

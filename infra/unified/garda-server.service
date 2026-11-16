@@ -1,0 +1,22 @@
+[Unit]
+Description=GARDA HTTPS and independent NVR recorder
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=garda
+Group=garda
+WorkingDirectory=/opt/garda-server
+ExecStart=/opt/garda-server/.venv/bin/python -m garda_ai.server serve --data /var/lib/garda
+Restart=always
+RestartSec=5
+TimeoutStopSec=60
+KillMode=control-group
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -9,8 +9,8 @@ android {
         applicationId = "org.foldview.cctv"
         minSdk = 33
         targetSdk = 37
-        versionCode = 17
-        versionName = "0.13.0"
+        versionCode = 18
+        versionName = "0.14.0"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

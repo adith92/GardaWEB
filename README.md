@@ -1,4 +1,4 @@
-**FIVE-PLATFORM MVP SOURCE v0.13.0 (build pending confirmation):** [Source status / acceptance](docs/GARDA_FIVE_PLATFORM_MVP_STATUS_2026-11-16.md) · [Unified server](projects/garda/ai-core/README_UNIFIED.md) · [Windows/Mac/Ubuntu client](desktop/README.md). Web route: `/workspace`; Android 13+ retains FOLD/Standard package IDs.
+**DOWNLOAD GARDA INTERNAL:** [Semua installer dan paket server di Releases](https://github.com/adith92/GardaWEB/releases) · [v0.13.0 installers yang sudah diterbitkan](https://github.com/adith92/GardaWEB/releases/tag/v0.13.0-internal.2) · [v0.14.0 recorder / recommended scan](docs/RELEASE_v0.14.0_INTERNAL.md). Installer EXE, DMG, DEB/AppImage, APK FOLD/Standard dan Web berada di bagian **Assets** pada Release, bukan folder Code. Core lima platform sudah masuk `main` melalui PR #12. Mode awal langsung Admin tanpa login.
 
 **DEVELOPMENT GARDA CCTV — 16 November 2026:** Source lengkap Android **FOLD + Standard v0.12.2**, Desktop, AI Core dan prototipe ONVIF telah dikonsolidasikan dari repo `docs`. Mulai di [projects/README.md](projects/README.md). Lihat [provenance dan batas migrasi](docs/GARDA_CCTV_MIGRATION_2026-11-16.md).
 

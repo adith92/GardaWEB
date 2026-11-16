@@ -1,3 +1,5 @@
+**UPDATE v0.14:** recorder, native HTTPS gateway, Recommended/Full scan profiles and startup setup are documented in [release setup](../../../docs/RELEASE_v0.14.0_INTERNAL.md). Initial builds have been owner-approved and published; the earlier build hold below is historical.
+
 # GARDA shared server and five-platform workspace — v0.13.0 source candidate
 
 Owner-selected lab target (16 November 2026): one local AI server, Windows/macOS

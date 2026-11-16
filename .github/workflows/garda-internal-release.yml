@@ -39,7 +39,7 @@ jobs:
           [[ "$GITHUB_REF_NAME" =~ ^v[0-9.]+-internal\.[0-9]+$ ]]
       - name: Create private draft prerelease
         run: |
-          gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || gh release create "$GITHUB_REF_NAME" --draft --prerelease --title "GARDA 0.13.0 — Internal five-platform MVP" --notes-file docs/RELEASE_v0.13.0_INTERNAL.md
+          gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || gh release create "$GITHUB_REF_NAME" --draft --prerelease --title "GARDA 0.14.0 — Internal five-platform MVP" --notes-file docs/RELEASE_v0.14.0_INTERNAL.md
   web:
     needs: prepare
     runs-on: ubuntu-latest
@@ -53,10 +53,10 @@ jobs:
       - name: Upload verified Web bundle
         run: |
           cd dist
-          zip -qr ../GARDA-Web-0.13.0.zip .
+          zip -qr ../GARDA-Web-0.14.0.zip .
           cd ..
-          sha256sum GARDA-Web-0.13.0.zip > verification-web.txt
-          gh release upload "$GITHUB_REF_NAME" GARDA-Web-0.13.0.zip verification-web.txt --clobber
+          sha256sum GARDA-Web-0.14.0.zip > verification-web.txt
+          gh release upload "$GITHUB_REF_NAME" GARDA-Web-0.14.0.zip verification-web.txt --clobber
   desktop:
     needs: prepare
     strategy:
@@ -104,9 +104,9 @@ jobs:
           if ($sha -ne '9bea20396a3ab4d749f3335c4e852ae56473a52c37b07634ece8bba623b51019') { throw 'Unexpected signing identity' }
           $sig | Format-List Status,StatusMessage,SignerCertificate | Out-File verification-windows.txt
           [IO.File]::WriteAllBytes('GARDA-Windows-Internal.cer', $sig.SignerCertificate.RawData)
-          Copy-Item -LiteralPath $file.FullName -Destination GARDA-Windows-x64-0.13.0.exe
-          Get-FileHash GARDA-Windows-x64-0.13.0.exe -Algorithm SHA256 | Out-File verification-windows.txt -Append
-          gh release upload $env:GITHUB_REF_NAME GARDA-Windows-x64-0.13.0.exe GARDA-Windows-Internal.cer verification-windows.txt --clobber
+          Copy-Item -LiteralPath $file.FullName -Destination GARDA-Windows-x64-0.14.0.exe
+          Get-FileHash GARDA-Windows-x64-0.14.0.exe -Algorithm SHA256 | Out-File verification-windows.txt -Append
+          gh release upload $env:GITHUB_REF_NAME GARDA-Windows-x64-0.14.0.exe GARDA-Windows-Internal.cer verification-windows.txt --clobber
       - name: Verify Apple Silicon app, ad hoc signature and disk image
         if: matrix.name == 'macos'
         run: |
@@ -116,18 +116,18 @@ jobs:
           codesign -d --verbose=4 "$APP" 2>&1 | tee -a verification-macos.txt
           file "$APP/Contents/MacOS/GARDA Workspace" | tee -a verification-macos.txt
           file "$APP/Contents/MacOS/GARDA Workspace" | grep arm64
-          cp release/*.dmg GARDA-macOS-arm64-0.13.0.dmg
-          hdiutil verify GARDA-macOS-arm64-0.13.0.dmg | tee -a verification-macos.txt
-          shasum -a 256 GARDA-macOS-arm64-0.13.0.dmg >> verification-macos.txt
-          gh release upload "$GITHUB_REF_NAME" GARDA-macOS-arm64-0.13.0.dmg verification-macos.txt --clobber
+          cp release/*.dmg GARDA-macOS-arm64-0.14.0.dmg
+          hdiutil verify GARDA-macOS-arm64-0.14.0.dmg | tee -a verification-macos.txt
+          shasum -a 256 GARDA-macOS-arm64-0.14.0.dmg >> verification-macos.txt
+          gh release upload "$GITHUB_REF_NAME" GARDA-macOS-arm64-0.14.0.dmg verification-macos.txt --clobber
       - name: Verify Ubuntu metadata, AppImage architecture and startup
         if: matrix.name == 'linux'
         run: |
           set -euo pipefail
-          cp release/*.deb GARDA-Ubuntu-x64-0.13.0.deb
-          cp release/*.AppImage GARDA-Linux-x64-0.13.0.AppImage
-          dpkg-deb --info GARDA-Ubuntu-x64-0.13.0.deb | tee verification-linux.txt
-          test "$(dpkg-deb -f GARDA-Ubuntu-x64-0.13.0.deb Architecture)" = amd64
+          cp release/*.deb GARDA-Ubuntu-x64-0.14.0.deb
+          cp release/*.AppImage GARDA-Linux-x64-0.14.0.AppImage
+          dpkg-deb --info GARDA-Ubuntu-x64-0.14.0.deb | tee verification-linux.txt
+          test "$(dpkg-deb -f GARDA-Ubuntu-x64-0.14.0.deb Architecture)" = amd64
           file release/linux-unpacked/garda-workspace-desktop | tee -a verification-linux.txt
           set +e
           timeout 15s xvfb-run -a release/linux-unpacked/garda-workspace-desktop --no-sandbox > smoke-linux.txt 2>&1
@@ -136,7 +136,7 @@ jobs:
           test "$STATUS" = 124
           cat smoke-linux.txt >> verification-linux.txt
           sha256sum GARDA-*.deb GARDA-*.AppImage >> verification-linux.txt
-          gh release upload "$GITHUB_REF_NAME" GARDA-Ubuntu-x64-0.13.0.deb GARDA-Linux-x64-0.13.0.AppImage verification-linux.txt --clobber
+          gh release upload "$GITHUB_REF_NAME" GARDA-Ubuntu-x64-0.14.0.deb GARDA-Linux-x64-0.14.0.AppImage verification-linux.txt --clobber
   android:
     needs: prepare
     runs-on: ubuntu-latest
@@ -167,27 +167,76 @@ jobs:
       - name: Verify packages, SDK, persistent signing certificate and exports
         run: |
           set -euo pipefail
-          cp app/build/outputs/apk/fold/release/app-fold-release.apk GARDA-FOLD-0.13.0.apk
-          cp app/build/outputs/apk/standard/release/app-standard-release.apk GARDA-Standard-0.13.0.apk
+          cp app/build/outputs/apk/fold/release/app-fold-release.apk GARDA-FOLD-0.14.0.apk
+          cp app/build/outputs/apk/standard/release/app-standard-release.apk GARDA-Standard-0.14.0.apk
           AAPT="$ANDROID_HOME/build-tools/37.0.0/aapt"
           SIGNER="$ANDROID_HOME/build-tools/37.0.0/apksigner"
           for APK in GARDA-*.apk; do
             "$AAPT" dump badging "$APK" | tee "$APK.metadata.txt"
-            grep -q "versionCode='17'" "$APK.metadata.txt"
+            grep -q "versionCode='18'" "$APK.metadata.txt"
             grep -q "sdkVersion:'33'" "$APK.metadata.txt"
             "$SIGNER" verify --verbose --print-certs "$APK" | tee "$APK.signing.txt"
             grep -q 'Verified using v2 scheme (APK Signature Scheme v2): true' "$APK.signing.txt"
             grep -q 'b1e4d938be31d5910bc6127946465f1e89dacb9af8c77d5690fb046f810f3950' "$APK.signing.txt"
             ! unzip -Z1 "$APK" | grep -Ei 'garda_ai|ai-core|\.onnx$|\.p12$|\.pfx$|\.keystore$|\.jks$|face.key|camera.key'
           done
-          grep -q "package: name='org.foldview.cctv'" GARDA-FOLD-0.13.0.apk.metadata.txt
-          grep -q "package: name='org.garda.cctv.standard'" GARDA-Standard-0.13.0.apk.metadata.txt
+          grep -q "package: name='org.foldview.cctv'" GARDA-FOLD-0.14.0.apk.metadata.txt
+          grep -q "package: name='org.garda.cctv.standard'" GARDA-Standard-0.14.0.apk.metadata.txt
           cat GARDA-*.txt > verification-android.txt
           sha256sum GARDA-*.apk >> verification-android.txt
-          gh release upload "$GITHUB_REF_NAME" GARDA-FOLD-0.13.0.apk GARDA-Standard-0.13.0.apk verification-android.txt --clobber
+          gh release upload "$GITHUB_REF_NAME" GARDA-FOLD-0.14.0.apk GARDA-Standard-0.14.0.apk verification-android.txt --clobber
+  server:
+    needs: [prepare, web]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: Windows-x64
+            engine: mediamtx.exe
+          - os: ubuntu-latest
+            platform: Ubuntu-x64
+            engine: mediamtx
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v6
+        with: {go-version: '1.27.4'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Compile pinned MediaMTX source and test retention
+        shell: bash
+        run: |
+          git clone --depth 1 --branch v1.21.4 https://github.com/bluenviron/mediamtx.git engine-source
+          cd engine-source
+          test "$(git rev-parse HEAD)" = e65f9411a56b19076a0dfde1fb4a59414bdf642c
+          go generate ./internal/core ./internal/servers/hls
+          go test ./internal/recordcleaner
+          go build -trimpath -o ../${{ matrix.engine }} .
+          cd ..
+          ./${{ matrix.engine }} --version
+      - name: Self sign Windows recorder engine
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        env:
+          GARDA_PFX: ${{ secrets.GARDA_WINDOWS_PFX_B64 }}
+          GARDA_PFX_PASSWORD: ${{ secrets.GARDA_WINDOWS_PFX_PASSWORD }}
+        run: |
+          $cert = [Security.Cryptography.X509Certificates.X509Certificate2]::new([Convert]::FromBase64String($env:GARDA_PFX), $env:GARDA_PFX_PASSWORD)
+          $result = Set-AuthenticodeSignature -FilePath mediamtx.exe -Certificate $cert -HashAlgorithm SHA256
+          if (!$result.SignerCertificate -or $result.Status -eq 'HashMismatch' -or $result.Status -eq 'NotSigned') { throw 'Engine signing failed' }
+      - name: Package private server separately from clients
+        shell: bash
+        run: |
+          gh release download "$GITHUB_REF_NAME" --pattern 'GARDA-Web-0.14.0.zip' --dir web-download
+          mkdir -p dist
+          python -c "import zipfile;zipfile.ZipFile('web-download/GARDA-Web-0.14.0.zip').extractall('dist')"
+          python scripts/package-server.py '${{ matrix.platform }}' '${{ matrix.engine }}' engine-source/LICENSE server-release
+          gh release upload "$GITHUB_REF_NAME" server-release/*.zip --clobber
   publish:
-    needs: [web, desktop, android]
-    if: always() && (inputs.finalize_tag != '' || (needs.web.result == 'success' && needs.desktop.result == 'success' && needs.android.result == 'success'))
+    needs: [web, desktop, android, server]
+    if: always() && (inputs.finalize_tag != '' || (needs.web.result == 'success' && needs.desktop.result == 'success' && needs.android.result == 'success' && needs.server.result == 'success'))
     runs-on: ubuntu-latest
     env:
       GARDA_RELEASE_TAG: ${{ inputs.finalize_tag || github.ref_name }}
@@ -204,4 +253,4 @@ jobs:
           python3 scripts/release-assets.py release-check | tee release-verification.json
           gh release upload "$GARDA_RELEASE_TAG" release-check/SHA256SUMS.txt release-check/SHA256SUMS.sig release-check/GARDA-Release-PublicKey.pem release-check/updates.json release-verification.json --clobber
       - name: Publish internal prerelease in private repository
-        run: gh release edit "$GARDA_RELEASE_TAG" --draft=false --prerelease --notes-file docs/RELEASE_v0.13.0_INTERNAL.md
+        run: gh release edit "$GARDA_RELEASE_TAG" --draft=false --prerelease --notes-file docs/RELEASE_v0.14.0_INTERNAL.md

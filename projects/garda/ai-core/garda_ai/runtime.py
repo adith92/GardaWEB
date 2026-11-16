@@ -70,12 +70,23 @@ class Runtime:
             if camera_id not in self.records and len(self.records) >= 49:
                 raise ValueError("Single-site configuration limit is 49")
             self.records[camera_id] = {"id": camera_id, "name": name.strip(), "url": url,
-                                       "face_provider": face, "plate_provider": plate}
-            temp = self.file.with_suffix(".tmp")
-            fd = os.open(temp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-            with os.fdopen(fd, "wb") as output:
-                output.write(self.cipher.encrypt(json.dumps(self.records).encode()))
-            os.replace(temp, self.file)
+                                       "face_provider": face, "plate_provider": plate,
+                                       "recording_enabled": self.records.get(camera_id, {}).get("recording_enabled", True)}
+            self._persist()
+
+    def _persist(self):
+        temp = self.file.with_suffix(".tmp")
+        fd = os.open(temp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "wb") as output:
+            output.write(self.cipher.encrypt(json.dumps(self.records).encode()))
+        os.replace(temp, self.file)
+
+    def recording(self, camera_id, enabled):
+        with self.lock:
+            if camera_id not in self.records or not self.records[camera_id]["url"]:
+                raise ValueError("Configure the camera first")
+            self.records[camera_id]["recording_enabled"] = bool(enabled)
+            self._persist()
 
     def cameras(self):
         with self.lock:
