@@ -100,7 +100,7 @@ def setup_styles(doc):
         ("Title", 32, NAVY, 0, 13),
         ("Heading 1", 19.4, RED, 21, 11),
         ("Heading 2", 12.8, NAVY, 13, 7),
-        ("Heading 3", 10.6, BLUE, 10, 4),
+        ("Heading 3", 10.6, RGBColor(38, 57, 84), 10, 4),
     ):
         style = doc.styles[name]
         style.font.name = "Aptos Display" if name != "Heading 3" else "Aptos"
