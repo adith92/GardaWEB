@@ -1,5 +1,6 @@
 """Offline encrypted GARDA metadata archive regression tests; synthetic files only."""
 import os
+from contextlib import closing
 import sqlite3
 import tempfile
 import unittest
@@ -16,7 +17,7 @@ class BackupRoundTripTests(unittest.TestCase):
         self.root = Path(self.temp.name) / "live"
         self.root.mkdir()
         for name in ("garda.db", "identity.db"):
-            with sqlite3.connect(self.root / name) as db:
+            with closing(sqlite3.connect(self.root / name)) as db, db:
                 db.execute("CREATE TABLE items (value TEXT NOT NULL)")
                 db.execute("INSERT INTO items VALUES (?)", ("secret-" + name,))
         (self.root / "camera.key").write_bytes(b"camera-key-lab")
@@ -27,7 +28,7 @@ class BackupRoundTripTests(unittest.TestCase):
         (evidence / "abc.jpg").write_bytes(b"synthetic-jpeg-image")
         template = self.root / "templates" / "sface"
         template.mkdir(parents=True)
-        with sqlite3.connect(template / "garda.db") as db:
+        with closing(sqlite3.connect(template / "garda.db")) as db, db:
             db.execute("CREATE TABLE reference (label TEXT)")
             db.execute("INSERT INTO reference VALUES ('reference-one')")
         self.archive = Path(self.temp.name) / "backup.garda"
@@ -52,10 +53,10 @@ class BackupRoundTripTests(unittest.TestCase):
         self.assertEqual((target / "cameras.encrypted").read_bytes(), b"encrypted-camera-data")
         self.assertEqual((target / "evidence/2026-11-16/CAM-01/abc.jpg").read_bytes(),
                          b"synthetic-jpeg-image")
-        with sqlite3.connect(target / "garda.db") as db:
+        with closing(sqlite3.connect(target / "garda.db")) as db:
             self.assertEqual(db.execute("SELECT value FROM items").fetchone()[0],
                              "secret-garda.db")
-        with sqlite3.connect(target / "templates/sface/garda.db") as db:
+        with closing(sqlite3.connect(target / "templates/sface/garda.db")) as db:
             self.assertEqual(db.execute("SELECT label FROM reference").fetchone()[0],
                              "reference-one")
 
