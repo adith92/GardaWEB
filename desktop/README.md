@@ -6,7 +6,7 @@ on the owner's Windows/Linux server, not inside the client package.
 
 The first-run screen accepts the trusted GARDA HTTPS origin. `GARDA_WEB_URL`
 can provide the same origin for a managed installation. Only the server address
-is saved; login sessions are handled by the server/browser cookie store.
+is saved; the initial lab enters local Admin without login. Optional future named sessions are handled by the server/browser cookie store.
 Node integration is disabled; navigation, popup and permission requests are restricted.
 
 ## Development checks (no installer build)
