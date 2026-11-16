@@ -1,3 +1,5 @@
+**GARDA SECURITY INVESTOR VISUALS (2026-11-16):** [19 premium presentation renders](docs/investor/visuals/renders/) · [interactive investor gallery](docs/investor/visuals/index.html) · [source-capture and demo disclosures](docs/investor/visuals/README.md). Visuals use synthetic/demo data; the new mobile illustration is a design concept, not a production APK screen.
+
 **FIVE-PLATFORM MVP SOURCE v0.13.0 (build pending confirmation):** [Source status / acceptance](docs/GARDA_FIVE_PLATFORM_MVP_STATUS_2026-11-16.md) · [Unified server](projects/garda/ai-core/README_UNIFIED.md) · [Windows/Mac/Ubuntu client](desktop/README.md). Web route: `/workspace`; Android 13+ retains FOLD/Standard package IDs.
 
 **DEVELOPMENT GARDA CCTV — 16 November 2026:** Source lengkap Android **FOLD + Standard v0.12.2**, Desktop, AI Core dan prototipe ONVIF telah dikonsolidasikan dari repo `docs`. Mulai di [projects/README.md](projects/README.md). Lihat [provenance dan batas migrasi](docs/GARDA_CCTV_MIGRATION_2026-11-16.md).
