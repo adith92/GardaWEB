@@ -3,6 +3,11 @@ on:
   push:
     tags: ['v*-internal.*']
   workflow_dispatch:
+    inputs:
+      finalize_tag:
+        description: 'Reverify existing package assets and finalize a draft internal tag (leave empty to rebuild tag)'
+        type: string
+        default: ''
 permissions:
   contents: write
 concurrency:
@@ -12,6 +17,7 @@ env:
   GH_TOKEN: ${{ github.token }}
 jobs:
   source:
+    if: inputs.finalize_tag == ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -181,14 +187,21 @@ jobs:
           gh release upload "$GITHUB_REF_NAME" GARDA-FOLD-0.13.0.apk GARDA-Standard-0.13.0.apk verification-android.txt --clobber
   publish:
     needs: [web, desktop, android]
+    if: always() && (inputs.finalize_tag != '' || (needs.web.result == 'success' && needs.desktop.result == 'success' && needs.android.result == 'success'))
     runs-on: ubuntu-latest
+    env:
+      GARDA_RELEASE_TAG: ${{ inputs.finalize_tag || github.ref_name }}
+      GARDA_RELEASE_PFX_B64: ${{ secrets.GARDA_WINDOWS_PFX_B64 }}
+      GARDA_RELEASE_PFX_PASSWORD: ${{ secrets.GARDA_WINDOWS_PFX_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
       - name: Re-download and verify complete release inventory
         run: |
+          [[ "$GARDA_RELEASE_TAG" =~ ^v[0-9.]+-internal\.[0-9]+$ ]]
+          python3 -m pip install cryptography
           mkdir release-check
-          gh release download "$GITHUB_REF_NAME" --dir release-check
+          gh release download "$GARDA_RELEASE_TAG" --dir release-check
           python3 scripts/release-assets.py release-check | tee release-verification.json
-          gh release upload "$GITHUB_REF_NAME" release-check/SHA256SUMS.txt release-check/updates.json release-verification.json --clobber
+          gh release upload "$GARDA_RELEASE_TAG" release-check/SHA256SUMS.txt release-check/SHA256SUMS.sig release-check/GARDA-Release-PublicKey.pem release-check/updates.json release-verification.json --clobber
       - name: Publish internal prerelease in private repository
-        run: gh release edit "$GITHUB_REF_NAME" --draft=false --prerelease --notes-file docs/RELEASE_v0.13.0_INTERNAL.md
+        run: gh release edit "$GARDA_RELEASE_TAG" --draft=false --prerelease --notes-file docs/RELEASE_v0.13.0_INTERNAL.md
