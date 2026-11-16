@@ -1,0 +1,56 @@
+name: Render GARDA investor proposal visuals
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/investor/visuals/index.html"
+      - "scripts/render-investor-visuals.mjs"
+      - "screenshots/command-mobile.jpg"
+      - ".github/workflows/garda-investor-visuals.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: garda-investor-visuals-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  render:
+    name: Build source-based visual library
+    if: github.repository == 'adith92/GardaWEB'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Install locked packages
+        run: npm ci
+      - name: Install browser runtime
+        run: npx playwright install --with-deps chromium
+      - name: Capture local app and render investor visuals
+        run: node scripts/render-investor-visuals.mjs
+      - name: Verify expected render counts
+        shell: bash
+        run: |
+          test "$(find docs/investor/visuals/source-captures -maxdepth 1 -name '*.jpg' | wc -l)" -eq 15
+          test "$(find docs/investor/visuals/renders -maxdepth 1 -name '*.jpg' | wc -l)" -eq 19
+      - name: Commit source screenshots and investor images
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/investor/visuals/source-captures docs/investor/visuals/renders
+          if git diff --cached --quiet; then
+            echo "No image changes to commit"
+          else
+            git commit -m "docs(investor): refresh generated GARDA demo image set"
+            git push origin "HEAD:${{ github.ref_name }}"
+          fi
