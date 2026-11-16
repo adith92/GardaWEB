@@ -1,3 +1,5 @@
+**NEW DRAFT FOR CODEX — encrypted GARDA metadata backup:** [Offline backup / restore procedure](docs/GARDA_OFFLINE_BACKUP_RESTORE_2026-11-16.md). Snapshot-only (bounded 128 MiB) encrypted archive with SQLite-consistent DB copies, verification and restore into a new directory; DOES NOT back up NVR footage or certify disaster recovery.
+
 **FIVE-PLATFORM MVP SOURCE v0.13.0 (build pending confirmation):** [Source status / acceptance](docs/GARDA_FIVE_PLATFORM_MVP_STATUS_2026-11-16.md) · [Unified server](projects/garda/ai-core/README_UNIFIED.md) · [Windows/Mac/Ubuntu client](desktop/README.md). Web route: `/workspace`; Android 13+ retains FOLD/Standard package IDs.
 
 **DEVELOPMENT GARDA CCTV — 16 November 2026:** Source lengkap Android **FOLD + Standard v0.12.2**, Desktop, AI Core dan prototipe ONVIF telah dikonsolidasikan dari repo `docs`. Mulai di [projects/README.md](projects/README.md). Lihat [provenance dan batas migrasi](docs/GARDA_CCTV_MIGRATION_2026-11-16.md).
