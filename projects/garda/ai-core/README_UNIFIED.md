@@ -1,5 +1,18 @@
 # GARDA shared server and five-platform workspace — v0.13.0 source candidate
 
+> **2026-11-16 PR review addendum (not yet part of main):** API-backed incident lifecycle
+> `/api/v1/incidents`, real Workspace Insiden tab and SHA-256 snapshot inventory are
+> implemented in the dedicated review branch. Use `serve --protected` for a
+> controlled LAN pilot: create a named user first with `setup-user`, set
+> `GARDA_PUBLIC_ORIGIN=https://your-trusted-lan-host` and keep
+> `GARDA_COOKIE_SECURE=1`. This refuses missing HTTPS origin or insecure
+> cookies and disables local-Admin bypass **for that invocation only**.
+> Bare `serve` remains the deliberately insecure owner-requested initial
+> LAB default; do not expose that mode through a client-accessible gateway.
+> This flag does **not** supply MFA, stream authorization, backup/restore or KAK
+> acceptance. See [module audit & Codex handoff](../../../docs/GARDA_12_MODULE_GREEN_GATES_2026-11-16.md).
+
+
 Owner-selected lab target (16 November 2026): one local AI server, Windows/macOS
 M1/Ubuntu/Android 13+/Web clients, minimum eight camera configurations, one-day
 implementation priority. Packaging requires a separate pre-build confirmation.
