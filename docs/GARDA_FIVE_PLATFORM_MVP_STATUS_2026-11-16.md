@@ -27,7 +27,7 @@ Source entrypoints: [unified server](../projects/garda/ai-core/README_UNIFIED.md
 
 ## Focused local checks
 
-- Python: 32 tests pass (18 existing + 14 new), including session/role/CSRF boundaries,
+- Python: 34 tests pass (18 existing + 16 new), including session/role/CSRF boundaries,
   eight offline slots, encrypted camera URLs, event lookup and release redirect/hash failures.
 - Node: 6 tests pass (4 existing demo + 2 desktop navigation policy).
 - TypeScript: `tsc --noEmit` passes. No `vite build` executed.
@@ -89,3 +89,5 @@ production releases.
 These entries do not change catalog feature status to customer ACCEPTED.
 
 CI runner correction: macos-14 is retired on GitHub Actions (2 November 2026). The source-check and future packaging matrices now use supported macos-26 arm64. Python Windows/Ubuntu and shared Web source checks passed on the first revision; inspect the latest revision for Mac/Android results.
+
+Additional local checks verified encrypted camera-vault reload and PaddleOCR crop/result mapping with a fake OCR engine; these exercise adapter contracts rather than real model weights. Android test compilation and both unit flavors passed on 9ded194; APK assembly/upload steps were skipped as requested.

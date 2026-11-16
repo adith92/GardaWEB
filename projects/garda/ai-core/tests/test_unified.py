@@ -142,6 +142,40 @@ class LocalAdminTests(unittest.TestCase):
 
 
 class ConfigurationAndAssetsTests(unittest.TestCase):
+    def test_camera_vault_restores_without_disclosing_credentials(self):
+        from garda_ai.runtime import Runtime
+        from garda_ai.storage import EventStore
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);store=EventStore(root)
+            runtime=Runtime(root,store)
+            secret="rtsp://test:runtime-only@192.168.1.22:554/"
+            runtime.save("CAM-01","Gate",secret,"presence","off")
+            runtime.close()
+            restored=Runtime(root,store)
+            self.assertEqual(restored.records["CAM-01"]["url"],secret)
+            self.assertTrue(restored.cameras()[0]["configured"])
+            self.assertNotIn("runtime-only",json.dumps(restored.cameras()))
+            self.assertIsNone(restored.preview("CAM-01"))
+            restored.close();store.close()
+
+    def test_paddle_adapter_reads_detector_crops_and_returns_scores(self):
+        import numpy as np
+        from types import SimpleNamespace
+        from garda_ai.providers import Plates
+        engine=object.__new__(Plates)
+        engine.name="paddleocr"
+        box=SimpleNamespace(x1=10,y1=20,x2=80,y2=40)
+        engine.base=SimpleNamespace(engine=SimpleNamespace(predict=lambda frame:[SimpleNamespace(detection=SimpleNamespace(bounding_box=box))]))
+        class OCR:
+            def predict(self,crop):
+                self.shape=crop.shape
+                return [SimpleNamespace(json={"res":{"rec_texts":["B 1234 ABC"],"rec_scores":[.93]}})]
+        engine.ocr=OCR()
+        found=engine.detect(np.zeros((100,120,3),dtype=np.uint8))
+        self.assertEqual(found[0].text,"B1234ABC")
+        self.assertAlmostEqual(found[0].confidence,.93)
+        self.assertLess(engine.ocr.shape[0],100)
+
     def test_eight_camera_config_and_stream_count_boundary(self):
         with tempfile.TemporaryDirectory() as d:
             path=Path(d)/"config.json"
