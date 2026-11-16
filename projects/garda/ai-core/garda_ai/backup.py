@@ -80,7 +80,7 @@ def _collect(root: Path, include_snapshots: bool) -> dict[str, bytes]:
             data[name] = _sqlite_snapshot(file)
     for file in sorted((root / "templates").glob("*/garda.db")):
         name = file.relative_to(root).as_posix()
-        if not _safe_name(name):
+        if not _safe_name(name) or not file.resolve().is_relative_to(root.resolve()):
             raise ValueError("Unexpected template database path")
         data[name] = _sqlite_snapshot(file)
     for name in METADATA:
@@ -88,6 +88,8 @@ def _collect(root: Path, include_snapshots: bool) -> dict[str, bytes]:
         if file.exists() or file.is_symlink():
             data[name] = _read_checked(root, file)
     if include_snapshots and (root / "evidence").exists():
+        if (root / "evidence").is_symlink():
+            raise ValueError("Refusing symlinked evidence root")
         for file in sorted((root / "evidence").rglob("*")):
             if file.is_symlink():
                 raise ValueError("Symlink inside evidence directory is forbidden")
