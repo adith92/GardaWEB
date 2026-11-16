@@ -4,19 +4,21 @@
   "description": "GARDA shared workspace client for Windows, Apple Silicon macOS and Ubuntu",
   "author": { "name": "GARDA Internal", "email": "garda-internal@users.noreply.github.com" },
   "private": true,
+  "repository": {"type": "git", "url": "https://github.com/adith92/GardaWEB.git", "directory": "desktop"},
   "main": "main.cjs",
   "scripts": {
     "start": "electron .",
     "test": "node --test policy.test.cjs",
-    "package:windows": "electron-builder --win nsis --x64",
-    "package:mac": "electron-builder --mac dmg --arm64",
-    "package:linux": "electron-builder --linux AppImage deb --x64"
+    "package:windows": "electron-builder --win nsis --x64 --publish never",
+    "package:mac": "electron-builder --mac dmg --arm64 --publish never",
+    "package:linux": "electron-builder --linux AppImage deb --x64 --publish never"
   },
   "devDependencies": {
     "electron": "45.3.3",
     "electron-builder": "26.18.0"
   },
   "build": {
+    "publish": null,
     "appId": "id.garda.workspace",
     "productName": "GARDA Workspace",
     "directories": {
