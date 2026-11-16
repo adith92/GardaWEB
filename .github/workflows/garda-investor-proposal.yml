@@ -1,0 +1,98 @@
+name: GARDA investor proposal - draft DOCX and PDF
+
+on:
+  push:
+    branches:
+      - docs/garda-security-investor-proposal-draft-20261116
+    paths:
+      - "docs/investor/proposal/GARDA_INVESTOR_PROPOSAL_DRAFT.md"
+      - "scripts/build-investor-proposal.py"
+      - ".github/workflows/garda-investor-proposal.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: garda-investor-proposal-draft
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v6.1.0
+        with:
+          python-version: "3.13"
+      - name: Install dependencies
+        shell: bash
+        run: |
+          python -m pip install --disable-pip-version-check python-docx==1.2.0 Pillow==12.3.0
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libreoffice-writer poppler-utils fonts-liberation
+      - name: Build Word and PDF
+        run: python scripts/build-investor-proposal.py
+      - name: Validate the generated files
+        shell: bash
+        run: |
+          set -euo pipefail
+          DOC=docs/investor/proposal/deliverables/GARDA_Security_Proposal_Investasi_DRAFT_v1.0.docx
+          PDF=docs/investor/proposal/deliverables/GARDA_Security_Proposal_Investasi_DRAFT_v1.0.pdf
+          test -s "$DOC"
+          test -s "$PDF"
+          pdfinfo "$PDF" | grep -E '^Pages:|^Page size:|^File size:'
+          pdftotext -layout "$PDF" /tmp/garda-proposal-text.txt
+          grep -q "GARDA" /tmp/garda-proposal-text.txt
+          grep -q "PENJAJAKAN INVESTASI" /tmp/garda-proposal-text.txt
+          python - <<'PY'
+          from zipfile import ZipFile
+          p="docs/investor/proposal/deliverables/GARDA_Security_Proposal_Investasi_DRAFT_v1.0.docx"
+          with ZipFile(p) as z:
+              media=[n for n in z.namelist() if n.startswith("word/media/")]
+              assert len(media)>=14, f"Expected at least 14 visual assets, found {len(media)}"
+              print("DOCX embedded images:",len(media))
+          PY
+      - name: Create visual review contact sheet
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/investor/proposal/review work/pages
+          pdftoppm -scale-to 450 -jpeg -jpegopt quality=75 \
+            docs/investor/proposal/deliverables/GARDA_Security_Proposal_Investasi_DRAFT_v1.0.pdf \
+            work/pages/page >/dev/null 2>&1
+          python - <<'PY'
+          import glob,math
+          from PIL import Image,ImageDraw
+          paths=sorted(glob.glob("work/pages/page-*.jpg"))
+          assert paths, "No rendered review pages"
+          cols=5;tilew=235;tileh=354
+          rows=math.ceil(len(paths)/cols)
+          sheet=Image.new("RGB",(cols*tilew,rows*tileh),(232,236,241))
+          d=ImageDraw.Draw(sheet)
+          for i,p in enumerate(paths):
+              im=Image.open(p).convert("RGB")
+              im.thumbnail((tilew-14,tileh-32))
+              x=(i%cols)*tilew+(tilew-im.width)//2
+              y=(i//cols)*tileh+10
+              sheet.paste(im,(x,y))
+              d.text(((i%cols)*tilew+11,(i//cols)*tileh+tileh-19),f"Page {i+1:02d}",fill=(28,42,65))
+          sheet.save("docs/investor/proposal/review/contact-sheet.jpg",quality=87)
+          Image.open(paths[0]).save("docs/investor/proposal/review/cover-review.jpg",quality=90)
+          print("Reviewed PDF page count:",len(paths))
+          assert 18 <= len(paths) <= 90, f"Unexpected page count {len(paths)}"
+          PY
+      - name: Store review draft on proposal branch
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/investor/proposal/deliverables docs/investor/proposal/review
+          if git diff --cached --quiet; then
+            echo "No generated file changes"
+          else
+            git commit -m "docs(investor): publish reviewable draft PDF and DOCX"
+            git push origin HEAD:docs/garda-security-investor-proposal-draft-20261116
+          fi
