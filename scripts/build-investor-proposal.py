@@ -19,7 +19,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
 
-REPO = Path(__file__).resolve().parents[3]
+REPO = Path(__file__).resolve().parents[1]
 CONTENT = REPO / "docs/investor/proposal/GARDA_INVESTOR_PROPOSAL_DRAFT.md"
 VISUALS = REPO / "docs/investor/visuals/renders"
 OUT = REPO / "docs/investor/proposal/deliverables"
