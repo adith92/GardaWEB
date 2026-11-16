@@ -1,0 +1,37 @@
+name: GARDA investor handoff export
+
+on:
+  push:
+    branches: [docs/garda-security-investor-proposal-draft-20261116]
+    paths:
+      - ".github/workflows/garda-investor-drive-export.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Verify proposal and visual assets
+        shell: bash
+        run: |
+          test -s docs/investor/proposal/deliverables/GARDA_Security_Proposal_Investasi_DRAFT_v1.0.pdf
+          test -s docs/investor/proposal/deliverables/GARDA_Security_Proposal_Investasi_DRAFT_v1.0.docx
+          test "$(find docs/investor/visuals/renders -maxdepth 1 -type f -name '*.jpg' | wc -l)" -eq 19
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GARDA_Security_Investor_Review_Package_v1.0
+          if-no-files-found: error
+          compression-level: 6
+          retention-days: 30
+          path: |
+            docs/investor/proposal/deliverables/*.docx
+            docs/investor/proposal/deliverables/*.pdf
+            docs/investor/proposal/GARDA_INVESTOR_PROPOSAL_DRAFT.md
+            docs/investor/proposal/review/*.jpg
+            docs/investor/visuals/renders/*.jpg
+            docs/investor/visuals/README.md
+            docs/investor/visuals/index.html
