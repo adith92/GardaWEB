@@ -362,7 +362,7 @@ def make_document():
                 # every 1-2 page section onto a new page.
                 if any(title.startswith(pre) for pre in (
                     "01 |","03 |","05 |","08 |","10 |","12 |","14 |",
-                    "16 |","18 |","LAMPIRAN A",
+                    "16 |","18 |","LAMPIRAN A","LAMPIRAN C",
                 )):
                     p.paragraph_format.page_break_before=True
             elif level==2:
