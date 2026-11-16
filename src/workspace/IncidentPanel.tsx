@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import type { FormEvent } from "react";
 import { apiRoot, request } from "./api";
 
 type IncidentRow = {
@@ -55,7 +56,7 @@ export default function IncidentPanel({ csrf, reload }: { csrf: string; reload: 
     finally { setBusy(false); }
   }
 
-  async function addNote(e: React.FormEvent<HTMLFormElement>) {
+  async function addNote(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!selected) return;
     setBusy(true); setMessage("");
