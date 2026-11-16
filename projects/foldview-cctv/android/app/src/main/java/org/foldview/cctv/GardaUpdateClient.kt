@@ -68,13 +68,20 @@ internal object GardaUpdateClient {
         return uri
     }
 
-    private fun open(url: URI): HttpURLConnection {
+    private fun open(context: Context, url: URI): HttpURLConnection {
         val connection = (url.toURL().openConnection() as HttpURLConnection)
         connection.instanceFollowRedirects = false
         connection.connectTimeout = 4_000
         connection.readTimeout = 10_000
         connection.setRequestProperty("Accept", "application/json, application/vnd.android.package-archive")
         connection.setRequestProperty("User-Agent", "GARDA-FOLD-OTA")
+        // Send the session only to the saved GARDA origin, never a different OTA host.
+        val client = GardaAiClient(context)
+        val saved = runCatching { URI(client.savedUrl()) }.getOrNull()
+        if (saved != null && saved.scheme == url.scheme && saved.host == url.host && saved.port == url.port) {
+            val token = client.savedKey()
+            if (token.isNotBlank()) connection.setRequestProperty("Authorization", "Bearer " + token)
+        }
         return connection
     }
 
@@ -83,7 +90,7 @@ internal object GardaUpdateClient {
         require(origin.rawPath?.endsWith("/manifest.json") == true) {
             "OTA server URL must end with /manifest.json"
         }
-        val c = open(origin)
+        val c = open(context, origin)
         val body: String
         try {
             check(c.responseCode == 200) { "Update server replied HTTP " + c.responseCode }
@@ -131,7 +138,7 @@ internal object GardaUpdateClient {
         part.delete()
         completed.delete()
         val u = validatedUrl(release.apkUrl)
-        val c = open(u)
+        val c = open(context, u)
         val digest = MessageDigest.getInstance("SHA-256")
         var total = 0L
         try {

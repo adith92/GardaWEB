@@ -10,6 +10,11 @@ on:
       - 'projects/foldview-cctv/android/**'
       - '.github/workflows/foldview-build.yml'
   workflow_dispatch:
+    inputs:
+      approved_build:
+        description: 'Owner has reviewed source/test results and approved APK packaging'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -44,8 +49,10 @@ jobs:
       - name: Verify Python GARDA LAN OTA manifest server
         run: python3 -m unittest discover -s ota-server -p 'test*.py' -v
       - name: Build two independent APK flavors (debug signed)
+        if: github.event_name == 'workflow_dispatch' && inputs.approved_build
         run: gradle --no-daemon --stacktrace :app:assembleFoldDebug :app:assembleStandardDebug
       - name: Validate both package IDs, version, labels and signatures
+        if: github.event_name == 'workflow_dispatch' && inputs.approved_build
         run: |
           set -euo pipefail
           FOLD="app/build/outputs/apk/fold/debug/app-fold-debug.apk"
@@ -58,24 +65,25 @@ jobs:
           "$AAPT" dump badging "$STANDARD" | tee package-standard.txt
           grep -q "package: name='org.foldview.cctv'" package-fold.txt
           grep -q "package: name='org.garda.cctv.standard'" package-standard.txt
-          grep -q "versionCode='16'" package-fold.txt
-          grep -q "versionCode='16'" package-standard.txt
+          grep -q "versionCode='17'" package-fold.txt
+          grep -q "versionCode='17'" package-standard.txt
           grep -q "application-label:'GARDA CCTV FOLD edition'" package-fold.txt
           grep -q "application-label:'GARDA CCTV Standard edition'" package-standard.txt
           "$SIGNER" verify --verbose --print-certs "$FOLD" | tee signing-fold.txt
           "$SIGNER" verify --verbose --print-certs "$STANDARD" | tee signing-standard.txt
           grep -q 'Verified using v2 scheme (APK Signature Scheme v2): true' signing-fold.txt
           grep -q 'Verified using v2 scheme (APK Signature Scheme v2): true' signing-standard.txt
-          cp "$FOLD" GARDA-CCTV-FOLD-edition-v0.12.2-DEBUG-SIDELOAD.apk
-          cp "$STANDARD" GARDA-CCTV-Standard-edition-v0.12.2-DEBUG-SIDELOAD.apk
-          sha256sum GARDA-CCTV-*-v0.12.2-DEBUG-SIDELOAD.apk | tee SHA256SUMS.txt
+          cp "$FOLD" GARDA-CCTV-FOLD-edition-v0.13.0-DEBUG-SIDELOAD.apk
+          cp "$STANDARD" GARDA-CCTV-Standard-edition-v0.13.0-DEBUG-SIDELOAD.apk
+          sha256sum GARDA-CCTV-*-v0.13.0-DEBUG-SIDELOAD.apk | tee SHA256SUMS.txt
       - name: Upload both verified APKs and signing reports
+        if: github.event_name == 'workflow_dispatch' && inputs.approved_build
         uses: actions/upload-artifact@v4
         with:
-          name: GARDA-CCTV-FOLD-Standard-v0.12.2-signed-debug
+          name: GARDA-CCTV-FOLD-Standard-v0.13.0-signed-debug
           path: |
-            projects/foldview-cctv/android/GARDA-CCTV-FOLD-edition-v0.12.2-DEBUG-SIDELOAD.apk
-            projects/foldview-cctv/android/GARDA-CCTV-Standard-edition-v0.12.2-DEBUG-SIDELOAD.apk
+            projects/foldview-cctv/android/GARDA-CCTV-FOLD-edition-v0.13.0-DEBUG-SIDELOAD.apk
+            projects/foldview-cctv/android/GARDA-CCTV-Standard-edition-v0.13.0-DEBUG-SIDELOAD.apk
             projects/foldview-cctv/android/signing-fold.txt
             projects/foldview-cctv/android/signing-standard.txt
             projects/foldview-cctv/android/package-fold.txt

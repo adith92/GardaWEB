@@ -61,3 +61,10 @@ Applies to **every** file and AI coding session in this repository. Product: PUS
 - This is a source migration, not a new tier entitlement or KAK acceptance. Existing product decisions remain authoritative.
 - projects/garda/ai-core and PR #10 services/garda-ai-vision are separate prototypes; do not silently treat them as one backend.
 - Keep source-only modules out of web/client deployment. Preserve Android application IDs and signing continuity. Old source history remains archived in docs.
+
+## Owner-authorized five-platform lab (2026-11-16)
+- Owner selected one local AI server with Windows, Apple Silicon M1 macOS, Ubuntu, Android 13+ and Web clients, an eight-camera minimum target, and a one-day MVP priority. See docs/GARDA_FIVE_PLATFORM_MVP_STATUS_2026-11-16.md.
+- This lab explicitly includes enrolled face matching and plate OCR; it does not change generic Basic entitlements, production acceptance or the historic PUSADA contract schedule.
+- Owner requires confirmation BEFORE web production build, APK assembly or desktop installer packaging. Source/type/unit tests and development-server QA are permitted. Keep branch auto-preview and automatic packaging disabled until that confirmation.
+- Previous Android signing key is unavailable. Keep existing package IDs; require backup before manual migration and a persistent private new signing identity for future OTA. Do not claim in-place updates across different signers.
+- Latest owner steering: initial lab starts without login as local Admin with all roles. Unified server `serve` defaults to this mode; named accounts are retained behind `--require-login`. Do not silently reintroduce a login gate for the initial lab.

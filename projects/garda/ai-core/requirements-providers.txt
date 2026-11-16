@@ -1,0 +1,6 @@
+# Opt-in adapters; audit/pin transitive dependencies and model licenses before release.
+fast-alpr[onnx]==0.4.0
+deepface>=0.0.93,<1
+paddleocr>=3,<4
+# PaddleOCR also requires a separately selected compatible PaddlePaddle runtime.
+# InsightFace is deliberately provisioned separately with licensed local ONNX weights.

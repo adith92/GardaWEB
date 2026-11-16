@@ -7,10 +7,10 @@ android {
     compileSdk = 37
     defaultConfig {
         applicationId = "org.foldview.cctv"
-        minSdk = 29
+        minSdk = 33
         targetSdk = 37
-        versionCode = 16
-        versionName = "0.12.2"
+        versionCode = 17
+        versionName = "0.13.0"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -36,6 +36,22 @@ android {
         compose = true
         buildConfig = true
         resValues = true
+    }
+    signingConfigs {
+        create("internal") {
+            val keyPath = System.getenv("GARDA_ANDROID_KEYSTORE")
+            if (!keyPath.isNullOrBlank()) {
+                storeFile = file(keyPath)
+                storePassword = System.getenv("GARDA_ANDROID_STORE_PASSWORD")
+                keyAlias = System.getenv("GARDA_ANDROID_KEY_ALIAS") ?: "garda-internal"
+                keyPassword = System.getenv("GARDA_ANDROID_KEY_PASSWORD")
+            }
+        }
+    }
+    buildTypes {
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("internal")
+        }
     }
     packaging {
         resources {

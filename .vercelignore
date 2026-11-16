@@ -8,4 +8,7 @@ LOGO AGLIS ANGGAH AHINGANI PUSADA TNI.png
 .DS_Store
 .env*
 projects/
+desktop/
+.tools/
+.venv/
 .github/

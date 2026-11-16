@@ -1,0 +1,27 @@
+# GARDA_HOST is a trusted hostname/IP with HTTPS, e.g. https://garda.example.internal.
+# Install/trust the Caddy site CA explicitly on internal clients.
+{$GARDA_HOST} {
+    tls internal
+    header {
+        X-Content-Type-Options nosniff
+        Referrer-Policy no-referrer
+        X-Frame-Options DENY
+        Content-Security-Policy "default-src 'self'; img-src 'self' blob: data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; media-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+    }
+    handle_path /garda-api/* {
+        reverse_proxy 127.0.0.1:8808 {
+            header_up Host {hostport}
+        }
+    }
+    handle /api/* {
+        reverse_proxy 127.0.0.1:8808 {
+            header_up Host {hostport}
+        }
+    }
+    # Use only after the owner-approved frontend build creates dist/.
+    handle {
+        root * {$GARDA_WEB_ROOT}
+        try_files {path} /index.html
+        file_server
+    }
+}

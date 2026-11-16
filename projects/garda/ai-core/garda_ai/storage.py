@@ -124,7 +124,7 @@ class EventStore:
                 raise
 
     def list_events(self, kind: str | None = None, plate_prefix: str | None = None,
-                    camera_id: str | None = None, limit: int = 50) -> list[dict]:
+                    camera_id: str | None = None, limit: int = 50, search: str = "") -> list[dict]:
         if kind is not None and kind not in KINDS:
             raise ValueError("invalid kind")
         limit = max(1, min(int(limit), 100))
@@ -136,6 +136,10 @@ class EventStore:
             sql += " AND plate_text LIKE ?"; args.append(plate_prefix.upper().replace("%", "").replace("_", "") + "%")
         if camera_id:
             sql += " AND camera_id=?"; args.append(camera_id)
+        if search:
+            text = "%" + search[:100].replace("%", "").replace("_", "") + "%"
+            sql += " AND (plate_text LIKE ? OR face_label LIKE ? OR camera_id LIKE ?)"
+            args.extend((text, text, text))
         sql += " ORDER BY observed_at DESC, id DESC LIMIT ?"; args.append(limit)
         with self._lock:
             return [dict(row) for row in self.db.execute(sql, args)]

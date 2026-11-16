@@ -1,3 +1,5 @@
+**FIVE-PLATFORM MVP SOURCE v0.13.0 (build pending confirmation):** [Source status / acceptance](docs/GARDA_FIVE_PLATFORM_MVP_STATUS_2026-11-16.md) · [Unified server](projects/garda/ai-core/README_UNIFIED.md) · [Windows/Mac/Ubuntu client](desktop/README.md). Web route: `/workspace`; Android 13+ retains FOLD/Standard package IDs.
+
 **DEVELOPMENT GARDA CCTV — 16 November 2026:** Source lengkap Android **FOLD + Standard v0.12.2**, Desktop, AI Core dan prototipe ONVIF telah dikonsolidasikan dari repo `docs`. Mulai di [projects/README.md](projects/README.md). Lihat [provenance dan batas migrasi](docs/GARDA_CCTV_MIGRATION_2026-11-16.md).
 
 **🗺️ CURRENT INTERACTIVE PRD / BUILD BLUEPRINT (2026-10-11):** [GARDA PRD Visual Build Blueprint](./docs/GARDA_PRD_VISUAL_BUILD_BLUEPRINT_2026-10-11.html) — light standalone interactive HTML mapping current T1 Basic vs proposed PUSADA KAK bundle, feature modules, architecture, repo demo status, implementation roadmap, acceptance and code handoff. For implementation decisions, canonical docs in AGENTS.md still take precedence; this visualization is explanatory and not customer acceptance.

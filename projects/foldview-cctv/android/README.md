@@ -1,3 +1,5 @@
+**v0.13.0 source candidate — packaging not yet approved:** Android 13+ (minSdk 33), versionCode 17. Named GARDA server login and shared eight-camera Workspace added. Both package IDs preserved. Existing APK signer is unavailable; export profiles before manual migration. See [unified server and migration instructions](../../garda/ai-core/README_UNIFIED.md). Historical release notes follow.
+
 # GARDA CCTV FOLD + Standard editions v0.12.2 — native Android
 
 2026-11-08. Native Kotlin/Compose Android viewer. Latest build uses **AGP 9.5.1, Gradle 9.6.0, Kotlin Compose plugin 2.4.21, Compose BOM 2026.09.00 and Media3 1.11.1**. CI downloads Android SDK 37.0 and verifies v2 APK signature.

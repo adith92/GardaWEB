@@ -28,6 +28,11 @@ internal fun GardaAiEventsPanel() {
     val coroutine = rememberCoroutineScope()
     var url by remember { mutableStateOf(client.savedUrl()) }
     var secret by remember { mutableStateOf(client.savedKey()) }
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var showWorkspace by remember { mutableStateOf(false) }
+    var labMode by remember { mutableStateOf(false) }
+    var requiresLogin by remember { mutableStateOf(false) }
     var busy by remember { mutableStateOf(false) }
     var status by remember { mutableStateOf("") }
     var stats by remember { mutableStateOf<JSONObject?>(null) }
@@ -68,19 +73,50 @@ internal fun GardaAiEventsPanel() {
             label = { Text(gText("URL server HTTPS", "HTTPS server URL")) },
             singleLine = true, modifier = Modifier.fillMaxWidth()
         )
+        if (requiresLogin) {
         OutlinedTextField(
-            value = secret, onValueChange = { secret = it.take(200) },
-            label = { Text(gText("Kunci API privat", "Private API key")) },
+            value = username, onValueChange = { username = it.take(80) },
+            label = { Text(gText("Nama pengguna", "Username")) },
+            singleLine = true, modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = password, onValueChange = { password = it.take(256) },
+            label = { Text(gText("Kata sandi", "Password")) },
             visualTransformation = PasswordVisualTransformation(),
             singleLine = true, modifier = Modifier.fillMaxWidth()
         )
+        GardaMotionButton(gText("Masuk ke server", "Sign in to server"), {
+            busy = true
+            coroutine.launch {
+                val result = withContext(Dispatchers.IO) { runCatching { client.login(url, username, password) } }
+                password = ""
+                result.onSuccess { secret = client.savedKey(); status = "Session connected" }
+                    .onFailure { status = it.message?.take(125) ?: "Login failed" }
+                busy = false
+            }
+        }, enabled = !busy && username.isNotBlank() && password.isNotBlank())
+        }
+        GardaMotionButton(gText("Workspace · 8 kamera & administrasi", "Workspace · 8 cameras & administration"), {
+            showWorkspace = true
+        }, enabled = client.savedUrl().isNotBlank() && (labMode || secret.isNotBlank()), filled = false)
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            GardaMotionButton(gText("Simpan koneksi", "Save connection"), {
-                status = runCatching { client.remember(url, secret) }
-                    .fold({ "🔒 " + context.getString(android.R.string.ok) },
-                          { "⚠ " + (it.message ?: "Invalid connection") })
-            })
+            GardaMotionButton(gText("Hubungkan server", "Connect server"), {
+                busy = true
+                coroutine.launch {
+                    val result = withContext(Dispatchers.IO) { runCatching { client.connect(url) } }
+                    result.onSuccess { localAdmin ->
+                        labMode = localAdmin
+                        secret = client.savedKey()
+                        requiresLogin = false
+                        status = if (localAdmin) "Admin lokal · Semua akses" else "Session connected"
+                    }.onFailure {
+                        requiresLogin = it.message?.contains("named login") == true
+                        status = it.message?.take(125) ?: "Server unavailable"
+                    }
+                    busy = false
+                }
+            }, enabled = !busy)
             GardaMotionButton(gText("Hapus koneksi", "Forget"), {
                 client.forget()
                 url = ""; secret = ""; events = emptyList(); stats = null
@@ -185,5 +221,8 @@ internal fun GardaAiEventsPanel() {
                 }
             }
         )
+    }
+    if (showWorkspace) {
+        GardaWorkspaceView(client.savedUrl(), client.savedKey()) { showWorkspace = false }
     }
 }

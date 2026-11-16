@@ -18,8 +18,11 @@ LOG = logging.getLogger("garda.runner")
 
 
 class StreamWorker:
-    def __init__(self, config: CameraConfig, processor: FrameProcessor, stop: threading.Event):
+    def __init__(self, config: CameraConfig, processor: FrameProcessor, stop: threading.Event,
+                 on_preview=None, on_inference=None):
         self.config, self.processor, self.stop = config, processor, stop
+        self.on_preview = on_preview
+        self.on_inference = on_inference
         self.frames: queue.Queue = queue.Queue(maxsize=1)
         self.reader = threading.Thread(target=self._read, name="rtsp-" + config.id, daemon=True)
         self.processor_thread = threading.Thread(target=self._process,
@@ -35,9 +38,11 @@ class StreamWorker:
 
     def _read(self):
         backoff = 1.0
+        preview_at = 0.0
         while not self.stop.is_set():
             # Never log the RTSP URL, which may contain credentials.
-            cap = cv2.VideoCapture(self.config.url, cv2.CAP_FFMPEG)
+            cap = cv2.VideoCapture(self.config.url, cv2.CAP_FFMPEG, [
+                cv2.CAP_PROP_OPEN_TIMEOUT_MSEC, 5000, cv2.CAP_PROP_READ_TIMEOUT_MSEC, 3000])
             if not cap.isOpened():
                 cap.release()
                 LOG.warning("%s: stream unavailable (retrying)", self.config.id)
@@ -51,6 +56,10 @@ class StreamWorker:
                     ok, frame = cap.read()
                     if not ok or frame is None:
                         break
+                    now = time.monotonic()
+                    if self.on_preview and now >= preview_at:
+                        self.on_preview(frame)
+                        preview_at = now + .5
                     try:
                         self.frames.put_nowait(frame)
                     except queue.Full:
@@ -82,14 +91,18 @@ class StreamWorker:
             next_time = now + interval
             try:
                 counts = self.processor.process(frame, now)
+                if self.on_inference:
+                    self.on_inference(True)
                 if any(counts.values()):
                     LOG.info("%s: new events: %s", self.config.id, counts)
             except Exception:
+                if self.on_inference:
+                    self.on_inference(False)
                 LOG.exception("%s: detection frame failed, continuing", self.config.id)
 
 
 def run(config: GardaConfig):
-    LOG.info("Starting GARDA AI Core v0.1 (1-2 cameras, local-only evidence)")
+    LOG.info("Starting GARDA AI Core (%d configured cameras; throughput unverified)", len(config.cameras))
     store = EventStore(config.data_dir)
     store.purge(config.retention_days)
     stop = threading.Event()

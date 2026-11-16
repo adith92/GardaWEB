@@ -1,0 +1,43 @@
+{
+  "name": "garda-workspace-desktop",
+  "version": "0.13.0",
+  "description": "GARDA shared workspace client for Windows, Apple Silicon macOS and Ubuntu",
+  "private": true,
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test policy.test.cjs",
+    "package:windows": "electron-builder --win nsis --x64",
+    "package:mac": "electron-builder --mac dmg --arm64",
+    "package:linux": "electron-builder --linux AppImage deb --x64"
+  },
+  "devDependencies": {
+    "electron": "45.3.3",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "id.garda.workspace",
+    "productName": "GARDA Workspace",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "policy.cjs",
+      "connect.html",
+      "connect.js"
+    ],
+    "mac": {
+      "category": "public.app-category.utilities",
+      "hardenedRuntime": true
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "linux": {
+      "category": "Utility"
+    }
+  }
+}
