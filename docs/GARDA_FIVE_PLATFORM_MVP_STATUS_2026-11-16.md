@@ -87,3 +87,5 @@ production releases.
 - VID-500: Android native/shared client source; package and physical acceptance pending.
 
 These entries do not change catalog feature status to customer ACCEPTED.
+
+CI runner correction: macos-14 is retired on GitHub Actions (2 November 2026). The source-check and future packaging matrices now use supported macos-26 arm64. Python Windows/Ubuntu and shared Web source checks passed on the first revision; inspect the latest revision for Mac/Android results.
