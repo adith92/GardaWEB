@@ -7,3 +7,5 @@ opencv-python-headless>=4.10,<5
 numpy>=2,<3
 # For basic OCR: pip install -r requirements-ocr.txt
 # For ONVIF PTZ: pip install onvif-zeep (verify camera WSDL)
+
+psutil>=6.1,<8

@@ -17,12 +17,13 @@ from .storage import Store
 from .vision import Vision
 from .worker import Workers
 from .ptz import zoom
+from .scanner import ScanManager, network_interfaces, scan_network
 
 MAX_UPLOAD = 8 * 1024 * 1024
 security = HTTPBearer(auto_error=False)
 
 
-def build_app(cameras: dict[str, Camera] | None = None, store: Store | None = None, vision: Vision | None = None) -> FastAPI:
+def build_app(cameras: dict[str, Camera] | None = None, store: Store | None = None, vision: Vision | None = None, scan_engine=None) -> FastAPI:
     cameras = cameras if cameras is not None else load_cameras(os.getenv("GARDA_CAMERAS_FILE", "cameras.example.json"))
     roles = {role: os.getenv(f"GARDA_{role.upper()}_TOKEN", "") for role in ("viewer", "operator", "admin")}
     if not all(len(token) >= 24 for token in roles.values()) or len(set(roles.values())) != 3:
@@ -32,13 +33,15 @@ def build_app(cameras: dict[str, Camera] | None = None, store: Store | None = No
         store = Store(os.getenv("GARDA_DB_PATH", "data/garda-vision.sqlite3"), os.getenv("GARDA_DATA_KEY", ""))
     vision = vision or Vision(os.getenv("GARDA_FACE_ONNX"), os.getenv("GARDA_FACE_ID_ENABLED") == "1")
     workers = Workers(cameras, vision, store)
+    scanner = ScanManager(store, scanner=scan_engine or scan_network)
     enable_face = os.getenv("GARDA_FACE_ID_ENABLED") == "1" and os.getenv("GARDA_CONTRACT_BUNDLE") == "pusada"
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         yield
         workers.close()
-        if owned_store:
+        scanner_stopped = scanner.close()
+        if owned_store and scanner_stopped:
             store.close()
 
     app = FastAPI(title="GARDA AI Vision LAB", version="0.1.0", lifespan=lifespan)
@@ -57,6 +60,44 @@ def build_app(cameras: dict[str, Camera] | None = None, store: Store | None = No
                 raise HTTPException(403, "Role not authorized")
             return role
         return dependency
+
+    class NetworkScanRequest(BaseModel):
+        cidr: str = Field(min_length=9, max_length=21)
+        mode: Literal["quick", "extended"] = "quick"
+        target_ip: str | None = Field(default=None, max_length=15)
+        confirm_authorized: bool = False
+
+    @app.get("/api/v1/network/interfaces")
+    def interfaces(role: Annotated[str, Depends(require("admin"))]):
+        return network_interfaces()
+
+    @app.get("/api/v1/network/scans")
+    def scan_history(role: Annotated[str, Depends(require("admin"))]):
+        store.audit(role, "network_scan_history", "last_10", "ok")
+        return store.scans(10)
+
+    @app.post("/api/v1/network/scans", status_code=202)
+    def scan_start(command: NetworkScanRequest, role: Annotated[str, Depends(require("admin"))]):
+        if os.getenv("GARDA_NETWORK_SCAN_ENABLED", "0") != "1":
+            raise HTTPException(403, "Enable GARDA_NETWORK_SCAN_ENABLED=1 for authorized local scans")
+        if not command.confirm_authorized:
+            raise HTTPException(422, "Explicit confirmation of network authorization required")
+        try:
+            scan_id = scanner.start(command.cidr, command.mode, command.target_ip)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
+        except RuntimeError as exc:
+            raise HTTPException(409, str(exc)) from exc
+        store.audit(role, "network_scan_start", scan_id, "ok")
+        return {"scan_id": scan_id, "status": "queued"}
+
+    @app.get("/api/v1/network/scans/{scan_id}")
+    def scan_result(scan_id: str, role: Annotated[str, Depends(require("admin"))]):
+        result = store.scan(scan_id)
+        if not result:
+            raise HTTPException(404, "Scan not found")
+        store.audit(role, "network_scan_read", scan_id, "ok")
+        return result
 
     def camera_or_404(cid: str) -> Camera:
         if cid not in cameras:

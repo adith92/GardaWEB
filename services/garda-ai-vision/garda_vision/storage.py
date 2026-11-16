@@ -27,6 +27,7 @@ class Store:
             self.db.execute("CREATE INDEX IF NOT EXISTS events_by_time ON events(time_utc)")
             self.db.execute("CREATE TABLE IF NOT EXISTS enrolled_faces (person_id TEXT PRIMARY KEY, template BLOB, created_utc TEXT)")
             self.db.execute("CREATE TABLE IF NOT EXISTS audit (id TEXT PRIMARY KEY, time_utc TEXT, actor TEXT, action TEXT, target TEXT, outcome TEXT)")
+            self.db.execute("CREATE TABLE IF NOT EXISTS network_scans (id TEXT PRIMARY KEY, created_utc TEXT, completed_utc TEXT, status TEXT, cidr TEXT, mode TEXT, target_ip TEXT, payload BLOB)")
 
     @staticmethod
     def now() -> str:
@@ -81,6 +82,40 @@ class Store:
         with self.lock, self.db:
             deleted = self.db.execute("DELETE FROM events WHERE time_utc<?", (cutoff,)).rowcount
         return deleted
+
+    def create_scan(self, cidr: str, mode: str, target_ip: str | None) -> str:
+        scan_id = str(uuid4())
+        with self.lock, self.db:
+            self.db.execute("INSERT INTO network_scans VALUES (?,?,?,?,?,?,?,?)",
+                            (scan_id, self.now(), None, "queued", "", mode, None,
+                             self.seal({"devices": [], "request_cidr": cidr, "request_target_ip": target_ip})))
+        return scan_id
+
+    def finish_scan(self, scan_id: str, status: str, result: dict[str, Any]):
+        with self.lock, self.db:
+            row = self.db.execute("SELECT payload FROM network_scans WHERE id=?", (scan_id,)).fetchone()
+            original = self.unseal(row[0]) if row else {}
+            payload = {**result, "request_cidr": original.get("request_cidr"),
+                       "request_target_ip": original.get("request_target_ip")}
+            self.db.execute("UPDATE network_scans SET status=?, completed_utc=?, payload=? WHERE id=?",
+                            (status, self.now() if status in ("completed", "failed") else None,
+                             self.seal(payload), scan_id))
+
+    def scan(self, scan_id: str) -> dict[str, Any] | None:
+        with self.lock:
+            row = self.db.execute("SELECT id,created_utc,completed_utc,status,cidr,mode,target_ip,payload FROM network_scans WHERE id=?", (scan_id,)).fetchone()
+        if not row:
+            return None
+        payload = self.unseal(row[7])
+        target, network = payload.pop("request_target_ip", None), payload.pop("request_cidr", None)
+        return {"id": row[0], "created_utc": row[1], "completed_utc": row[2],
+                "status": row[3], "network": network, "mode": row[5], "target_ip": target,
+                "result": payload}
+
+    def scans(self, limit: int = 10) -> list[dict[str, Any]]:
+        with self.lock:
+            rows = self.db.execute("SELECT id FROM network_scans ORDER BY created_utc DESC LIMIT ?", (limit,)).fetchall()
+        return [self.scan(row[0]) for row in rows]
 
     def close(self):
         with self.lock:
