@@ -1,3 +1,5 @@
+**NEW REVIEW BRANCH — incident workflow & protected LAN launch:** [12-module GREEN gate / Codex handoff](docs/GARDA_12_MODULE_GREEN_GATES_2026-11-16.md). This branch adds durable incident APIs, evidence hash inventory and Workspace incident UI; does NOT add recording, full-FPS WebRTC, legal hold or production certification.
+
 **FIVE-PLATFORM MVP SOURCE v0.13.0 (build pending confirmation):** [Source status / acceptance](docs/GARDA_FIVE_PLATFORM_MVP_STATUS_2026-11-16.md) · [Unified server](projects/garda/ai-core/README_UNIFIED.md) · [Windows/Mac/Ubuntu client](desktop/README.md). Web route: `/workspace`; Android 13+ retains FOLD/Standard package IDs.
 
 **DEVELOPMENT GARDA CCTV — 16 November 2026:** Source lengkap Android **FOLD + Standard v0.12.2**, Desktop, AI Core dan prototipe ONVIF telah dikonsolidasikan dari repo `docs`. Mulai di [projects/README.md](projects/README.md). Lihat [provenance dan batas migrasi](docs/GARDA_CCTV_MIGRATION_2026-11-16.md).
