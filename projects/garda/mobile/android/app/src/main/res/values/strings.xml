@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GARDA Mobile</string>
+    <string name="app_subtitle">Tactical Dual-Lens CCTV</string>
+
+    <string name="lens_1_title">LENSA 1 (PTZ / :1234)</string>
+    <string name="lens_2_title">LENSA 2 (WIDE / :1235)</string>
+
+    <string name="status_standby">STANDBY</string>
+    <string name="status_online">ONLINE</string>
+    <string name="status_offline">OFFLINE</string>
+
+    <string name="btn_connect">HUBUNGKAN</string>
+    <string name="btn_disconnect">PUTUS</string>
+    <string name="btn_scan_lan">SCAN LAN</string>
+
+    <string name="ptz_center">HOME</string>
+    <string name="ptz_speed">Kecepatan</string>
+
+    <string name="spotlight_off">💡 Spotlight: OFF</string>
+    <string name="spotlight_on">💡 Spotlight: ON</string>
+
+    <string name="ir_off">🌙 Night IR: OFF</string>
+    <string name="ir_on">🌙 Night IR: ON</string>
+
+    <string name="tracking_off">🎯 Tracking: OFF</string>
+    <string name="tracking_on">🎯 Tracking: ON</string>
+
+    <string name="cruise_off">🔄 Patroli: OFF</string>
+    <string name="cruise_on">🔄 Patroli: ON</string>
+
+    <string name="view_dual_vertical">Dual (Atas - Bawah)</string>
+    <string name="view_dual_horizontal">Dual (Kiri - Kanan)</string>
+    <string name="view_lens1">Fokus Lensa 1</string>
+    <string name="view_lens2">Fokus Lensa 2</string>
+</resources>

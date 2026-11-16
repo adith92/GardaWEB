@@ -1,0 +1,10 @@
+# Android generated/host state
+.gradle/
+**/build/
+local.properties
+*.apk
+*.aab
+.idea/
+*.iml
+*.jks
+*.keystore

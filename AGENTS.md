@@ -55,3 +55,9 @@ Applies to **every** file and AI coding session in this repository. Product: PUS
 - Optional Windows VM for RDP workloads must have resource isolation and no impact to continuous recording.
 - Highest-tier federation obeys local policies even if hub is disconnected.
 - Schema evolution, audit, data classification and integration envelopes must be designed for future tiers without shipping unapproved functionality.
+
+## GARDA CCTV development consolidation (2026-11-16)
+- Owner requested migration from adith92/docs and continuation in GardaWEB. Start at projects/README.md for Android FOLD/Standard, Desktop, AI Core and native ONVIF source.
+- This is a source migration, not a new tier entitlement or KAK acceptance. Existing product decisions remain authoritative.
+- projects/garda/ai-core and PR #10 services/garda-ai-vision are separate prototypes; do not silently treat them as one backend.
+- Keep source-only modules out of web/client deployment. Preserve Android application IDs and signing continuity. Old source history remains archived in docs.

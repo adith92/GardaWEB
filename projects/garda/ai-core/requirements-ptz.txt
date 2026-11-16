@@ -1,0 +1,2 @@
+# Optional manual ONVIF Zoom CLI; onvif-zeep is legacy (2018) and needs hardware verification.
+onvif-zeep==0.2.12

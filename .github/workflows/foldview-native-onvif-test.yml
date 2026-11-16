@@ -1,0 +1,33 @@
+name: FOLDVIEW native ONVIF protocol smoke (host only)
+
+on:
+  pull_request:
+    paths:
+      - 'projects/cctv-firmware/fh8852v201-onvif/**'
+      - '.github/workflows/foldview-native-onvif-test.yml'
+  push:
+    paths:
+      - 'projects/cctv-firmware/fh8852v201-onvif/**'
+      - '.github/workflows/foldview-native-onvif-test.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  protocol-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile HOST binary and run isolated SOAP/Discovery tests
+        working-directory: projects/cctv-firmware/fh8852v201-onvif
+        run: |
+          set -euo pipefail
+          make
+          file foldview_onvifd
+          make test
+      - name: Explicit non-flashable qualification
+        run: |
+          echo 'These tests only validate a Linux HOST prototype.'
+          echo 'No FH8852V201 camera, ARM/uClibc executable, firmware image, flash operation or hardware validation was involved.'
