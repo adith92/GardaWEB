@@ -213,7 +213,7 @@ jobs:
           test "$(git rev-parse HEAD)" = e65f9411a56b19076a0dfde1fb4a59414bdf642c
           go generate ./internal/core ./internal/servers/hls
           if [ "$RUNNER_OS" = Windows ]; then
-            go test ./internal/recordcleaner -run '^TestCleanerReload$'
+            go test ./internal/recordcleaner -run '^TestCleanerRunsDespiteFrequentReloads$' -count=1
           else
             go test ./internal/recordcleaner
           fi
