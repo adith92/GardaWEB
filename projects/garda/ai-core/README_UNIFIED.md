@@ -69,6 +69,19 @@ failover are separate work; the live JPEG endpoint is not a recorder.
 
 ## Model adapters and provisioning
 
+Provision the default OpenCV models into the local server data directory:
+
+```shell
+python -m garda_ai.server provision-opencv
+```
+
+This explicit command downloads official YuNet/SFace assets and license notices,
+checks the pinned upstream Git LFS SHA-256 and byte sizes, and creates a protected
+local template-encryption key. `serve` loads these local paths automatically.
+The provisioned files and key stay in the ignored data directory. No reference
+faces or identities are downloaded. A blank-frame CPU smoke check initialized
+both models successfully on the Windows lab host; accuracy remains unvalidated.
+
 No weights are committed or fetched just by starting the server. Optional imports
 are lazy. Provider catalog distinguishes installed, not-loaded and configuration
 required states; loaded does not mean accuracy-certified.

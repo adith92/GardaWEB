@@ -142,6 +142,32 @@ class LocalAdminTests(unittest.TestCase):
 
 
 class ConfigurationAndAssetsTests(unittest.TestCase):
+    def test_provision_validates_download_and_preserves_template_key(self):
+        import io
+        from garda_ai.provision import provision_opencv
+        content=b"synthetic model for provisioning test"
+        model={"env":"GARDA_TEST_MODEL","directory":"test","file":"test.onnx",
+               "size":len(content),"sha256":hashlib.sha256(content).hexdigest(),"license":"test"}
+        def response(url,timeout=0):return io.BytesIO(b"test notice" if url.endswith("LICENSE") else content)
+        with tempfile.TemporaryDirectory() as d,patch("garda_ai.provision.MODELS",(model,)),patch("urllib.request.urlopen",response):
+            root=Path(d)
+            provision_opencv(root)
+            key=(root/"face.key").read_bytes()
+            self.assertEqual((root/"models/test.onnx").read_bytes(),content)
+            provision_opencv(root)
+            self.assertEqual((root/"face.key").read_bytes(),key)
+
+    def test_provision_rejects_corrupted_bytes_without_partial_model(self):
+        import io
+        from garda_ai.provision import provision_opencv
+        model={"env":"GARDA_TEST_MODEL","directory":"test","file":"test.onnx",
+               "size":5,"sha256":"0"*64,"license":"test"}
+        with tempfile.TemporaryDirectory() as d,patch("garda_ai.provision.MODELS",(model,)),patch("urllib.request.urlopen",lambda *a,**k:io.BytesIO(b"wrong")):
+            root=Path(d)
+            with self.assertRaises(ValueError):provision_opencv(root)
+            self.assertFalse((root/"models/test.onnx").exists())
+            self.assertEqual(list((root/"models").glob("*.part")),[])
+
     def test_camera_vault_restores_without_disclosing_credentials(self):
         from garda_ai.runtime import Runtime
         from garda_ai.storage import EventStore

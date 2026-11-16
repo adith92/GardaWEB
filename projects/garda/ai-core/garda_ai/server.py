@@ -9,13 +9,17 @@ from pathlib import Path
 
 def main():
     parser = argparse.ArgumentParser(description="GARDA shared server")
-    parser.add_argument("command", choices=("setup-user", "serve"))
+    parser.add_argument("command", choices=("setup-user", "serve", "provision-opencv"))
     parser.add_argument("--data", default=os.environ.get("GARDA_AI_DATA_DIR", "./var"))
     parser.add_argument("--port", type=int, default=8808)
     parser.add_argument("--require-login", action="store_true", help="Use named sessions instead of the initial local Admin lab")
     args = parser.parse_args()
     root = Path(args.data).resolve()
     root.mkdir(parents=True, exist_ok=True, mode=0o700)
+    if args.command == "provision-opencv":
+        from .provision import provision_opencv
+        print(provision_opencv(root))
+        return
     if args.command == "setup-user":
         from .auth import Identity
         identity = Identity(root)
@@ -32,6 +36,8 @@ def main():
         return
     # Native FFmpeg diagnostics must not leak credential-bearing RTSP URLs.
     os.environ.setdefault("OPENCV_FFMPEG_LOGLEVEL", "-8")
+    from .provision import local_models
+    local_models(root)
     from .api import create_app
     import uvicorn
     app = create_app(root, unified=True, lab_no_login=not args.require_login)
