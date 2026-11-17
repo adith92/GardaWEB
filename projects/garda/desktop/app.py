@@ -871,12 +871,15 @@ class GardaMainWindow(QMainWindow):
         if tele:
             self._on_telemetry_updated(True, tele)
 
-        # Stop previous streams
-        self._stop_streams()
+        # Stop previous streams without abandoning any still-running QThread.
+        if not self._stop_streams():
+            self.log("Thread kamera belum berhenti; koneksi baru dibatalkan.")
+            self.btn_disconnect.setEnabled(True)
+            return
 
         # 2. Start Lens 1 Stream (Port 1234)
         rtsp_url_1 = f"rtsp://{ip}:{rtsp_port_1}/"
-        self.log(f"Membuka Stream Lensa 1: {rtsp_url_1}")
+        self.log("Membuka Stream Lensa 1 (alamat RTSP disembunyikan)")
         self.stream_thread_1 = CameraStreamThread(rtsp_url_1)
         self.stream_thread_1.frame_ready.connect(self.video_widget_1.update_frame)
         self.stream_thread_1.status_changed.connect(lambda c, m: self._on_stream_status_changed(1, c, m))
@@ -885,7 +888,7 @@ class GardaMainWindow(QMainWindow):
 
         # 3. Start Lens 2 Stream (Port 1235)
         rtsp_url_2 = f"rtsp://{ip}:{rtsp_port_2}/"
-        self.log(f"Membuka Stream Lensa 2: {rtsp_url_2}")
+        self.log("Membuka Stream Lensa 2 (alamat RTSP disembunyikan)")
         self.stream_thread_2 = CameraStreamThread(rtsp_url_2)
         self.stream_thread_2.frame_ready.connect(self.video_widget_2.update_frame)
         self.stream_thread_2.status_changed.connect(lambda c, m: self._on_stream_status_changed(2, c, m))
@@ -894,16 +897,25 @@ class GardaMainWindow(QMainWindow):
 
         self.btn_disconnect.setEnabled(True)
 
-    def _stop_streams(self):
-        if self.stream_thread_1 is not None:
-            self.stream_thread_1.stop()
-            self.stream_thread_1 = None
-        if self.stream_thread_2 is not None:
-            self.stream_thread_2.stop()
-            self.stream_thread_2 = None
+    def _stop_streams(self) -> bool:
+        all_stopped = True
+        for field in ("stream_thread_1", "stream_thread_2"):
+            thread = getattr(self, field)
+            if thread is not None:
+                if thread.stop():
+                    setattr(self, field, None)
+                else:
+                    all_stopped = False
+        return all_stopped
 
     def on_disconnect_clicked(self):
-        self._stop_streams()
+        if not self._stop_streams():
+            self.log("Masih menunggu thread kamera berhenti; coba putuskan kembali.")
+            self.btn_disconnect.setEnabled(True)
+            return
+        self.is_recording = False
+        self.btn_record.setText("⏺ Rekam MP4")
+        self.btn_record.setStyleSheet("")
         self.is_connected = False
         self.badge_stream.setText("⚪ DISCONNECTED")
         self.badge_stream.setStyleSheet("background-color: #1e293b; color: #94a3b8; border-radius: 6px; padding: 4px 10px; font-weight: bold; font-size: 11px;")
@@ -1112,8 +1124,9 @@ class GardaMainWindow(QMainWindow):
             self.stream_thread_2.capture_snapshot(f2)
             saved.append(f2)
 
-        self.log(f"Snapshot Dual-Lens tersimpan ({len(saved)} file)")
-        QMessageBox.information(self, "Snapshot Berhasil", "Foto disimpan ke:\n" + "\n".join(saved))
+        self.log(f"Permintaan snapshot dikirim ({len(saved)} file)")
+        QMessageBox.information(self, "Snapshot Diminta",
+                                "Snapshot akan disimpan setelah frame berikutnya diterima:\n" + "\n".join(saved))
 
     def on_record_clicked(self):
         c1 = self.stream_thread_1 and self.stream_thread_1.is_connected
@@ -1161,7 +1174,11 @@ class GardaMainWindow(QMainWindow):
             QMessageBox.information(self, "Rekaman Selesai", "File MP4 tersimpan di:\n" + "\n".join(saved))
 
     def closeEvent(self, event):
-        self.on_disconnect_clicked()
+        # QThread must finish before the containing QWidget can be destroyed.
+        if not self._stop_streams():
+            self.log("Tunda penutupan: kamera masih melepas koneksi RTSP.")
+            event.ignore()
+            return
         event.accept()
 
 

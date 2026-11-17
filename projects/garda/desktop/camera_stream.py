@@ -56,7 +56,7 @@ class CameraStreamThread(QThread):
     def _pause(self, seconds: float) -> None:
         end = time.monotonic() + seconds
         while self.running and time.monotonic() < end:
-            time.sleep(min(0.1, end - time.monotonic()))
+            time.sleep(max(0.0, min(0.1, end - time.monotonic())))
 
     def run(self) -> None:
         backoff = 1.0
@@ -91,8 +91,11 @@ class CameraStreamThread(QThread):
                                         else:
                                             self._record_writer.write(frame)
                             if snapshot:
-                                if not cv2.imwrite(snapshot, frame):
-                                    logger.error("Snapshot could not be written")
+                                try:
+                                    if not cv2.imwrite(snapshot, frame):
+                                        logger.error("Snapshot could not be written")
+                                except (cv2.error, OSError):
+                                    logger.error("Snapshot write failed")
                             count += 1
                             if count >= 15:
                                 now = time.monotonic()
@@ -102,7 +105,7 @@ class CameraStreamThread(QThread):
                             rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                             # Deep-copy before the NumPy buffer goes out of scope.
                             self.frame_ready.emit(QImage(rgb.data, w, h, ch * w, QImage.Format.Format_RGB888).copy())
-                except (cv2.error, OSError, RuntimeError) as exc:
+                except Exception as exc:
                     # Do not log raw backend errors: FFmpeg can embed credentialed URLs.
                     logger.warning("RTSP capture failure (%s)", type(exc).__name__)
                     self.status_changed.emit(False, "Koneksi kamera bermasalah. Mencoba kembali...")
@@ -170,9 +173,7 @@ class CameraStreamThread(QThread):
     def stop(self) -> bool:
         """Request cooperative shutdown; never destroy a live QThread on timeout."""
         self.running = False
-        if self.isRunning():
-            self.wait(7000)
-        done = not self.isRunning()
+        done = self.wait(7000)
         if not done:
             logger.error("Camera thread did not exit within the bounded timeout")
         return done
