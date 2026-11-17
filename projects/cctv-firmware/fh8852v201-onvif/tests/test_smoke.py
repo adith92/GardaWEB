@@ -68,6 +68,31 @@ class OnvifDaemonTests(unittest.TestCase):
         self.assertEqual(sub.find(".//tt:Uri", NS).text,
                          "rtsp://127.0.0.1:1235/")
 
+    def test_invalid_content_length_does_not_kill_daemon(self):
+        # Invalid length must be rejected without poisoning later clients.
+        with socket.create_connection(("127.0.0.1", PORT), timeout=3) as sock:
+            sock.sendall(b"POST /onvif/device_service HTTP/1.1\r\n"
+                         b"Content-Length: 42invalid\r\n\r\n")
+            sock.shutdown(socket.SHUT_WR)
+            self.assertEqual(sock.recv(1024), b"")
+        self.assertIsNone(self.process.poll())
+        self.test_device_information()
+
+    def test_discovery_message_id_not_reflected_as_xml(self):
+        request = ('<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope"'
+                   ' xmlns:d="http://schemas.xmlsoap.org/ws/2005/04/discovery">'
+                   '<s:Header><a:MessageID xmlns:a="http://schemas.xmlsoap.org/ws/2004/08/addressing">'
+                   'urn:uuid:bad&amp;escape</a:MessageID></s:Header>'
+                   '<s:Body><d:Probe/></s:Body></s:Envelope>').encode()
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.settimeout(3)
+            sock.sendto(request, ("127.0.0.1", 3702))
+            payload, _ = sock.recvfrom(8192)
+        root = ET.fromstring(payload)
+        self.assertIsNotNone(root)
+        self.assertNotIn(b"bad&amp;escape", payload)
+        self.assertIn(b"urn:uuid:unknown", payload)
+
     def test_discovery_probe(self):
         request = ('<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope"'
                    ' xmlns:d="http://schemas.xmlsoap.org/ws/2005/04/discovery">'

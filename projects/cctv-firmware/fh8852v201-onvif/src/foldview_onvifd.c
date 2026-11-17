@@ -12,6 +12,7 @@
  */
 #define _POSIX_C_SOURCE 200809L
 #include <arpa/inet.h>
+#include <ctype.h>
 #include <errno.h>
 #include <netinet/in.h>
 #include <signal.h>
@@ -100,8 +101,20 @@ static void discover_reply(int fd, const struct config *cfg) {
         message += strlen("MessageID>");
         char *close = strchr(message, '<');
         if (close && close > message && (size_t)(close - message) < sizeof(relates)) {
-            memcpy(relates, message, (size_t)(close - message));
-            relates[close - message] = '\0';
+            size_t len = (size_t)(close - message);
+            int valid = 1;
+            for (size_t i = 0; i < len; ++i) {
+                unsigned char ch = (unsigned char)message[i];
+                if (!isalnum(ch) && ch != ':' && ch != '-' && ch != '_' && ch != '.') {
+                    valid = 0;
+                    break;
+                }
+            }
+            /* Never reflect untrusted XML into the WS-Discovery response. */
+            if (valid) {
+                memcpy(relates, message, len);
+                relates[len] = '\0';
+            }
         }
     }
     int size = snprintf(output, sizeof(output),
@@ -148,9 +161,17 @@ static int read_http(int fd, char *input, size_t cap) {
                 char *line_end = strstr(p, "\r\n");
                 if (!line_end || line_end > end) break;
                 if (strncasecmp(p, "Content-Length:", 15) == 0) {
-                    int value = atoi(p + 15);
-                    if (value < 0 || value > (int)(cap - header_len - 1)) return -1;
-                    required = value;
+                    const char *raw = p + 15;
+                    while (raw < line_end && (*raw == ' ' || *raw == '\t')) ++raw;
+                    if (raw >= line_end || !isdigit((unsigned char)*raw)) return -1;
+                    errno = 0;
+                    char *after = NULL;
+                    long value = strtol(raw, &after, 10);
+                    if (errno || after == raw || after > line_end ||
+                        value < 0 || value > (long)(cap - header_len - 1)) return -1;
+                    while (after < line_end && (*after == ' ' || *after == '\t')) ++after;
+                    if (after != line_end) return -1;
+                    required = (int)value;
                 }
                 p = line_end + 2;
             }
@@ -253,7 +274,8 @@ static int soap_body(const char *req, const struct config *cfg,
 static void serve_http(int fd, const struct config *cfg) {
     char input[MAX_REQUEST], body[5500], response[MAX_RESPONSE];
     struct timeval timeout = {3, 0};
-    setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+    if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) != 0 ||
+        setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout)) != 0) return;
     if (read_http(fd, input, sizeof(input)) < 0) return;
     if (strncmp(input, "POST /onvif/", 12) != 0) {
         const char *s = "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n"

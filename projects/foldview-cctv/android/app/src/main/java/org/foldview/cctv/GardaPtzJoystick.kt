@@ -128,12 +128,7 @@ internal class GardaPtzStickDriver(
             firstQueued = null
             if (!disposed) onError(PTZFeedback.safeMessage(e))
         } finally {
-            try {
-                if (useGardaNative) GardaNativeApi.stop(camera)
-                else OnvifPtz.stopContinuous(camera)
-            } catch (_: Exception) {
-                if (!disposed) onError("PTZ Stop not confirmed; check physical camera.")
-            }
+            stopWithRetry()
             synchronized(this) {
                 working = false
                 if (!disposed && desired != null) {
@@ -143,6 +138,30 @@ internal class GardaPtzStickDriver(
                 }
             }
         }
+    }
+
+    /**
+     * Best-effort delivery; network retries are NOT proof that the motor stopped.
+     * Device-side ContinuousMove timeout remains the essential safety boundary.
+     */
+    private fun stopWithRetry() {
+        for (attempt in 0..2) {
+            try {
+                if (useGardaNative) GardaNativeApi.stop(camera)
+                else OnvifPtz.stopContinuous(camera)
+                return
+            } catch (_: Exception) {
+                if (attempt < 2) {
+                    try {
+                        Thread.sleep(100L * (attempt + 1))
+                    } catch (_: InterruptedException) {
+                        Thread.currentThread().interrupt()
+                        break
+                    }
+                }
+            }
+        }
+        if (!disposed) onError("PTZ Stop not confirmed after retries; check physical camera.")
     }
 
     fun close() {
