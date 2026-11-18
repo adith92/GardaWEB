@@ -189,7 +189,7 @@ export function Incidents() {
               <aside className="evidence-column">
                 <h3>Evidence</h3>
                 <CameraImage
-                  camera={cameras.find((c) => c.id === current.camera)!}
+                  camera={cameras.find((c) => c.id === current.camera)}
                 />
                 <p>Snapshot sintetis · {current.camera}</p>
                 <button

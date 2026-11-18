@@ -137,7 +137,7 @@ export function EventDetail({
   return (
     <Modal title={`Evidence · ${event.id}`} onClose={onClose}>
       <CameraImage
-        camera={cameras.find((c) => c.id === event.camera)!}
+        camera={cameras.find((c) => c.id === event.camera)}
         className="detail-image"
       />
       <div className="detail-meta">
@@ -424,7 +424,7 @@ export function Command({ legacy = false }: { legacy?: boolean } = {}) {
                 {i.title}
               </button>
               <div className="incident-preview">
-                <CameraImage camera={cameras.find((c) => c.id === i.camera)!} />
+                <CameraImage camera={cameras.find((c) => c.id === i.camera)} />
                 <div>
                   <b>{cameras.find((c) => c.id === i.camera)?.name}</b>
                   <p>

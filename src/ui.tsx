@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState as useLocal, type ReactNode } from "react";
 import { X, ArrowUpRight, Camera as CameraIcon, Download } from "lucide-react";
 import { cameras, download, useDemo, type Camera } from "./store";
 export function Badge({
@@ -89,23 +89,24 @@ export function CameraImage({
   className = "",
   children,
 }: {
-  camera: Camera;
+  camera?: Camera | null;
   className?: string;
   children?: ReactNode;
 }) {
-  const i = cameras.findIndex((c) => c.id === camera.id);
+  const i = camera ? cameras.findIndex((c) => c.id === camera.id) : -1;
+  const knownCamera = camera != null && i >= 0;
   return (
     <div
       role="img"
-      aria-label={`Simulasi kamera ${camera.name}`}
+      aria-label={knownCamera ? `Simulasi kamera ${camera?.name}` : "Kamera tidak tersedia"}
       className={`camera-image ${className}`}
       style={{
-        backgroundImage: "url(/cameras.png)",
+        backgroundImage: knownCamera ? "url(/cameras.png)" : "none",
         backgroundSize: "400% 200%",
         backgroundPosition: `${((i % 4) * 100) / 3}% ${Math.floor(i / 4) * 100}%`,
       }}
     >
-      {children}
+      {knownCamera ? children : <span>Kamera tidak tersedia</span>}
     </div>
   );
 }
@@ -244,4 +245,4 @@ export function CameraDetail({
     </Modal>
   );
 }
-import { useState as useLocal } from "react";
+
