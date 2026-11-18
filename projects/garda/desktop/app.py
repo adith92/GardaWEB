@@ -18,7 +18,7 @@ from datetime import datetime
 from typing import Optional, Dict, Any
 
 from PySide6.QtCore import Qt, QTimer, Signal, QObject
-from PySide6.QtGui import QImage, QPixmap, QFont, QKeySequence, QShortcut
+from PySide6.QtGui import QImage, QPixmap, QFont, QKeySequence, QShortcut, QIntValidator
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QLineEdit, QPushButton, QSlider, QComboBox,
@@ -115,6 +115,7 @@ class GardaMainWindow(QMainWindow):
         self.is_tracking_on = False
         self.is_cruise_on = False
 
+        self._telemetry_inflight = False
         self._fps_1 = 0.0
         self._fps_2 = 0.0
         self._res_1 = "-"
@@ -510,6 +511,9 @@ class GardaMainWindow(QMainWindow):
         conn_layout.addWidget(QLabel("RTSP L2:"), 2, 2)
         self.txt_rtsp_port_2 = QLineEdit(str(self.config.get("rtsp_port_2", 1235)))
         conn_layout.addWidget(self.txt_rtsp_port_2, 2, 3)
+        # Keep all port inputs within a valid TCP/UDP numeric range.
+        for field in (self.txt_onvif_port, self.txt_ptz_port, self.txt_rtsp_port, self.txt_rtsp_port_2):
+            field.setValidator(QIntValidator(1, 65535, self))
 
         btn_box = QHBoxLayout()
         self.btn_connect = QPushButton("⚡ HUBUNGKAN KAMERA")
@@ -751,6 +755,8 @@ class GardaMainWindow(QMainWindow):
         os.makedirs(directory, exist_ok=True)
         if sys.platform == "win32":
             os.startfile(directory)
+        elif sys.platform == "darwin":
+            subprocess.Popen(["open", directory])
         else:
             subprocess.Popen(["xdg-open", directory])
 
@@ -758,21 +764,43 @@ class GardaMainWindow(QMainWindow):
         ts = datetime.now().strftime("%H:%M:%S")
         self.txt_log.append(f"[{ts}] {message}")
 
+    @staticmethod
+    def _parse_port(text: str, default: int) -> int:
+        try:
+            port = int(text.strip() or str(default))
+        except ValueError as exc:
+            raise ValueError("Port harus berupa angka 1 sampai 65535") from exc
+        if not 1 <= port <= 65535:
+            raise ValueError("Port harus antara 1 dan 65535")
+        return port
+
     # -------------------------------------------------------------
     # Live ONVIF & REST Telemetry Polling
     # -------------------------------------------------------------
     def _poll_telemetry(self):
         ip = self.txt_ip.text().strip()
-        onvif_port = int(self.txt_onvif_port.text().strip() or "8899")
+        if self._telemetry_inflight:
+            return
+        try:
+            onvif_port = self._parse_port(self.txt_onvif_port.text(), 8899)
+        except ValueError as exc:
+            self.log(str(exc))
+            return
+        self._telemetry_inflight = True
 
         def worker():
-            client = SriHomeClient(ip, onvif_port=onvif_port)
-            ok, data = client.get_telemetry()
-            self.sig.updated.emit(ok, data)
-            if ok:
-                ok_i, info = client.get_onvif_device_info()
-                if ok_i:
-                    self.sig.device_info_ready.emit(True, info)
+            try:
+                client = SriHomeClient(ip, onvif_port=onvif_port)
+                ok, data = client.get_telemetry()
+                self.sig.updated.emit(ok, data)
+                if ok:
+                    ok_i, info = client.get_onvif_device_info()
+                    if ok_i:
+                        self.sig.device_info_ready.emit(True, info)
+            except Exception:
+                self.sig.log_msg.emit("Telemetry kamera belum tersedia")
+            finally:
+                self._telemetry_inflight = False
 
         threading.Thread(target=worker, daemon=True).start()
 
@@ -846,10 +874,14 @@ class GardaMainWindow(QMainWindow):
     # -------------------------------------------------------------
     def on_connect_clicked(self):
         ip = self.txt_ip.text().strip()
-        onvif_port = int(self.txt_onvif_port.text().strip() or "8899")
-        rtsp_port_1 = int(self.txt_rtsp_port.text().strip() or "1234")
-        rtsp_port_2 = int(self.txt_rtsp_port_2.text().strip() or "1235")
-        ptz_port = int(self.txt_ptz_port.text().strip() or "7777")
+        try:
+            onvif_port = self._parse_port(self.txt_onvif_port.text(), 8899)
+            rtsp_port_1 = self._parse_port(self.txt_rtsp_port.text(), 1234)
+            rtsp_port_2 = self._parse_port(self.txt_rtsp_port_2.text(), 1235)
+            ptz_port = self._parse_port(self.txt_ptz_port.text(), 7777)
+        except ValueError as exc:
+            QMessageBox.warning(self, "Port tidak valid", str(exc))
+            return
         step = self.slider_step.value()
 
         # Save config
@@ -866,10 +898,16 @@ class GardaMainWindow(QMainWindow):
 
         # 1. Initialize Unified Client
         self.srihome = SriHomeClient(ip, onvif_port=onvif_port, ptz_port=ptz_port, telnet_port=23)
-        ok, msg, tele = self.srihome.check_connection()
-        self.log(msg)
-        if tele:
-            self._on_telemetry_updated(True, tele)
+        # Do not block the Qt event loop on camera REST/ONVIF probing.
+        def probe():
+            try:
+                ok, msg, tele = self.srihome.check_connection()
+                self.sig.log_msg.emit(msg)
+                if tele:
+                    self.sig.updated.emit(ok, tele)
+            except Exception:
+                self.sig.log_msg.emit("Probe kamera belum berhasil; RTSP tetap dicoba")
+        threading.Thread(target=probe, daemon=True).start()
 
         # Stop previous streams without abandoning any still-running QThread.
         if not self._stop_streams():
@@ -884,6 +922,7 @@ class GardaMainWindow(QMainWindow):
         self.stream_thread_1.frame_ready.connect(self.video_widget_1.update_frame)
         self.stream_thread_1.status_changed.connect(lambda c, m: self._on_stream_status_changed(1, c, m))
         self.stream_thread_1.stats_updated.connect(lambda f, w, h: self._on_stream_stats_updated(1, f, w, h))
+        self.stream_thread_1.recording_ended.connect(self._on_recording_finished)
         self.stream_thread_1.start()
 
         # 3. Start Lens 2 Stream (Port 1235)
@@ -893,6 +932,7 @@ class GardaMainWindow(QMainWindow):
         self.stream_thread_2.frame_ready.connect(self.video_widget_2.update_frame)
         self.stream_thread_2.status_changed.connect(lambda c, m: self._on_stream_status_changed(2, c, m))
         self.stream_thread_2.stats_updated.connect(lambda f, w, h: self._on_stream_stats_updated(2, f, w, h))
+        self.stream_thread_2.recording_ended.connect(self._on_recording_finished)
         self.stream_thread_2.start()
 
         self.btn_disconnect.setEnabled(True)
@@ -923,6 +963,17 @@ class GardaMainWindow(QMainWindow):
         self.btn_connect.setEnabled(True)
         self.btn_disconnect.setEnabled(False)
         self.log("Transmisi video kedua lensa dihentikan.")
+
+    def _on_recording_finished(self, path: str):
+        active = any(thread is not None and thread.is_recording_active
+                     for thread in (self.stream_thread_1, self.stream_thread_2))
+        if self.is_recording and not active:
+            self.is_recording = False
+            self.btn_record.setText("⏺ Rekam MP4")
+            self.btn_record.setStyleSheet("")
+            self.log("Perekaman dihentikan; periksa file MP4 hasil rekaman.")
+        if not path:
+            self.log("Ada rekaman yang tidak menghasilkan file MP4 valid.")
 
     def _on_stream_status_changed(self, lens_id: int, connected: bool, message: str):
         self.log(f"Lensa {lens_id}: {message}")
@@ -1131,7 +1182,7 @@ class GardaMainWindow(QMainWindow):
     def on_record_clicked(self):
         c1 = self.stream_thread_1 and self.stream_thread_1.is_connected
         c2 = self.stream_thread_2 and self.stream_thread_2.is_connected
-        if not c1 and not c2:
+        if not self.is_recording and not c1 and not c2:
             QMessageBox.warning(self, "Peringatan", "Stream video belum terhubung!")
             return
 
@@ -1178,6 +1229,7 @@ class GardaMainWindow(QMainWindow):
         if not self._stop_streams():
             self.log("Tunda penutupan: kamera masih melepas koneksi RTSP.")
             event.ignore()
+            QTimer.singleShot(250, self.close)
             return
         event.accept()
 

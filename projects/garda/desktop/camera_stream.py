@@ -28,6 +28,7 @@ class CameraStreamThread(QThread):
     frame_ready = Signal(QImage)
     status_changed = Signal(bool, str)
     stats_updated = Signal(float, int, int)
+    recording_ended = Signal(str)
 
     def __init__(self, rtsp_url: str):
         super().__init__()
@@ -115,6 +116,8 @@ class CameraStreamThread(QThread):
                     self.is_connected = False
                     with self._lock:
                         self._frame_size = None
+                        if self._is_recording:
+                            self._finish_recording_locked()
                 if self.running:
                     self.status_changed.emit(False, "Stream terputus. Menyambungkan kembali...")
                     self._pause(backoff)
@@ -143,7 +146,11 @@ class CameraStreamThread(QThread):
             if not self.running or self._frame_size is None or self._is_recording:
                 return False
             w, h = self._frame_size
-            writer = cv2.VideoWriter(filepath, cv2.VideoWriter_fourcc(*"mp4v"), fps, (w, h))
+            try:
+                writer = cv2.VideoWriter(filepath, cv2.VideoWriter_fourcc(*"mp4v"), fps, (w, h))
+            except (cv2.error, OSError):
+                logger.error("MP4 writer initialization failed")
+                return False
             if not writer.isOpened():
                 writer.release()
                 logger.error("MP4 writer could not be opened")
@@ -162,18 +169,24 @@ class CameraStreamThread(QThread):
             self._record_writer.release()
         self._record_writer = None
         self._record_file = None
-        if path is not None and os.path.isfile(path) and os.path.getsize(path) > 0:
-            return path
-        return None
+        valid = path if path is not None and os.path.isfile(path) and os.path.getsize(path) > 0 else None
+        if path is not None:
+            self.recording_ended.emit(valid or "")
+        return valid
 
     def stop_recording(self) -> Optional[str]:
         with self._lock:
             return self._finish_recording_locked()
 
+    @property
+    def is_recording_active(self) -> bool:
+        with self._lock:
+            return self._is_recording
+
     def stop(self) -> bool:
-        """Request cooperative shutdown; never destroy a live QThread on timeout."""
+        """Cooperative shutdown with short GUI wait; caller retains live QThread."""
         self.running = False
-        done = self.wait(7000)
+        done = self.wait(100)
         if not done:
-            logger.error("Camera thread did not exit within the bounded timeout")
+            logger.debug("Camera thread shutdown pending")
         return done

@@ -84,7 +84,7 @@ class DesktopCaptureTests(unittest.TestCase):
         self.thread.running = True
         with patch.object(self.thread, "wait", return_value=False) as wait:
             self.assertFalse(self.thread.stop())
-            wait.assert_called_once_with(7000)
+            wait.assert_called_once_with(100)
         self.assertFalse(self.thread.running)
 
 
