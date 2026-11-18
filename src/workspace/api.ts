@@ -13,10 +13,17 @@ export async function request<T>(path: string, options: RequestInit = {}, csrf =
   const headers = new Headers(options.headers);
   if (options.body && !(options.body instanceof FormData)) headers.set("Content-Type", "application/json");
   if (csrf) headers.set("X-GARDA-CSRF", csrf);
-  const response = await fetch(apiRoot + path, { ...options, headers, credentials: "same-origin" });
+  const timeout = AbortSignal.timeout(10000);
+  const signal = options.signal ? AbortSignal.any([options.signal, timeout]) : timeout;
+  const response = await fetch(apiRoot + path, { ...options, headers, credentials: "same-origin", signal });
+  const payload = await response.text();
   if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    throw new ApiError(response.status === 401 ? "Sesi berakhir. Silakan masuk kembali." : String(data.detail || `HTTP ${response.status}`), response.status);
+    let detail: unknown;
+    try { detail = JSON.parse(payload)?.detail; } catch { detail = undefined; }
+    const reason = typeof detail === "string" ? detail
+      : Array.isArray(detail) ? detail.map(item => typeof item?.msg === "string" ? item.msg : "Invalid field").join("; ")
+      : `HTTP ${response.status}`;
+    throw new ApiError(response.status === 401 ? "Sesi berakhir. Silakan masuk kembali." : reason, response.status);
   }
-  return response.json() as Promise<T>;
+  return payload ? JSON.parse(payload) as T : undefined as T;
 }

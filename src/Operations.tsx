@@ -189,7 +189,7 @@ export function Incidents() {
               <aside className="evidence-column">
                 <h3>Evidence</h3>
                 <CameraImage
-                  camera={cameras.find((c) => c.id === current.camera)!}
+                  camera={cameras.find((c) => c.id === current.camera)}
                 />
                 <p>Snapshot sintetis · {current.camera}</p>
                 <button
@@ -833,13 +833,14 @@ export function Intelligence({ kind }: { kind: "faces" | "plates" }) {
   return (
     <>
       <PageTitle
-        title={face ? "Face Intelligence" : "Vehicle Intelligence"}
+        title={face ? "Face Recognitions" : "Vehicle Intelligence"}
         description={
           face
-            ? "Direktori identitas dan jejak kamera. Seluruh identitas bersifat fiktif."
+            ? "Tier 1 mencatat keberadaan wajah, kamera, dan waktu. Identitas pada pratinjau demo ini bersifat fiktif; identifikasi orang tersedia mulai Tier 2."
             : "Log pelat, riwayat akses, dan kendaraan di dalam kawasan."
         }
       >
+        {face && <Badge>Face Recognitions Basic · Tier 1</Badge>}
         <Badge>Data sintetis · bukan pengenalan nyata</Badge>
       </PageTitle>
       <div className="toolbar">

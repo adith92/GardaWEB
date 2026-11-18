@@ -63,6 +63,15 @@ def provision_opencv(root: Path):
 
 
 def local_models(root):
+    plate_manifest = root / "plate-provisioning.json"
+    if plate_manifest.is_file():
+        plates = json.loads(plate_manifest.read_text())
+        for item in plates["files"]:
+            target = (root / item["path"]).resolve()
+            if not target.is_relative_to(root.resolve()) or hashlib.sha256(target.read_bytes()).hexdigest() != item["sha256"]:
+                raise ValueError("Plate model fingerprint mismatch")
+        os.environ.setdefault("GARDA_PLATE_CACHE", str((root / "models" / "plates").resolve()))
+        os.environ.setdefault("GARDA_FASTALPR_MODELS_APPROVED", "1")
     manifest = root / "model-provisioning.json"
     if not manifest.is_file():
         return
@@ -74,3 +83,18 @@ def local_models(root):
                 os.environ.setdefault(key, str(data[key]))
     key_file = Path(data["face_key_file"])
     os.environ.setdefault("GARDA_FACE_KEY", key_file.read_text().strip())
+
+
+def provision_plates(root):
+    from .vision import PlateReader
+    import numpy as np
+    cache = root / "models" / "plates"
+    os.environ["GARDA_PLATE_CACHE"] = str(cache.resolve())
+    engine = PlateReader()
+    engine.detect(np.zeros((480,640,3), dtype=np.uint8))
+    files = [{"path": str(p.relative_to(root)), "sha256": hashlib.sha256(p.read_bytes()).hexdigest(), "size": p.stat().st_size}
+             for p in cache.rglob("*") if p.is_file() and p.suffix in (".onnx", ".yaml")]
+    if len(files) != 3:
+        raise RuntimeError("Expected the selected detector, OCR weights and OCR configuration")
+    (root/"plate-provisioning.json").write_text(json.dumps({"files":files},indent=2), encoding="utf8")
+    return {"provider":"fastalpr", "files_verified":len(files), "blank_frame_inference":"passed", "accuracy_validated":False}

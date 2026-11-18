@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -48,6 +49,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.common.PlaybackException
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.rtsp.RtspMediaSource
 import androidx.media3.ui.AspectRatioFrameLayout
@@ -332,8 +335,10 @@ class MainActivity : ComponentActivity() {
                         val imported = withContext(Dispatchers.IO) {
                             runCatching {
                                 context.contentResolver.openInputStream(source)?.use { input ->
-                                    val content = input.bufferedReader().readText()
-                                    GardaCameraBackup.import(content)
+                                    // Enforce 128 KiB-ish camera list limit before decoding into a String.
+                                    val bytes = input.readNBytes(128_001)
+                                    require(bytes.size <= 128_000) { "Camera backup exceeds 128 KB" }
+                                    GardaCameraBackup.import(String(bytes, Charsets.UTF_8))
                                 } ?: error("File unavailable")
                             }
                         }
@@ -1489,9 +1494,25 @@ private fun VideoTile(
         if (camera != null && enabled) {
             key(camera.id, camera.url) {
                 val player = remember { ExoPlayer.Builder(context).build() }
+                var retryAttempt by remember { mutableIntStateOf(0) }
+                var playbackProblem by remember { mutableStateOf(false) }
                 DisposableEffect(player) {
+                    val listener = object : Player.Listener {
+                        override fun onPlayerError(error: PlaybackException) {
+                            // Avoid leaking the RTSP URL or credentials through error messages.
+                            playbackProblem = true
+                            retryAttempt = (retryAttempt + 1).coerceAtMost(6)
+                        }
+                        override fun onPlaybackStateChanged(playbackState: Int) {
+                            if (playbackState == Player.STATE_READY) {
+                                playbackProblem = false
+                                retryAttempt = 0
+                            }
+                        }
+                    }
+                    player.addListener(listener)
                     try {
-                        // Force RTP over RTSP TCP for the user's FH8852V201 dual-lens streams.
+                        // TCP mode works with the user's FH8852V201 dual-lens streams.
                         player.setMediaSource(
                             RtspMediaSource.Factory().setForceUseRtpTcp(true)
                                 .createMediaSource(MediaItem.fromUri(camera.url))
@@ -1499,9 +1520,27 @@ private fun VideoTile(
                         player.prepare()
                         player.playWhenReady = true
                     } catch (_: Exception) {
-                        // PlayerView displays idle black; no sensitive URL logging.
+                        playbackProblem = true
+                        retryAttempt = 1
                     }
-                    onDispose { player.release(); onSurface(null) }
+                    onDispose {
+                        player.removeListener(listener)
+                        player.release()
+                        onSurface(null)
+                    }
+                }
+                LaunchedEffect(player, retryAttempt) {
+                    if (retryAttempt in 1..5) {
+                        val delays = longArrayOf(1000, 2000, 4000, 8000, 15000)
+                        delay(delays[retryAttempt - 1])
+                        try {
+                            player.prepare()
+                            player.playWhenReady = true
+                        } catch (_: Exception) {
+                            playbackProblem = true
+                            retryAttempt = (retryAttempt + 1).coerceAtMost(6)
+                        }
+                    }
                 }
                 SideEffect { player.volume = if (muted) 0f else 1f }
                 AndroidView(
@@ -1519,6 +1558,24 @@ private fun VideoTile(
                         onSurface(view.videoSurfaceView as? SurfaceView)
                     }
                 )
+                if (playbackProblem) {
+                    Column(
+                        modifier = Modifier.align(Alignment.Center)
+                            .background(Color(0xC909111B), RoundedCornerShape(10.dp))
+                            .padding(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            if (retryAttempt > 5) "Kamera tidak tersedia" else "Menyambungkan kembali (${retryAttempt}/5)",
+                            color = Color.White, style = MaterialTheme.typography.labelSmall
+                        )
+                        if (retryAttempt > 5) {
+                            TextButton(onClick = { retryAttempt = 1 }) {
+                                Text("Coba lagi")
+                            }
+                        }
+                    }
+                }
             }
         } else {
             Text(

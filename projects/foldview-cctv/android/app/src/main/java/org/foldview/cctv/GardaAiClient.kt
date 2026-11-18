@@ -1,6 +1,7 @@
 package org.foldview.cctv
 
 import android.content.Context
+import android.webkit.CookieManager
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
@@ -100,7 +101,17 @@ internal class GardaAiClient(context: Context) {
         } finally { c.disconnect() }
     }
 
-    fun forget() { prefs.edit().clear().apply() }
+    fun forget() {
+        val previousOrigin = savedUrl()
+        prefs.edit().clear().apply()
+        // Expire only GARDA's session, not all unrelated WebView cookies.
+        if (previousOrigin.isNotBlank()) {
+            val manager = CookieManager.getInstance()
+            manager.setCookie(previousOrigin, "garda_session=; Max-Age=0; Path=/; SameSite=Strict") {
+                manager.flush()
+            }
+        }
+    }
 
     /** Initial lab server grants local Admin without a username/password. */
     fun connect(url: String): Boolean {

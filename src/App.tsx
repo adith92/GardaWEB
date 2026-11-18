@@ -30,31 +30,33 @@ import {
   LogOut,
   ShieldCheck,
   ArrowUpRight,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Sun,
+  Moon,
+  ChevronRight,
 } from "lucide-react";
-import { StoreProvider, useDemo } from "./store";
-import { Badge, Modal } from "./ui";
+import { StoreProvider, useDemo, cameras } from "./store";
+import { ErrorBoundary } from "./ErrorBoundary";
+import { Badge, CameraImage, Modal } from "./ui";
 import { Command, Live, MapPage, Playback, Events } from "./Monitoring";
 import { Incidents, AskGarda, Vault, Intelligence } from "./Operations";
 import { System, Devices, Audit, Settings } from "./Administration";
 const Analytics = lazy(() => import("./Analytics"));
 const Workspace = lazy(() => import("./workspace/Workspace"));
-const nav = [
-  ["COMMAND", "/command", LayoutDashboard],
-  ["LIVE", "/live", Video],
-  ["PLAYBACK", "/playback", CirclePlay],
-  ["EVENTS", "/events", Bell],
-  ["FACES", "/faces", ScanFace],
-  ["PLATES", "/plates", CarFront],
-  ["MAP", "/map", Map],
-  ["INCIDENTS", "/incidents", ShieldAlert],
-  ["ASK GARDA", "/ask-garda", Sparkles],
-  ["ANALYTICS", "/analytics", ChartNoAxesCombined],
-  ["VAULT", "/vault", FolderLock],
-  ["DEVICES", "/devices", Network],
-  ["SYSTEM", "/system", Server],
-  ["AUDIT", "/audit", ScrollText],
-  ["SETTINGS", "/settings", SettingsIcon],
-] as const;
+const GardaVisionWorkbench = lazy(() => import("./GardaVisionWorkbench"));
+const visionEnabled = import.meta.env.DEV && import.meta.env.VITE_GARDA_AI_LAB === "true";
+type NavItem = readonly [string, string, typeof LayoutDashboard];
+const navGroups: Array<{ label: string; items: NavItem[] }> = [
+  { label: "Overview", items: [["COMMAND", "/command", LayoutDashboard]] },
+  { label: "Monitoring", items: [["LIVE", "/live", Video], ["PLAYBACK", "/playback", CirclePlay], ["MAP", "/map", Map]] },
+  { label: "Response", items: [["EVENTS", "/events", Bell], ["INCIDENTS", "/incidents", ShieldAlert]] },
+  { label: "Intelligence", items: [["FACE RECOGNITIONS", "/faces", ScanFace], ["PLATES", "/plates", CarFront], ["ASK GARDA", "/ask-garda", Sparkles], ["ANALYTICS", "/analytics", ChartNoAxesCombined]] },
+  { label: "Evidence", items: [["VAULT", "/vault", FolderLock]] },
+  { label: "Administration", items: [["DEVICES", "/devices", Network], ["SYSTEM", "/system", Server], ["AUDIT", "/audit", ScrollText], ["SETTINGS", "/settings", SettingsIcon]] },
+];
+const nav = navGroups.flatMap((group) => group.items);
+const defaultExpanded: Record<string, boolean> = { Overview: true, Monitoring: true, Response: true, Intelligence: false, Evidence: false, Administration: false };
 function Shell() {
   const { state, toast, log, notify } = useDemo();
   const navigate = useNavigate();
@@ -65,6 +67,16 @@ function Shell() {
   const [site, setSite] = useState(false);
   const [mobile, setMobile] = useState(false);
   const [loggedOut, setLoggedOut] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [thumbsOpen, setThumbsOpen] = useState(true);
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(defaultExpanded);
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    try {
+      return localStorage.getItem("garda-theme") === "light" ? "light" : "dark";
+    } catch {
+      return "dark";
+    }
+  });
   useEffect(() => {
     const f = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -78,6 +90,14 @@ function Shell() {
   useEffect(() => {
     setMobile(false);
   }, [location.pathname]);
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try {
+      localStorage.setItem("garda-theme", theme);
+    } catch {
+      // Theme remains active for the current session when storage is unavailable.
+    }
+  }, [theme]);
   function go(url: string) {
     navigate(url);
     setSearch(false);
@@ -89,7 +109,7 @@ function Shell() {
         <img src="/logo.png" alt="Pusada TNI" />
         <h1>GARDA</h1>
         <p>PUSADA MONITORING CENTER</p>
-        <Badge>Ruang kerja demonstrasi · T1 BASIC</Badge>
+        <Badge>Ruang kerja demonstrasi · PUSADA KAK</Badge>
         <h2>Siap kembali bertugas?</h2>
         <p>Masuk ke sesi demo lokal GARDA. Tidak memerlukan kredensial.</p>
         <button
@@ -104,49 +124,74 @@ function Shell() {
       </div>
     );
   return (
-    <div className="app-shell">
-      <aside className={`sidebar ${mobile ? "open" : ""}`}>
+    <div className={`app-shell ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
+      <aside className={`sidebar ${mobile ? "open" : ""} ${sidebarCollapsed ? "collapsed" : ""}`}>
         <NavLink to="/command" className="brand">
           <img src="/logo.png" alt="Logo Aglis Anggah Ahingani Pusada TNI" />
-          <div>
+          {!sidebarCollapsed && <div>
             <strong>
               GARDA<span>®</span>
             </strong>
             <small>PUSADA MONITORING CENTER</small>
-          </div>
+          </div>}
         </NavLink>
-        <div className="nav-label">RUANG OPERASI TNI · T1 BASIC</div>
+        <button
+          className="sidebar-toggle icon-button"
+          aria-label={sidebarCollapsed ? "Buka sidebar" : "Tutup sidebar"}
+          onClick={() => setSidebarCollapsed((value) => !value)}
+        >
+          {sidebarCollapsed ? <PanelLeftOpen size={17} /> : <PanelLeftClose size={17} />}
+        </button>
+        {!sidebarCollapsed && <div className="nav-label">PUSADA · DEMO KAK V2</div>}
         <nav>
-          {nav.map(([name, url, Icon], i) => (
-            <NavLink
-              key={url}
-              to={url}
-              className={({ isActive }) =>
-                `nav-item ${isActive ? "selected" : ""} ${[4, 8, 11].includes(i) ? "section-start" : ""}`
-              }
-            >
-              <Icon size={18} />
-              <span>{name}</span>
-              {name === "INCIDENTS" && state.settings.alerts && (
-                <b>
-                  {
-                    state.incidents.filter((i) => i.status !== "resolved")
-                      .length
-                  }
-                </b>
+          {navGroups.map((group) => (
+            <div className="nav-group" key={group.label}>
+              {!sidebarCollapsed && group.label !== "Overview" && (
+                <button
+                  className="nav-group-toggle"
+                  onClick={() => setExpandedGroups((current) => ({ ...current, [group.label]: !current[group.label] }))}
+                  aria-expanded={expandedGroups[group.label]}
+                >
+                  <ChevronRight size={13} className={expandedGroups[group.label] ? "rotated" : ""} />
+                  {group.label}
+                </button>
               )}
-              {name === "ASK GARDA" && <span className="nav-ai">AI</span>}
-            </NavLink>
+              {(sidebarCollapsed || group.label === "Overview" || expandedGroups[group.label]) && group.items.map(([name, url, Icon]) => (
+                <NavLink key={url} to={url} title={sidebarCollapsed ? name : undefined} className={({ isActive }) => `nav-item ${isActive ? "selected" : ""}`}>
+                  <Icon size={18} />
+                  {!sidebarCollapsed && <span>{name}</span>}
+                  {!sidebarCollapsed && name === "INCIDENTS" && state.settings.alerts && <b>{state.incidents.filter((i) => i.status !== "resolved").length}</b>}
+                  {!sidebarCollapsed && name === "ASK GARDA" && <span className="nav-ai">AI</span>}
+                </NavLink>
+              ))}
+            </div>
           ))}
+          {visionEnabled && <NavLink to="/ai-vision" className={({ isActive }) => `nav-item ${isActive ? "selected" : ""}`}><ScanFace size={18}/><span>AI VISION LAB</span></NavLink>}
         </nav>
+        {!sidebarCollapsed && <>
+        <div className="thumbnail-heading">
+          <span>CAMERA THUMBNAILS</span>
+          <button className="icon-button" aria-label={thumbsOpen ? "Tutup thumbnails" : "Buka thumbnails"} onClick={() => setThumbsOpen((value) => !value)}>
+            <ChevronRight size={15} className={thumbsOpen ? "rotated" : ""} />
+          </button>
+        </div>
+        {thumbsOpen && <div className="thumbnail-grid">
+          {cameras.slice(0, 6).map((camera) => (
+            <button className="thumbnail-card" key={camera.id} title={`Buka ${camera.id}`} onClick={() => { navigate(`/live?camera=${camera.id}`); notify(`${camera.id} dipilih · feed simulasi`); }}>
+              <CameraImage camera={camera} />
+              <span><b>{camera.id}</b><small>{camera.name}</small></span>
+            </button>
+          ))}
+        </div>}
         <div className="sidebar-foot">
           <div>
             <ShieldCheck size={17} />
             <span>LOCAL-FIRST. MISSION-READY.</span>
           </div>
-          <small>PMC GARDA · Demo v1.0</small>
+          <small>PMC GARDA · V2 · Data Demo</small>
           <div className="camo" />
         </div>
+        </>}
       </aside>
       <div className="workspace">
         <header className="topbar">
@@ -160,6 +205,16 @@ function Shell() {
           <span className="topbar-title">
             PUSADA MONITORING CENTER <i /> <b>GARDA</b>
           </span>
+          <a className="stage2-link" href="/garda-stage2.html" target="_blank" rel="noreferrer">
+            DEMO TAHAP 2
+          </a>
+          <button
+            className="theme-toggle icon-button"
+            aria-label={`Gunakan tema ${theme === "dark" ? "terang" : "gelap"}`}
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
+            {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
+          </button>
           <button className="site-select" onClick={() => setSite(true)}>
             <Map size={15} /> PUSADA HQ <ChevronDown size={13} />
           </button>
@@ -216,6 +271,7 @@ function Shell() {
               <Route path="/system" element={<System />} />
               <Route path="/audit" element={<Audit />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/ai-vision" element={visionEnabled ? <GardaVisionWorkbench /> : <Navigate to="/command" replace />} />
               <Route path="*" element={<Navigate to="/command" replace />} />
             </Routes>
           </Suspense>
@@ -225,7 +281,7 @@ function Shell() {
               <span>· Simulated environment</span>
             </span>
             <span>
-              GMT+7 / JAKARTA <b>SECURE LOCAL DEMO</b>
+              GMT+7 / JAKARTA <a href="/garda-stage2.html" target="_blank" rel="noreferrer">TAHAP 2 BRIEF</a> <b>SECURE LOCAL DEMO</b>
             </span>
           </footer>
         </main>
@@ -357,7 +413,8 @@ export default function App() {
   }
   return (
     <StoreProvider>
-      <Shell />
+      <ErrorBoundary><Shell /></ErrorBoundary>
     </StoreProvider>
   );
 }
+

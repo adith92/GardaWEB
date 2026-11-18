@@ -1,3 +1,7 @@
+## Pembaruan 16 Oktober 2026
+
+Animasi Command V2: kamera CCTV bergerak, pilihan logo GARDA berputar, jeda dan reduced motion. Tidak memerlukan WebGL. Jadwal final: implementasi 8 minggu + testing/UAT/commissioning 2 minggu; support 12 bulan sejak BAST. Rincian perubahan besar menuju demo final: `docs/PMC_V2_FINAL_DEMO_2026-10-16.md`. Ini belum menyatakan seluruh fungsi KAK selesai diimplementasikan.
+
 # GardaWEB — PMC GARDA interactive demo
 
 React 19, TypeScript, Vite, Tailwind CSS, Lucide, and Recharts. Opens directly into COMMAND. Original planning files and the supplied PUSADA logo are retained.
@@ -12,6 +16,8 @@ npm run dev -- --port 5173
 ```
 
 Open http://127.0.0.1:5173. Production check: `npm run build`. Logic checks: `npm test` (four tests covering filters, incident state, seeded queries, evidence references, and report totals).
+
+Untuk membaca baseline Demo Tahap 2 dalam format interaktif, buka `/garda-stage2.html`. Halaman ini berisi keputusan owner, arsitektur recorder/NVR, checklist kesiapan lokal, dan estimator retensi. Semua feed pada demo tetap sintetis.
 
 Tier 1 LAN toolchain preparation is documented in [`infra/tier1/README.md`](./infra/tier1/README.md), with an optional MediaMTX/ONVIF/stream bridge compose harness. The standalone feature traceability page is [`docs/GARDA_TIER1_KAK_FEATURES_2026-10-11.html`](./docs/GARDA_TIER1_KAK_FEATURES_2026-10-11.html).
 
@@ -44,3 +50,4 @@ Visual comparison used `view_image` on the COMMAND concept and final deployed sc
 `design/command-concept.png`, `design/key-screens-concept.png`; generated using the built-in Image Gen tool. Brief: complete operational COMMAND and LIVE/INCIDENTS/ASK/Vault content surfaces, white and red, compact Lucide icons, original crest, restrained olive branding accent. Production assets: `public/site-map.png`, `public/cameras.png`, `public/faces.png`. Screenshot evidence is in `screenshots/`.
 
 Intentional concept adaptations: original JSON names/times override fabricated text in the image concepts; KPI metrics use one compact strip; headings use supplied PRD labels plus Indonesian operational descriptions; simulated controls are labeled; desktop COMMAND is tightened to retain the event table and infrastructure strip.
+

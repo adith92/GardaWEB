@@ -1,4 +1,7 @@
-# GARDA shared server and five-platform workspace — v0.13.0 source candidate
+# GARDA shared server and five-platform workspace — consolidated review
+
+> **PR #18 functional consolidation:** NVR capture/timeline/playback (PR #13), incident ledger/evidence workflow (PR #14), and encrypted offline metadata backup/restore (PR #15) are code-integrated in this review. Bare `serve` retains no-login local-Admin lab; `--protected` remains optional. Physical recording validation is pending.
+
 
 Owner-selected lab target (16 November 2026): one local AI server, Windows/macOS
 M1/Ubuntu/Android 13+/Web clients, minimum eight camera configurations, one-day

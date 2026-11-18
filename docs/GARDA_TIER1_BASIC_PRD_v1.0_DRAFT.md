@@ -57,7 +57,8 @@ All marked **PROPOSED DELIVERY / ACCEPTANCE GATE** until customer signs scope an
 ## 3. What Basic AI actually means
 ### Person detection (T1)
 Detects *presence of a person* with an optional bounding box/time and source event; no person name, recognition watchlist, unique identity or inferred dangerous intent. Optional generic vehicle class detection.
-### Face detection (T1)
+### Face Recognitions Basic (T1)
+Owner-approved UI name (2026-10-14), traced to T1-008. The name does not change the capability or tier entitlement.
 Says *"wajah terdeteksi"* and links to camera/time. **Face detection != Face Recognition**. Store only operational event data necessary for authorized processing. No identity embedding/gallery, no facial profile database for matching.
 ### ANPR Lite (T1)
 Plate detector -> crop -> OCR -> confidence/quality -> event with plate string, timestamp, camera, source evidence. No automatic gate unlocking, no unsupported 'suspect' classification; manually verify uncertain reads. Advanced registration/watchlists, journeys/cross-camera correlation and higher-volume optimizations are T2/T3 features unless separately bought.

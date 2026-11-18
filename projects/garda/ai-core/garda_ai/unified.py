@@ -7,6 +7,7 @@ import os
 import re
 import secrets
 from pathlib import Path
+from typing import Literal
 from urllib.parse import urlsplit
 
 import cv2
@@ -15,8 +16,10 @@ from fastapi import Depends, File, Form, HTTPException, Query, Request, Response
 from pydantic import BaseModel, Field
 
 from .auth import Identity
+from .incidents import IncidentLedger, IncidentMissing, IncidentConflict
 from .runtime import Runtime
 from .network import NetworkScanner, interfaces, DEFAULT_PORTS
+from .recorder import Recorder
 
 
 class Login(BaseModel):
@@ -33,7 +36,26 @@ class CameraInput(BaseModel):
 
 class ScanInput(BaseModel):
     target: str = Field(min_length=1, max_length=32)
-    ports: str = Field(default=DEFAULT_PORTS, min_length=1, max_length=512)
+    profile: Literal["recommended", "full"] = "recommended"
+
+
+class RecordingInput(BaseModel):
+    enabled: bool
+
+
+class IncidentInput(BaseModel):
+    title: str = Field(min_length=1, max_length=160)
+    camera_id: str = Field(min_length=1, max_length=40)
+    severity: str = "medium"
+    event_id: str | None = Field(default=None, max_length=80)
+
+
+class IncidentEventInput(BaseModel):
+    event_id: str = Field(min_length=1, max_length=80)
+
+
+class IncidentNoteInput(BaseModel):
+    note: str = Field(min_length=1, max_length=500)
 
 
 def decode_image(raw):
@@ -57,7 +79,9 @@ class Unified:
         self.lab_actor = {"name": "Admin lokal", "role": "admin", "csrf": secrets.token_urlsafe(32),
                           "lab_no_login": True}
         self.runtime = Runtime(root, store)
+        self.incidents = IncidentLedger(store)
         self.scanner = NetworkScanner()
+        self.recorder = Recorder(root, self.runtime)
         self.secure_cookie = os.environ.get("GARDA_COOKIE_SECURE", "1") != "0"
         self.allowed_origin = os.environ.get("GARDA_PUBLIC_ORIGIN", "").rstrip("/")
         self._routes(app)
@@ -98,6 +122,54 @@ class Unified:
         operate = self.require("admin", "operator")
         admin = self.require("admin")
 
+        @app.get("/api/v1/nvr/status")
+        def nvr_status(actor=Depends(read)):
+            return self.recorder.snapshot()
+
+        @app.put("/api/v1/nvr/cameras/{camera_id}/recording")
+        def recording(camera_id: str, command: RecordingInput, actor=Depends(admin)):
+            try:
+                self.runtime.recording(camera_id, command.enabled)
+            except ValueError as exc:
+                raise HTTPException(422, str(exc))
+            return {"saved": True, "recording_enabled": command.enabled}
+
+        @app.get("/api/v1/nvr/cameras/{camera_id}/timeline")
+        def timeline(camera_id: str, start: str | None = None, end: str | None = None, actor=Depends(operate)):
+            try:
+                return {"recordings": self.recorder.timeline(camera_id, start, end)}
+            except ValueError:
+                raise HTTPException(422, "Invalid camera/date")
+            except Exception:
+                raise HTTPException(503, "Recording service is not available")
+
+        @app.get("/api/v1/nvr/cameras/{camera_id}/playback.mp4")
+        def playback(camera_id: str, start: str, duration: float = Query(60, ge=1, le=600), actor=Depends(operate)):
+            from datetime import datetime
+            from fastapi.responses import StreamingResponse
+            import httpx
+            if not re.fullmatch(r"[A-Za-z0-9_-]{1,40}", camera_id) or camera_id not in self.runtime.records:
+                raise HTTPException(404, "Unknown camera")
+            try:
+                datetime.fromisoformat(start.replace("Z", "+00:00"))
+            except ValueError:
+                raise HTTPException(422, "Use an ISO date/time")
+            client = httpx.Client(timeout=30, trust_env=False, follow_redirects=False)
+            try:
+                upstream = client.send(client.build_request("GET", "http://127.0.0.1:9996/get",
+                    params={"path": camera_id, "start": start, "duration": duration, "format": "fmp4"}), stream=True)
+                upstream.raise_for_status()
+            except Exception:
+                client.close()
+                raise HTTPException(503, "Recording is unavailable for this time")
+            def chunks():
+                try:
+                    yield from upstream.iter_bytes(65536)
+                finally:
+                    upstream.close()
+                    client.close()
+            return StreamingResponse(chunks(), media_type="video/mp4")
+
         @app.get("/api/v1/network/interfaces")
         def network_interfaces(actor=Depends(admin)):
             return {"interfaces": interfaces(), "default_ports": DEFAULT_PORTS, "source": "server"}
@@ -109,7 +181,7 @@ class Unified:
         @app.post("/api/v1/network/scan")
         def start_scan(command: ScanInput, actor=Depends(admin)):
             try:
-                return self.scanner.start(command.target, command.ports)
+                return self.scanner.start(command.target, "1-65535" if command.profile == "full" else DEFAULT_PORTS)
             except ValueError as exc:
                 raise HTTPException(422, str(exc))
             except RuntimeError as exc:
@@ -225,6 +297,53 @@ class Unified:
                 raise HTTPException(404, "Evidence not found")
             return FileResponse(target, media_type="image/jpeg")
 
+        # Persistent incident workflow; separate from the synthetic /command demo.
+        # Operator/admin only. Every write goes through the existing CSRF/origin guard.
+        def incident_result(operation, *args, **kwargs):
+            try:
+                return operation(*args, **kwargs)
+            except IncidentMissing as exc:
+                raise HTTPException(404, str(exc)) from exc
+            except IncidentConflict as exc:
+                raise HTTPException(409, str(exc)) from exc
+            except ValueError as exc:
+                raise HTTPException(422, str(exc)) from exc
+
+        @app.get("/api/v1/incidents")
+        def incidents(status: str | None = None,
+                      limit: int = Query(50, ge=1, le=100), actor=Depends(operate)):
+            items = incident_result(self.incidents.list, status, limit)
+            return {"incidents": items, "count": len(items)}
+
+        @app.post("/api/v1/incidents", status_code=201)
+        def create_incident(command: IncidentInput, actor=Depends(operate)):
+            return incident_result(self.incidents.create, command.title, command.camera_id,
+                                   command.severity, actor["name"], command.event_id)
+
+        @app.get("/api/v1/incidents/{incident_id}")
+        def incident_detail(incident_id: str, actor=Depends(operate)):
+            return incident_result(self.incidents.get, incident_id)
+
+        @app.post("/api/v1/incidents/{incident_id}/acknowledge")
+        def acknowledge_incident(incident_id: str, actor=Depends(operate)):
+            return incident_result(self.incidents.transition, incident_id, "acknowledge", actor["name"])
+
+        @app.post("/api/v1/incidents/{incident_id}/resolve")
+        def resolve_incident(incident_id: str, actor=Depends(operate)):
+            return incident_result(self.incidents.transition, incident_id, "resolve", actor["name"])
+
+        @app.post("/api/v1/incidents/{incident_id}/events")
+        def attach_incident_event(incident_id: str, command: IncidentEventInput, actor=Depends(operate)):
+            return incident_result(self.incidents.attach_event, incident_id, command.event_id, actor["name"])
+
+        @app.post("/api/v1/incidents/{incident_id}/notes")
+        def add_incident_note(incident_id: str, command: IncidentNoteInput, actor=Depends(operate)):
+            return incident_result(self.incidents.add_note, incident_id, command.note, actor["name"])
+
+        @app.get("/api/v1/incidents/{incident_id}/evidence-manifest")
+        def incident_manifest(incident_id: str, actor=Depends(operate)):
+            return incident_result(self.incidents.evidence_manifest, incident_id)
+
         @app.post("/api/v1/faces/enroll")
         async def enroll(image: UploadFile = File(...), label: str = Form(..., max_length=90),
                          reference: str = Form(..., min_length=1, max_length=140),
@@ -259,5 +378,6 @@ class Unified:
         install_updates(app, self, self.runtime.root)
 
     def close(self):
+        self.recorder.close()
         self.runtime.close()
         self.identity.close()

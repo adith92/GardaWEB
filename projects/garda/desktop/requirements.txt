@@ -1,4 +1,7 @@
-PySide6
-opencv-python
-numpy
-onvif-zeep
+# Desktop-only environment; use a clean venv (Python 3.11-3.13).
+# Do not install opencv-python and opencv-python-headless together.
+PySide6>=6.7,<7
+opencv-python-headless>=4.10,<5
+numpy>=2,<3
+# Legacy ONVIF client retained for compatibility, replacement requires device tests.
+onvif-zeep==0.2.12

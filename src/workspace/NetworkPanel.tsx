@@ -3,7 +3,8 @@ import type { FormEvent } from "react";
 import { Network, Search, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSet, FieldLegend } from "@/components/ui/field";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,7 @@ export default function NetworkPanel({ csrf }: { csrf: string }) {
   const [interfaces, setInterfaces] = useState<Interface[]>([]);
   const [target, setTarget] = useState("");
   const [ports, setPorts] = useState("");
+  const [profile, setProfile] = useState("recommended");
   const [scan, setScan] = useState<Scan>({status: "idle", completed: 0, total: 0, results: []});
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
@@ -37,7 +39,7 @@ export default function NetworkPanel({ csrf }: { csrf: string }) {
   }, []);
   async function submit(event: FormEvent) {
     event.preventDefault(); setError(""); setPending(true);
-    try {setScan(await request<Scan>("/api/v1/network/scan", {method: "POST", body: JSON.stringify({target, ports})}, csrf));}
+    try {setScan(await request<Scan>("/api/v1/network/scan", {method: "POST", body: JSON.stringify({target, profile})}, csrf));}
     catch (e) {setError((e as Error).message);} finally {setPending(false);}
   }
   const running = scan.status === "running";
@@ -46,7 +48,13 @@ export default function NetworkPanel({ csrf }: { csrf: string }) {
     <Card><CardHeader><CardTitle>Temukan perangkat & port LAN</CardTitle><CardDescription>TCP scanner bawaan · maksimal /24 · tanpa instalasi Nmap.</CardDescription></CardHeader>
       <CardContent><form id="network-scan" onSubmit={submit}><FieldGroup>
         <Field><FieldLabel htmlFor="scan-target">IP atau subnet target</FieldLabel><Input id="scan-target" value={target} onChange={e => setTarget(e.target.value)} placeholder="192.168.1.0/24" maxLength={32} required disabled={running}/><FieldDescription>Interface aktif: {interfaces.length ? interfaces.map(i => `${i.name} (${i.ip}, ${i.network})`).join("; ") : "Belum ditemukan. Periksa koneksi LAN server."}</FieldDescription></Field>
-        <Field><FieldLabel htmlFor="scan-ports">Port TCP</FieldLabel><Input id="scan-ports" value={ports} onChange={e => setPorts(e.target.value)} placeholder="80,443,554,8899" maxLength={512} required disabled={running}/><FieldDescription>Daftar atau rentang port 1–65535. Untuk full scan, pilih satu IP lalu isi 1-65535. Batas waktu 5 menit; hasil parsial tetap tampil.</FieldDescription></Field>
+        <FieldDescription>{profile === "recommended" ? <>Otomatis memakai <strong>Recommended Ports</strong>: {ports}. Full Port hanya dijalankan jika dipilih di pengaturan lanjutan.</> : <>Profil aktif: <strong>Full Port · 1–65535</strong>. Dipilih secara manual di Advanced Settings; hanya untuk satu IP.</>}</FieldDescription>
+        <details className="gw-advanced"><summary>Advanced Settings</summary><FieldSet disabled={running}><FieldLegend>Profil pemindaian</FieldLegend>
+          <RadioGroup value={profile} onValueChange={setProfile} disabled={running} aria-label="Profil pemindaian">
+            <Field orientation="horizontal"><RadioGroupItem id="scan-recommended" value="recommended"/><FieldLabel htmlFor="scan-recommended">Recommended Ports · cepat (default)</FieldLabel></Field>
+            <Field orientation="horizontal"><RadioGroupItem id="scan-full" value="full"/><FieldLabel htmlFor="scan-full">Full Port · 1–65535, satu IP</FieldLabel></Field>
+          </RadioGroup><FieldDescription>{profile === "full" ? "Full Port aktif. Masukkan satu IP kamera; durasi maksimal 5 menit, hasil parsial tetap tampil." : "Hanya port umum CCTV yang diperiksa. Tidak menjalankan full scan otomatis."}</FieldDescription>
+        </FieldSet></details>
       </FieldGroup></form></CardContent>
       <CardFooter className="flex flex-wrap gap-3"><Button type="submit" form="network-scan" disabled={running || pending || !interfaces.length}><Search data-icon="inline-start"/>{pending ? "Memulai…" : "Mulai pindai"}</Button><Button variant="outline" disabled={!running || pending} onClick={async () => {try {setScan(await request<Scan>("/api/v1/network/scan/cancel", {method: "POST"}, csrf));} catch (e) {setError((e as Error).message);}}}><Square data-icon="inline-start"/>Hentikan</Button></CardFooter>
     </Card>

@@ -170,6 +170,11 @@ internal fun GardaAiEventsPanel() {
                                         val id = client.photoIds(event.id).firstOrNull()
                                         id?.let { photoId ->
                                             val bytes = client.photo(event.id, photoId)
+                                            val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                                            BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
+                                            require(bounds.outWidth > 0 && bounds.outHeight > 0 &&
+                                                bounds.outWidth.toLong() * bounds.outHeight.toLong() <= 12_000_000L
+                                            ) { "Image dimensions exceed safe decoder budget" }
                                             BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                                         }
                                     }

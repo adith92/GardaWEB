@@ -62,6 +62,13 @@ Applies to **every** file and AI coding session in this repository. Product: PUS
 - projects/garda/ai-core and PR #10 services/garda-ai-vision are separate prototypes; do not silently treat them as one backend.
 - Keep source-only modules out of web/client deployment. Preserve Android application IDs and signing continuity. Old source history remains archived in docs.
 
+## Consolidated functional lab review (PR #18; 2026-11-18)
+- This review integrates outstanding PR #3, #6, #7, #9, #10, #13, #14, #15, #16, and #17 with no separate backend activation for archived prototype services.
+- Keep local-Admin no-login mode as the owner-approved initial lab default. Maintain camera RTSP/ONVIF Basic authentication and legacy physical camera control methods for the testing environment. Production hardening remains a separately scoped decision.
+- Unified AI/NVR and incident routes share one `projects/garda/ai-core` server. `services/garda-api` and `services/garda-ai-vision` are experimental, separately started scaffolds only.
+- Root legacy demo, /V2 demo, and /workspace real control panel must all remain reachable.
+- No local data may be wiped automatically during error recovery. Do not claim hardware acceptance based on source/CI checks alone.
+
 ## Owner-authorized five-platform lab (2026-11-16)
 - Owner selected one local AI server with Windows, Apple Silicon M1 macOS, Ubuntu, Android 13+ and Web clients, an eight-camera minimum target, and a one-day MVP priority. See docs/GARDA_FIVE_PLATFORM_MVP_STATUS_2026-11-16.md.
 - This lab explicitly includes enrolled face matching and plate OCR; it does not change generic Basic entitlements, production acceptance or the historic PUSADA contract schedule.

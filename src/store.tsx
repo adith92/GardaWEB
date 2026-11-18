@@ -94,7 +94,12 @@ function read(): State {
       Array.isArray(s.incidents) &&
       Array.isArray(s.files) &&
       s.settings
-      ? { ...initial, ...s }
+      ? {
+          ...initial,
+          ...s,
+          settings: { ...initial.settings, ...s.settings },
+          audit: Array.isArray(s.audit) ? s.audit.slice(0, 500) : initial.audit,
+        }
       : initial;
   } catch {
     return initial;
@@ -130,23 +135,24 @@ function useStore() {
           target,
         },
         ...s.audit,
-      ],
+      ].slice(0, 500),
     }));
   }
   function updateIncident(id: string, patch: Partial<Incident>) {
-    setState((s) => ({
-      ...s,
-      incidents: s.incidents.map((i) =>
-        i.id === id
-          ? {
-              ...(patch.status ? transitionIncident(i, patch.status) : i),
-              ...patch,
-            }
-          : i,
-      ),
-    }));
+    setState((s) => {
+      const current = s.incidents.find((item) => item.id === id);
+      if (!current) return s;
+      let updated: Incident;
+      try {
+        updated = { ...(patch.status ? transitionIncident(current, patch.status) : current), ...patch };
+      } catch {
+        // Invalid status transitions can be caused by outdated local data.
+        return s;
+      }
+      return { ...s, incidents: s.incidents.map((item) => item.id === id ? updated : item) };
+    });
     log("Insiden diperbarui", id);
-    setToast("Perubahan insiden disimpan lokal");
+    setToast("Permintaan pembaruan insiden diproses");
   }
   function createIncident(camera: string) {
     const id = `INC-DEMO-${Date.now().toString().slice(-7)}`;

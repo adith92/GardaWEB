@@ -57,10 +57,9 @@ class SriHomeClient:
 
         # 2. Fallback check Port 7777 Native PTZ
         try:
-            s = socket.socket()
-            s.settimeout(1.5)
-            s.connect((self.ip, self.ptz_port))
-            s.close()
+            with socket.socket() as s:
+                s.settimeout(1.5)
+                s.connect((self.ip, self.ptz_port))
             self.is_connected = True
             return True, f"Native PTZ Terhubung ({self.ip}:{self.ptz_port})", telemetry
         except Exception as e:
@@ -165,23 +164,19 @@ class SriHomeClient:
     def send_ptz_packet(self, opcode: int, step: int = 30) -> Tuple[bool, str]:
         """Send a 32-byte binary PTZ packet to port 7777."""
         try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.settimeout(1.5)
-            s.connect((self.ip, self.ptz_port))
-
             pkt = bytearray(32)
             pkt[0] = 0xAA
             pkt[1] = opcode & 0xFF
             pkt[2] = step & 0xFF
             pkt[3] = (step >> 8) & 0xFF
-
-            s.sendall(pkt)
-            res = s.recv(32)
-            s.close()
-
-            if len(res) > 0 and res[0] == 0xBB:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                sock.settimeout(1.5)
+                sock.connect((self.ip, self.ptz_port))
+                sock.sendall(pkt)
+                res = sock.recv(32)
+            if res and res[0] == 0xBB:
                 return True, "OK (0xBB)"
-            return True, f"Ack: {res.hex()}"
+            return False, "Kamera mengembalikan respons PTZ tidak valid"
         except Exception as e:
             return False, str(e)
 
@@ -239,15 +234,14 @@ class SriHomeClient:
     def execute_shell_cmd(self, cmd: str) -> Tuple[bool, str]:
         """Execute a shell command via passwordless Telnet port 23."""
         try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.settimeout(2.0)
-            s.connect((self.ip, self.telnet_port))
-            time.sleep(0.12)
-            payload = f"{cmd}\nexit\n".encode("utf-8")
-            s.sendall(payload)
-            time.sleep(0.18)
-            out = s.recv(2048).decode("utf-8", errors="ignore")
-            s.close()
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                sock.settimeout(2.0)
+                sock.connect((self.ip, self.telnet_port))
+                time.sleep(0.12)
+                payload = f"{cmd}\nexit\n".encode("utf-8")
+                sock.sendall(payload)
+                time.sleep(0.18)
+                out = sock.recv(2048).decode("utf-8", errors="ignore")
             return True, out.strip()
         except Exception as e:
             return False, str(e)
@@ -255,13 +249,15 @@ class SriHomeClient:
     def set_white_light(self, enable: bool) -> Tuple[bool, str]:
         """Turn White Light Spotlight ON or OFF via REST API + PWM."""
         mode = "white_on" if enable else "white_off"
-        self._post_api(f"/api/led?mode={mode}")
-        if enable:
-            ok, msg = self.execute_shell_cmd("echo 1 > /var/white_light")
-        else:
-            ok, msg = self.execute_shell_cmd("rm -f /var/white_light")
-        self.white_light_on = enable
-        return True, f"Spotlight Putih {'ON' if enable else 'OFF'}"
+        ok, msg = self._post_api(f"/api/led?mode={mode}")
+        if not ok:
+            # Preserve owner-requested Telnet hardware fallback in lab testing.
+            ok, msg = self.execute_shell_cmd(
+                "echo 1 > /var/white_light" if enable else "rm -f /var/white_light"
+            )
+        if ok:
+            self.white_light_on = enable
+        return ok, f"Spotlight Putih {'ON' if enable else 'OFF'}" if ok else f"Spotlight gagal: {msg}"
 
     def set_ir_light(self, enable: bool) -> Tuple[bool, str]:
         """Turn IR Night Vision LED ON or OFF via REST API (/api/led) & GPIO 44."""
@@ -270,8 +266,9 @@ class SriHomeClient:
         if not ok:
             val = "1" if enable else "0"
             ok, msg = self.execute_shell_cmd(f"/app/gpio_output.sh 44 {val}")
-        self.ir_light_on = enable
-        return True, f"IR Night Vision {'ON' if enable else 'OFF'}"
+        if ok:
+            self.ir_light_on = enable
+        return ok, f"IR Night Vision {'ON' if enable else 'OFF'}" if ok else f"IR gagal: {msg}"
 
     def set_ircut_filter(self, night_mode: bool) -> Tuple[bool, str]:
         """Switch IR-Cut optical filter between Day (GPIO 39) and Night (GPIO 40)."""

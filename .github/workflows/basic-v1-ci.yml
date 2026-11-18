@@ -1,0 +1,40 @@
+name: Garda Basic v1 local stack checks
+on:
+  pull_request:
+    paths:
+      - 'services/garda-api/**'
+      - 'infra/basic-v1/**'
+      - '.github/workflows/basic-v1-ci.yml'
+  push:
+    branches:
+      - 'feat/garda-basic-v1-local-foundation-20261108'
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '24'
+      - name: Install API dependencies
+        working-directory: services/garda-api
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Syntax and tests
+        working-directory: services/garda-api
+        run: npm run check && npm test
+      - name: Validate Docker Compose syntax
+        env:
+          POSTGRES_USER: garda
+          POSTGRES_PASSWORD: ci_only_test_0123456789abcdef
+          POSTGRES_DB: garda
+          GARDA_ADMIN_TOKEN: ci_only_test_token_at_least_32_characters
+          GARDA_CAMERA_KEY_HEX: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          MEDIAMTX_API_PASSWORD: ci_only_test_media_password
+          GARDA_RECORDINGS_DIR: ./data/recordings
+        run: |
+          docker compose -f infra/basic-v1/docker-compose.yml config --quiet
+          docker compose -f infra/basic-v1/docker-compose.yml up -d --build --wait
+          curl --retry 10 --retry-connrefused --retry-delay 2 -fsS http://127.0.0.1:8088/healthz
+          curl --retry 10 --retry-connrefused --retry-delay 2 -fsS -H "Authorization: Bearer $GARDA_ADMIN_TOKEN" http://127.0.0.1:8088/v1/cameras
+          docker compose -f infra/basic-v1/docker-compose.yml down
