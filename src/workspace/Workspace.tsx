@@ -7,7 +7,8 @@ import "./workspace.css";
 
 const NetworkPanel = lazy(() => import("./NetworkPanel"));
 const IncidentPanel = lazy(() => import("./IncidentPanel"));
-const tabs = ["Live", "Kejadian", "Insiden", "Perangkat", "Jaringan", "Wajah", "Engine", "Update"] as const;
+const RecorderPanel = lazy(() => import("./RecorderPanel"));
+const tabs = ["Live", "Rekaman", "Kejadian", "Insiden", "Perangkat", "Jaringan", "Wajah", "Engine", "Update"] as const;
 type Tab = typeof tabs[number];
 const date = (value: string) => new Date(value).toLocaleString("id-ID");
 
@@ -175,7 +176,7 @@ export default function Workspace() {
   if (checking) return <main className="gw"><p role="status">Memeriksa sesi…</p></main>;
   if (connectionError) return <main className="gw login-surface"><section className="login-form"><h1>GARDA Workspace</h1><p role="alert">{connectionError}</p><button onClick={() => setRetry(v => v+1)}>Coba hubungkan kembali</button></section></main>;
   if (!actor) return <Login onLogin={setActor}/>;
-  const visibleTabs = tabs.filter(t => actor.role === "admin" || (t !== "Perangkat" && t !== "Jaringan" && t !== "Wajah" && (actor.role !== "viewer" || (t !== "Kejadian" && t !== "Insiden" && t !== "Update"))));
+  const visibleTabs = tabs.filter(t => actor.role === "admin" || (t !== "Perangkat" && t !== "Jaringan" && t !== "Wajah" && (actor.role !== "viewer" || (t !== "Rekaman" && t !== "Kejadian" && t !== "Insiden" && t !== "Update"))));
   return <main className="gw"><header className="gw-header"><a className="gw-brand" href="/workspace"><img src="/logo.png" alt="GARDA"/><span>GARDA<strong>Workspace</strong></span></a>
     <div className="gw-user"><ShieldCheck size={18}/><span>{actor.lab_no_login ? "Admin lokal · Semua akses" : `${actor.name} · ${actor.role}`}</span>{!actor.lab_no_login ? <button aria-label="Keluar" onClick={async () => { try { await request("/api/v1/auth/logout", { method: "POST" }, actor.csrf); setActor(null); setCameras([]); setEvents([]); } catch (e) { setNotice((e as Error).message); } }}><LogOut size={18}/></button> : null}</div>
   </header><nav className="gw-nav">{visibleTabs.map(t => <button key={t} aria-current={tab === t ? "page" : undefined} onClick={() => setTab(t)}>{t}</button>)}</nav>
@@ -185,6 +186,7 @@ export default function Workspace() {
       {tab === "Kejadian" && canOperate ? <section><div className="gw-filters"><label><Search size={16}/><input aria-label="Cari plat, nama atau kamera" placeholder="Cari plat, nama atau kamera" value={query} onChange={e => setQuery(e.target.value)}/></label><select aria-label="Jenis kejadian" value={kind} onChange={e => setKind(e.target.value)}><option value="">Semua kejadian</option><option value="face">Wajah</option><option value="plate">Plat</option><option value="motion">Gerakan</option></select></div>
         <div className="gw-table-wrap"><table><thead><tr><th>Waktu</th><th>Kamera</th><th>Jenis</th><th>Hasil kandidat</th><th>Confidence</th><th>Bukti / Insiden</th></tr></thead><tbody>{events.map(e => <tr key={e.id}><td>{date(e.observed_at)}</td><td>{e.camera_id}</td><td>{e.kind}</td><td>{e.plate_text || e.face_label || "Belum teridentifikasi"}</td><td>{typeof e.confidence === "number" ? `${(e.confidence*100).toFixed(1)}%` : "—"}</td><td><button onClick={() => void openEvidence(e)}>Snapshot</button> <button onClick={() => void incidentFromEvent(e)}>Buat Insiden</button></td></tr>)}</tbody></table>{events.length === 0 ? <p className="gw-empty-line">Belum ada kejadian yang cocok.</p> : null}</div></section> : null}
       {tab === "Insiden" && canOperate ? <Suspense fallback={<p role="status">Memuat insiden…</p>}><IncidentPanel csrf={actor.csrf} reload={incidentReload}/></Suspense> : null}
+      {tab === "Rekaman" && canOperate ? <Suspense fallback={<p role="status">Membuka rekaman…</p>}><RecorderPanel csrf={actor.csrf} admin={actor.role === "admin"}/></Suspense> : null}
       {tab === "Perangkat" && actor.role === "admin" ? <Devices cameras={cameras} actor={actor} refresh={() => void refresh()} notice={setNotice}/> : null}
       {tab === "Jaringan" && actor.role === "admin" ? <Suspense fallback={<p role="status">Membuka scanner…</p>}><NetworkPanel csrf={actor.csrf}/></Suspense> : null}
       {tab === "Wajah" && actor.role === "admin" ? <Faces actor={actor} notice={setNotice}/> : null}
