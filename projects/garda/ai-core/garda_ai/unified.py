@@ -15,6 +15,7 @@ from fastapi import Depends, File, Form, HTTPException, Query, Request, Response
 from pydantic import BaseModel, Field
 
 from .auth import Identity
+from .incidents import IncidentLedger, IncidentMissing, IncidentConflict
 from .runtime import Runtime
 from .network import NetworkScanner, interfaces, DEFAULT_PORTS
 
@@ -34,6 +35,21 @@ class CameraInput(BaseModel):
 class ScanInput(BaseModel):
     target: str = Field(min_length=1, max_length=32)
     ports: str = Field(default=DEFAULT_PORTS, min_length=1, max_length=512)
+
+
+class IncidentInput(BaseModel):
+    title: str = Field(min_length=1, max_length=160)
+    camera_id: str = Field(min_length=1, max_length=40)
+    severity: str = "medium"
+    event_id: str | None = Field(default=None, max_length=80)
+
+
+class IncidentEventInput(BaseModel):
+    event_id: str = Field(min_length=1, max_length=80)
+
+
+class IncidentNoteInput(BaseModel):
+    note: str = Field(min_length=1, max_length=500)
 
 
 def decode_image(raw):
@@ -57,6 +73,7 @@ class Unified:
         self.lab_actor = {"name": "Admin lokal", "role": "admin", "csrf": secrets.token_urlsafe(32),
                           "lab_no_login": True}
         self.runtime = Runtime(root, store)
+        self.incidents = IncidentLedger(store)
         self.scanner = NetworkScanner()
         self.secure_cookie = os.environ.get("GARDA_COOKIE_SECURE", "1") != "0"
         self.allowed_origin = os.environ.get("GARDA_PUBLIC_ORIGIN", "").rstrip("/")
@@ -224,6 +241,53 @@ class Unified:
             if target is None:
                 raise HTTPException(404, "Evidence not found")
             return FileResponse(target, media_type="image/jpeg")
+
+        # Persistent incident workflow; separate from the synthetic /command demo.
+        # Operator/admin only. Every write goes through the existing CSRF/origin guard.
+        def incident_result(operation, *args, **kwargs):
+            try:
+                return operation(*args, **kwargs)
+            except IncidentMissing as exc:
+                raise HTTPException(404, str(exc)) from exc
+            except IncidentConflict as exc:
+                raise HTTPException(409, str(exc)) from exc
+            except ValueError as exc:
+                raise HTTPException(422, str(exc)) from exc
+
+        @app.get("/api/v1/incidents")
+        def incidents(status: str | None = None,
+                      limit: int = Query(50, ge=1, le=100), actor=Depends(operate)):
+            items = incident_result(self.incidents.list, status, limit)
+            return {"incidents": items, "count": len(items)}
+
+        @app.post("/api/v1/incidents", status_code=201)
+        def create_incident(command: IncidentInput, actor=Depends(operate)):
+            return incident_result(self.incidents.create, command.title, command.camera_id,
+                                   command.severity, actor["name"], command.event_id)
+
+        @app.get("/api/v1/incidents/{incident_id}")
+        def incident_detail(incident_id: str, actor=Depends(operate)):
+            return incident_result(self.incidents.get, incident_id)
+
+        @app.post("/api/v1/incidents/{incident_id}/acknowledge")
+        def acknowledge_incident(incident_id: str, actor=Depends(operate)):
+            return incident_result(self.incidents.transition, incident_id, "acknowledge", actor["name"])
+
+        @app.post("/api/v1/incidents/{incident_id}/resolve")
+        def resolve_incident(incident_id: str, actor=Depends(operate)):
+            return incident_result(self.incidents.transition, incident_id, "resolve", actor["name"])
+
+        @app.post("/api/v1/incidents/{incident_id}/events")
+        def attach_incident_event(incident_id: str, command: IncidentEventInput, actor=Depends(operate)):
+            return incident_result(self.incidents.attach_event, incident_id, command.event_id, actor["name"])
+
+        @app.post("/api/v1/incidents/{incident_id}/notes")
+        def add_incident_note(incident_id: str, command: IncidentNoteInput, actor=Depends(operate)):
+            return incident_result(self.incidents.add_note, incident_id, command.note, actor["name"])
+
+        @app.get("/api/v1/incidents/{incident_id}/evidence-manifest")
+        def incident_manifest(incident_id: str, actor=Depends(operate)):
+            return incident_result(self.incidents.evidence_manifest, incident_id)
 
         @app.post("/api/v1/faces/enroll")
         async def enroll(image: UploadFile = File(...), label: str = Form(..., max_length=90),

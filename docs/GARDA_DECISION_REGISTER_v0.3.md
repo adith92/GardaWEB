@@ -1,3 +1,10 @@
+## Keputusan final owner 16 Oktober 2026
+
+- **DECIDED:** Implementasi 8 minggu (minggu 1–8), testing/UAT/commissioning 2 minggu (minggu 9–10). Support/warranty **12 bulan sejak BAST/serah terima operasional**. Seluruh pernyataan jadwal/support terdahulu yang bertentangan digantikan keputusan ini; tidak perlu ditanyakan ulang.
+- **DECIDED DEMO:** PMC V2 diarahkan menjadi demo final khusus kebutuhan KAK PUSADA, memakai data sintetis. Ini tidak mengubah entitlement paket Basic produksi atau berarti uji penerimaan sistem nyata sudah lulus.
+- **IMPLEMENTED DEMO:** Animasi jaringan abstrak diganti kamera CCTV bergerak; pilihan logo GARDA berputar, jeda dan reduced motion tersedia.
+- Rincian pembahasan tahap final: `docs/PMC_V2_FINAL_DEMO_2026-10-16.md`.
+
 # GARDA — Decision Register Addendum v0.3
 Date: **2026-10-08** | Authoritative owner answers: questions 1–20, after decisions 21–25.
 **Status:** Product owner intent = **DECIDED**; technical/commercial acceptance, legal feasibility and KAK compliance = **PENDING**.
@@ -45,7 +52,7 @@ This addendum **supersedes the 'Still open from questions 1–20' section** in `
 
 ## KAK conflict warning — no silent waiver
 The uploaded KAK for PUSADA calls for **16 monitoring points, 90-day video/metadata retention, face enrollment/watchlists, LPR, Ask Garda, zone audio, rules and integrations, redundant NVR/storage, ECC enterprise GPU server, and tests**. The owner’s **generic Tier1 Basic commercial package** does NOT cover all KAK-mandated modules or infrastructure. Do **not** call plain Tier1 KAK-compliant. Prepare a distinct **PUSADA Contract Bundle: T1 Core + separately priced/contracted T2/T3/T4 selected modules and KAK infrastructure** (or agree written changes to KAK) and validate procurement/legal compliance. See `GARDA_PUSADA_KAK_GAP_MATRIX_2026-10-08.md`.
-The KAK itself also appears to conflict on **duration/support** (narrative vs schedule); seek clarification before signing.
+Duration/support resolved by owner on 2026-10-16: 8 weeks implementation + 2 weeks testing/UAT/commissioning; 12 months support from BAST.
 
 ## Items remaining OPEN (do not invent)
 - Q10: need for **true air gap** vs offline with controlled update access.
@@ -60,14 +67,44 @@ The KAK itself also appears to conflict on **duration/support** (narrative vs sc
 - Exact KAK-reconciled first contract scope, paid add-ons, whether face recognition and Ask Garda must be active from day one, legal and privacy authorizations.
 - Four marketing tier names remain **PROPOSED**: SIAGA/WASPADA/WASKITA/KOMANDO, not owner-approved.
 
+## Production questionnaire answers (owner, 2026-10-08)
+
+The following answers are now the owner intent for the PUSADA planning baseline. They do not by themselves amend the signed KAK or prove technical acceptance.
+
+| Q | Owner answer recorded | Decision effect / remaining control |
+|---|---|---|
+| Q01 | KAK functions remain expected, while practical GARDA hot retention remains **7 days**. | Keep the PUSADA Contract Bundle for KAK functions. Treat 90-day availability as a separate NVR/archive acceptance obligation; do not label a 7-day hot window as 90-day compliance. |
+| Q02 | **16 principal channels/points**: 13 dual-camera points, 2 face-recognition cameras and 1 LPR/ANPR camera. | Use this inventory for the next design pass. Confirm whether “13 dual-camera” means 26 physical cameras and record each stream/channel ID before sizing. |
+| Q03 | KAK schedule uses **weeks**, with weeks **1–10** as the planning baseline. | Superseded on 2026-10-16: 8 weeks implementation + 2 weeks testing/UAT/commissioning; 12 months support from BAST. |
+| Q04 | **50 kVA final owner target** for the generator. | Use 50 kVA as the owner BOM target, subject to load/power survey and written resolution of the KAK 500 kVA conflict. |
+| Q05 | **Combination storage**: NVR has 1 TB; GARDA CPU/storage has 16 TB; NVR is only a backup of GARDA. | GARDA is the primary recorder. Prove 7-day hot retention and backup restore. A 1 TB NVR cannot be assumed to provide 90 days; 90-day KAK availability remains an explicit capacity, archive and acceptance item. |
+| Q06 | 13 dual-camera channels use ordinary camera specification; face and ANPR/LPR cameras use a somewhat higher specification. | Keep exact resolution, FPS, codec, bitrate, lighting and lens requirements open until camera quotation/survey and benchmark. |
+| Q07 | Follow the questionnaire recommendation for full-storage/disk-failure behavior. | Use alarmed policy-controlled overwrite, preserve protected evidence, and audit the action. |
+| Q08 | Use the camera list already recorded in GitHub as the first compatibility baseline. | Trace the exact repository list into a test matrix; firmware, ONVIF/RTSP behavior and reconnect evidence remain required. |
+| Q09 | AI should remain **simple/basic** for this baseline. | Basic scope is person/face presence and simple ANPR/LPR as supported by the approved list. Face identity, advanced LPR and Ask GARDA remain separate contract/tier decisions despite the KAK wording. GPU stays TBA. |
+| Q10 | The ordinary **User** role is view-only and cannot replay video. | Define higher roles and server-side permissions for live, playback, export, watchlist and biometric actions; do not infer privileges from the label “User”. |
+| Q11 | Follow the questionnaire recommendation. | Define a server-side concurrent operator lease, heartbeat, takeover and separate maintenance path in the PRD. |
+| Q12 | Online access is **optional**; operations should work offline. | Use offline-first operation with a controlled, signed update path. Do not call the design air-gapped until network/media policy is approved. |
+| Q13 | Follow the questionnaire recommendation. | Acceptance must contain measurable live, reconnect, recording, AI, restore, RTO and RPO thresholds with evidence and sign-off. |
+| Q14 | Final decisions belong to the **Pejabat Pembuat Komitmen (PPK)**. The implementer is not the decision maker; contract terms will be adjusted accordingly. | Assign scope, privacy, hardware, acceptance and variation approvals to PPK/customer authority in the RACI. Treat implementer recommendations as proposals until contract authority accepts them. |
+
+These answers supersede the questionnaire's temporary OPEN labels for owner intent. The technical controls, capacity calculations, compatibility tests, acceptance evidence and formal PPK/KAK changes remain pending.
+
 ## Architecture decision notes
 - Security: Basic role/permission and tenant/site checks apply server-side to streams, playback, exports, events, evidence, and vault, not just frontend UI.
 - Offline: no vendor cloud required for monitoring/recording/AI/license. Optional internet update separated from camera segment via screened management channel.
 - Recording: NVR continuous independent recording is distinct from GARDA recording. If parallel, independently size storage and retention on both; never assume GARDA's 7-day default satisfies the KAK's 90-day requirement.
 - Data rights: encrypted biometric records only when matching is a contracted/licensed lawful capability; Basic face detection shouldn't persist face embeddings or identity labels.
 
+## Owner naming update — 2026-10-14
+
+- **DECIDED:** The face module's UI name is **Face Recognitions**; the Tier 1 label is **Face Recognitions Basic**. Do not display “Face Detection” as the customer-facing module name.
+- This is a naming decision: T1-008 still covers face presence, camera and time only. Identity matching, enrollment and watchlists remain Tier 2 capabilities.
+- **DEMO:** The existing synthetic identity preview remains explicitly fictional and does not demonstrate a real biometric integration.
+
 ## Links
 - `docs/GARDA_TIER1_BASIC_PRD_v1.0_DRAFT.md`
 - `docs/GARDA_MASTER_FEATURE_CATALOG_v0.3.md`
 - `docs/GARDA_PUSADA_KAK_GAP_MATRIX_2026-10-08.md`
 - `AGENTS.md`
+

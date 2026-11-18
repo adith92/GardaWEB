@@ -11,9 +11,10 @@ from cryptography.hazmat.primitives.serialization import pkcs12
 import base64
 
 root = Path(sys.argv[1])
-expected = ["GARDA-Web-0.13.0.zip", "GARDA-Windows-x64-0.13.0.exe", "GARDA-macOS-arm64-0.13.0.dmg",
-            "GARDA-Ubuntu-x64-0.13.0.deb", "GARDA-Linux-x64-0.13.0.AppImage",
-            "GARDA-FOLD-0.13.0.apk", "GARDA-Standard-0.13.0.apk"]
+expected = ["GARDA-Web-0.14.0.zip", "GARDA-Windows-x64-0.14.0.exe", "GARDA-macOS-arm64-0.14.0.dmg",
+            "GARDA-Ubuntu-x64-0.14.0.deb", "GARDA-Linux-x64-0.14.0.AppImage",
+            "GARDA-FOLD-0.14.0.apk", "GARDA-Standard-0.14.0.apk",
+            "GARDA-Server-Windows-x64-0.14.0.zip", "GARDA-Server-Ubuntu-x64-0.14.0.zip"]
 for name in expected:
     assert (root/name).is_file() and (root/name).stat().st_size > 1000, name + " missing/empty"
 hashes = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(root.iterdir()) if p.is_file()}
@@ -28,7 +29,7 @@ with urllib.request.urlopen(request) as response:
 manifest = {}
 for channel, name, package in [("fold",expected[5],"org.foldview.cctv"),("standard",expected[6],"org.garda.cctv.standard")]:
     manifest[channel] = {"assetId": assets[name]['id'], "sha256": hashes[name], "sizeBytes": (root/name).stat().st_size,
-                         "packageName": package, "versionName": "0.13.0", "versionCode": 17}
+                         "packageName": package, "versionName": "0.14.0", "versionCode": 18}
 (root/"updates.json").write_text(json.dumps(manifest, indent=2)+"\n")
 hashes = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(root.iterdir())
           if p.is_file() and p.name not in {'SHA256SUMS.txt', 'SHA256SUMS.sig', 'GARDA-Release-PublicKey.pem'}}

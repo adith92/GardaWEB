@@ -94,6 +94,13 @@ class FaceDetector:
 class PlateReader:
     """Real detector + OCR pipeline, lazy-loaded to keep unit tests lightweight."""
     def __init__(self, minimum_confidence: float = 0.7):
+        import os
+        cache = os.environ.get("GARDA_PLATE_CACHE")
+        if cache:
+            from open_image_models.detection.core import hub as detector_hub
+            from fast_plate_ocr.inference import hub as ocr_hub
+            detector_hub.MODEL_CACHE_DIR = Path(cache) / "detector"
+            ocr_hub.MODEL_CACHE_DIR = Path(cache) / "ocr"
         try:
             from fast_alpr import ALPR
         except ImportError as exc:

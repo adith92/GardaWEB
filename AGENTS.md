@@ -62,6 +62,19 @@ Applies to **every** file and AI coding session in this repository. Product: PUS
 - projects/garda/ai-core and PR #10 services/garda-ai-vision are separate prototypes; do not silently treat them as one backend.
 - Keep source-only modules out of web/client deployment. Preserve Android application IDs and signing continuity. Old source history remains archived in docs.
 
+## Incident ledger + protected LAN mode (new REVIEW branch, 2026-11-16)
+- Source and acceptance gates: `docs/GARDA_12_MODULE_GREEN_GATES_2026-11-16.md`.
+- `projects/garda/ai-core/garda_ai/incidents.py` contains persistent incident state
+  linked to pre-existing camera events/snapshots. In `/workspace`, **Insiden**
+  is real API data; synthetic `/command` and other demo views remain mock data.
+- `serve --protected` requires named login, HTTPS `GARDA_PUBLIC_ORIGIN`
+  and Secure cookies; the historic initial-lab `serve` stays local-Admin default
+  only for controlled lab usage. Never deploy the no-login lab through a client gateway.
+- SHA-256 snapshot inventory is NOT chain-of-custody certification, legal hold,
+  immutable storage, continuous recording or full Vault functionality.
+- Codex should review tests/CI, isolate follow-on recorder work from PR #9 and vision
+  work from PR #10, and NOT mark any module production GREEN without hardware UAT.
+
 ## Owner-authorized five-platform lab (2026-11-16)
 - Owner selected one local AI server with Windows, Apple Silicon M1 macOS, Ubuntu, Android 13+ and Web clients, an eight-camera minimum target, and a one-day MVP priority. See docs/GARDA_FIVE_PLATFORM_MVP_STATUS_2026-11-16.md.
 - This lab explicitly includes enrolled face matching and plate OCR; it does not change generic Basic entitlements, production acceptance or the historic PUSADA contract schedule.

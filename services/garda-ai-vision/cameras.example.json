@@ -1,0 +1,11 @@
+[
+  {
+    "id": "LAB-CAM-01",
+    "site_id": "LAB",
+    "rtsp_env": "GARDA_CAM01_RTSP",
+    "onvif_host": "192.0.2.10",
+    "onvif_port": 80,
+    "onvif_user_env": "GARDA_CAM01_ONVIF_USER",
+    "onvif_pass_env": "GARDA_CAM01_ONVIF_PASS"
+  }
+]

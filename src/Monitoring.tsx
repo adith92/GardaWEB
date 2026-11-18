@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Video,
@@ -33,6 +33,7 @@ import {
   Panel,
 } from "./ui";
 import { filterEvents } from "./logic.mjs";
+const ThreeMissionScene = lazy(() => import("./ThreeMissionScene").then((module) => ({ default: module.ThreeMissionScene })));
 const positions = [
   [49, 86],
   [50, 69],
@@ -257,7 +258,7 @@ export function EventTable({
     </div>
   );
 }
-export function Command() {
+export function Command({ legacy = false }: { legacy?: boolean } = {}) {
   const { state, updateIncident, log } = useDemo();
   const [camera, setCamera] = useState<Camera | null>(null);
   const [event, setEvent] = useState<Event | null>(null);
@@ -265,13 +266,13 @@ export function Command() {
   const active = state.incidents.filter((i) => i.status !== "resolved");
   const metrics = [
     {
-      name: "Cameras Online",
+      name: "Demo Feeds Online",
       value: "8",
       suffix: "/8",
       icon: Video,
       color: "green",
       to: "/live",
-      note: "Seluruh kamera terhubung",
+      note: "16 kanal/titik · feed sintetis",
     },
     {
       name: "Active Incidents",
@@ -312,6 +313,15 @@ export function Command() {
   ];
   return (
     <>
+      {!legacy && <section className="command-visual">
+        <div className="command-visual-copy">
+          <span className="visual-kicker">PMC V2 · DEMO PUSADA</span>
+          <h2>Pantau seluruh perimeter dari satu ruang kendali.</h2>
+          <p>Pemantauan 16 titik, pencarian bukti dan respons operator. Seluruh data pada demo bersifat sintetis.</p>
+          <div className="visual-status"><i /> 8 feed demo online <span>·</span> 16 kanal referensi</div>
+        </div>
+        <Suspense fallback={<div className="mission-scene-loading">Memuat animasi CCTV…</div>}><ThreeMissionScene /></Suspense>
+      </section>}
       <PageTitle
         title="Command Overview"
         description="Pantau kawasan. Kenali kejadian. Kendalikan respons."
@@ -325,7 +335,8 @@ export function Command() {
                 {
                   simulated: true,
                   date: "2026-10-01",
-                  cameras: 8,
+                  demoFeeds: 8,
+                  contractChannels: 16,
                   activeIncidents: active.length,
                   incidents: state.incidents,
                 },
@@ -361,7 +372,7 @@ export function Command() {
             actions={
               <div className="actions">
                 <span className="online">
-                  <i /> 8 cameras online
+                  <i /> 8 demo feeds online · 16 kanal referensi
                 </span>
                 <Link className="text-button" to="/map">
                   Open map <ArrowRight size={14} />
@@ -950,3 +961,4 @@ export function Playback() {
     </>
   );
 }
+

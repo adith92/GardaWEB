@@ -32,12 +32,13 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { StoreProvider, useDemo } from "./store";
+import GardaVisionWorkbench from "./GardaVisionWorkbench";
 import { Badge, Modal } from "./ui";
 import { Command, Live, MapPage, Playback, Events } from "./Monitoring";
 import { Incidents, AskGarda, Vault, Intelligence } from "./Operations";
 import { System, Devices, Audit, Settings } from "./Administration";
 const Analytics = lazy(() => import("./Analytics"));
-const Workspace = lazy(() => import("./workspace/Workspace"));
+const visionEnabled = import.meta.env.DEV && import.meta.env.VITE_GARDA_AI_LAB === "true";
 const nav = [
   ["COMMAND", "/command", LayoutDashboard],
   ["LIVE", "/live", Video],
@@ -138,6 +139,12 @@ function Shell() {
               {name === "ASK GARDA" && <span className="nav-ai">AI</span>}
             </NavLink>
           ))}
+          {visionEnabled && (
+            <NavLink to="/ai-vision" className={({ isActive }) => `nav-item ${isActive ? "selected" : ""}`}>
+              <ScanFace size={18} />
+              <span>AI VISION LAB</span>
+            </NavLink>
+          )}
         </nav>
         <div className="sidebar-foot">
           <div>
@@ -216,6 +223,7 @@ function Shell() {
               <Route path="/system" element={<System />} />
               <Route path="/audit" element={<Audit />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/ai-vision" element={visionEnabled ? <GardaVisionWorkbench /> : <Navigate to="/command" replace />} />
               <Route path="*" element={<Navigate to="/command" replace />} />
             </Routes>
           </Suspense>
@@ -351,10 +359,6 @@ function Shell() {
   );
 }
 export default function App() {
-  const { pathname } = useLocation();
-  if (pathname === "/workspace" || pathname.startsWith("/workspace/")) {
-    return <Suspense fallback={<main>Memuat GARDA Workspace…</main>}><Workspace /></Suspense>;
-  }
   return (
     <StoreProvider>
       <Shell />

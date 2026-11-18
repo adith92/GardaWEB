@@ -49,6 +49,8 @@ jobs:
           python -m compileall -q tests
       - name: Cross-platform source tests (synthetic, no real biometric data)
         run: python -m pytest tests -q
+      - name: Desktop RTSP and recorder safety tests (mock Qt, no camera)
+        run: python -m unittest discover -s ../desktop/tests -p 'test_*.py' -v
       - name: Model and camera caveat
         run: |
           echo "CI DOES NOT prove real-camera PTZ/zoom movement or face/plate OCR accuracy."

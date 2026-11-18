@@ -1,5 +1,12 @@
 # GARDA shared server and five-platform workspace — v0.13.0 source candidate
 
+> **Additional review branch:** Offline encrypted metadata/snapshot backup,
+> verification and new-directory restore: `python -m garda_ai.backup --help`.
+> Source is in `garda_ai/backup.py`, with bounded 128 MiB uncompressed input and
+> an interactive passphrase; it is **not** a video/NVR DR system. Detailed limits:
+> [offline backup & recovery guide](../../../docs/GARDA_OFFLINE_BACKUP_RESTORE_2026-11-16.md).
+
+
 Owner-selected lab target (16 November 2026): one local AI server, Windows/macOS
 M1/Ubuntu/Android 13+/Web clients, minimum eight camera configurations, one-day
 implementation priority. Packaging requires a separate pre-build confirmation.

@@ -1,0 +1,32 @@
+# Protected local lab only; no anonymous streaming and no public exposure.
+logLevel: info
+api: true
+apiAddress: :9997
+playback: true
+playbackAddress: :9996
+rtsp: true
+rtspAddress: :8554
+hls: true
+hlsAddress: :8888
+webrtc: true
+webrtcAddress: :8889
+authMethod: internal
+authInternalUsers:
+  - user: garda_api
+    pass: OVERRIDDEN_BY_MTX_AUTHINTERNALUSERS_0_PASS
+    ips: []
+    permissions:
+      - action: api
+      - action: read
+      - action: playback
+pathDefaults:
+  record: true
+  recordPath: /recordings/%path/%Y-%m-%d_%H-%M-%S-%f_%z
+  recordFormat: fmp4
+  recordPartDuration: 1s
+  recordSegmentDuration: 1h
+  recordDeleteAfter: 168h
+paths:
+  all_others:
+    source: publisher
+    record: false

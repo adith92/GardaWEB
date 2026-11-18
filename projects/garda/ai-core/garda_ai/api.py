@@ -26,6 +26,8 @@ def create_app(data_dir: str | Path | None = None, key: str | None = None,
     @asynccontextmanager
     async def lifespan(_app: FastAPI):
         try:
+            if service is not None:
+                service.recorder.start()
             yield
         finally:
             if service is not None:
