@@ -66,7 +66,13 @@ class OnvifIntercom {
         val connection = Socket()
         connection.connect(InetSocketAddress(host, port), 4500)
         connection.soTimeout = 4500
-        socket = connection
+        synchronized(this) {
+            if (!running) {
+                connection.close()
+                return
+            }
+            socket = connection
+        }
         val input = BufferedInputStream(connection.getInputStream())
         val output = BufferedOutputStream(connection.getOutputStream())
         var cseq = 1
@@ -157,10 +163,16 @@ class OnvifIntercom {
             )
             .setBufferSizeInBytes(max(3200, minBytes * 2))
             .build()
-        audio = recorder
-        check(recorder.state == AudioRecord.STATE_INITIALIZED) { "Android microphone initialization failed" }
-        recorder.startRecording()
-        onState(true, "Talk active (ONVIF G.711)")
+        synchronized(this) {
+            if (!running) {
+                recorder.release()
+                return
+            }
+            audio = recorder
+            check(recorder.state == AudioRecord.STATE_INITIALIZED) { "Android microphone initialization failed" }
+            recorder.startRecording()
+        }
+        if (running) onState(true, "Talk active (ONVIF G.711)")
         var seq = random.nextInt(65536)
         var timestamp = random.nextInt()
         val ssrc = random.nextInt()

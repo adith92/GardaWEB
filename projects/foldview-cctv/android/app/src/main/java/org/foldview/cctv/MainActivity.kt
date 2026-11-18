@@ -335,8 +335,10 @@ class MainActivity : ComponentActivity() {
                         val imported = withContext(Dispatchers.IO) {
                             runCatching {
                                 context.contentResolver.openInputStream(source)?.use { input ->
-                                    val content = input.bufferedReader().readText()
-                                    GardaCameraBackup.import(content)
+                                    // Enforce 128 KiB-ish camera list limit before decoding into a String.
+                                    val bytes = input.readNBytes(128_001)
+                                    require(bytes.size <= 128_000) { "Camera backup exceeds 128 KB" }
+                                    GardaCameraBackup.import(String(bytes, Charsets.UTF_8))
                                 } ?: error("File unavailable")
                             }
                         }

@@ -3,6 +3,8 @@ package com.garda.camera
 import android.content.Context
 import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.rtsp.RtspMediaSource
@@ -14,8 +16,18 @@ class RtspPlayerManager(private val context: Context) {
 
     fun startStream(playerView: PlayerView, rtspUrl: String, onStateChanged: ((Boolean) -> Unit)? = null) {
         release()
+        var created: ExoPlayer? = null
         try {
             val exoPlayer = ExoPlayer.Builder(context).build()
+            created = exoPlayer
+            exoPlayer.addListener(object : Player.Listener {
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    if (playbackState == Player.STATE_READY) onStateChanged?.invoke(true)
+                }
+                override fun onPlayerError(error: PlaybackException) {
+                    onStateChanged?.invoke(false)
+                }
+            })
             val mediaItem = MediaItem.fromUri(rtspUrl)
 
             // Force TCP transport for RTSP to prevent UDP packet loss and screen distortion
@@ -25,19 +37,20 @@ class RtspPlayerManager(private val context: Context) {
                 .createMediaSource(mediaItem)
 
             exoPlayer.setMediaSource(mediaSource)
-            exoPlayer.prepare()
-            exoPlayer.playWhenReady = true
-
             playerView.player = exoPlayer
             player = exoPlayer
-            onStateChanged?.invoke(true)
+            exoPlayer.prepare()
+            exoPlayer.playWhenReady = true
         } catch (e: Exception) {
+            created?.release()
+            if (player === created) player = null
+            playerView.player = null
             onStateChanged?.invoke(false)
         }
     }
 
     fun stopStream() {
-        player?.stop()
+        release()
     }
 
     fun release() {
